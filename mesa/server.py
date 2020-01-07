@@ -40,7 +40,7 @@ def schelling_draw(agent):
 
 
 happy_element = HappyElement()
-canvas_element = CanvasGrid(schelling_draw, 20, 20, 500, 500)
+canvas_element = CanvasGrid(schelling_draw, 100, 100, 500, 500)
 happy_chart = ChartModule([{"Label": "happy", "Color": "Black"}])
 
 model_params = {
