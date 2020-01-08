@@ -18,9 +18,7 @@ class ApocalypseAgent(Agent):
 
     def step(self):
         # get neighbours within vision(later make vision a property of an agent?)
-        vision = 5;
-        neighbours = self.model.grid.get_neighbors(
-            self.pos, False, radius=self.properties["vision"])
+        neighbours = self.model.grid.get_neighbors(self.pos, False, radius=self.properties["vision"])
 
         # print the neighbours for debugging purposes
         neigh = ""
