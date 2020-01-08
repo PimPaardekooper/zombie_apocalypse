@@ -55,11 +55,15 @@ class Apocalypse(Model):
             x = cell[1]
             y = cell[2]
             if self.random.random() < self.density:
+                properties = {}
                 if self.random.random() < self.infected:
-                    new_agent = ApocalypseAgent((x, y), self, "zombie", properties={"vision" : 4})
+                    properties["vision"] = 4
+                    type = "zombie"
                 else:
-                    new_agent = ApocalypseAgent((x, y), self, "human", properties={"vision" : 5})
+                    properties["vision"] = 5
+                    type = "human"
 
+                new_agent = ApocalypseAgent((x, y), self, type, properties=properties)
                 self.grid.position_agent(new_agent, (x, y))
                 self.schedule.add(new_agent)
 
