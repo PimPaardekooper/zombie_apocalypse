@@ -12,17 +12,18 @@ class ApocalypseAgent(Agent):
         super().__init__(pos, model)
         self.type = type
         self.pos = pos
+        self.properties = properties
 
     def step(self):
         # get neighbours within vision(later make vision a property of an agent?)
         vision = 5;
-        neighbours = self.model.grid.get_neighbors(self.pos, False, radius=vision)
+        neighbours = self.model.grid.get_neighbors(self.pos, False, radius=self.properties["vision"])
 
         # print the neighbours for debugging purposes
         neigh = ""
         for n in neighbours:
             neigh += "(" + str(n.pos) + ", " + self.type + "), "
-        print(str(self.pos) + "neighbours: " + neigh)
+        print("(" + str(self.pos) + ", " + self.type + ") " + "neighbours: " + neigh)
 
         # until an AI is implemented, move the agent to a completely random
         # square in the grid
@@ -55,11 +56,9 @@ class Apocalypse(Model):
             y = cell[2]
             if self.random.random() < self.density:
                 if self.random.random() < self.infected:
-                    type = "zombie"
+                    new_agent = ApocalypseAgent((x, y), self, "zombie", properties={"vision" : 4})
                 else:
-                    type = "human"
-
-                new_agent = ApocalypseAgent((x, y), self, type, {"strength" : 1})
+                    new_agent = ApocalypseAgent((x, y), self, "human", properties={"vision" : 5})
 
                 self.grid.position_agent(new_agent, (x, y))
                 self.schedule.add(new_agent)
