@@ -18,7 +18,7 @@ def model_draw(agent):
     else:
         portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 0,
                      "Text":  "(x, y)=" + str(agent.pos) + ", " +
-                              "Type=" + agent.type +
+                              "Type=" + agent.type
                      }
 
         if agent.type == "zombie":
