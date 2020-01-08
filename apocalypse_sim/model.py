@@ -14,15 +14,24 @@ class ApocalypseAgent(Agent):
         self.pos = pos
 
     def step(self):
+        vision = 5;
+        neighbours = self.model.grid.get_neighbors(self.pos, False, radius=vision)
+
+        neigh = ""
+        for n in neighbours:
+            neigh += "(" + str(n.pos) + ", " + self.type + "), "
+        print(str(self.pos) + "neighbours: " + neigh)
+
+
         self.model.grid.move_to_empty(self)
 
 
 class Apocalypse(Model):
-    def __init__(self, height=200, width=200, density=0.8, percent_infected=0.1):
+    def __init__(self, height=100, width=100, density=0.1, infected=0.05):
         self.height = height
         self.width = width
         self.density = density
-        self.percent_infected = percent_infected
+        self.infected = infected
 
         self.schedule = RandomActivation(self)
         self.grid = SingleGrid(height, width, torus=True)
@@ -32,11 +41,13 @@ class Apocalypse(Model):
             # For testing purposes, agent's individual x and y
             {"x": lambda a: a.pos[0], "y": lambda a: a.pos[1]})
 
+
+        # All agents are created here
         for cell in self.grid.coord_iter():
             x = cell[1]
             y = cell[2]
             if self.random.random() < self.density:
-                if self.random.random() < self.percent_infected:
+                if self.random.random() < self.infected:
                     type = "zombie"
                 else:
                     type = "human"
@@ -49,7 +60,6 @@ class Apocalypse(Model):
         # no idea what this does
         self.running = True
         self.datacollector.collect(self)
-
 
     def step(self):
         self.schedule.step()
