@@ -1,2 +1,4 @@
 # ignore virtual environments
 venv/
+__pycache__/
+mesa/
