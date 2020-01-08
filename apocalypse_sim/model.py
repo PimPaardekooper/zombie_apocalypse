@@ -77,12 +77,12 @@ class Apocalypse(Model):
                     agent_type = "human"
 
                 new_agent = ApocalypseAgent((x, y), self, agent_type, properties=properties)
-                self.grid.position_agent(new_agent, (x, y))
+                self.grid.position_agent(new_agent, x, y)
                 self.schedule.add(new_agent)
             else:
                 agent_type = 0
                 agent = ApocalypseAgent((x, y), self, agent_type, properties={})
-                self.grid.position_agent(agent, (x, y))
+                self.grid.position_agent(agent, x, y)
                 self.schedule.add(agent)
 
 
@@ -91,6 +91,7 @@ class Apocalypse(Model):
         Map that has a city and village and a road between. Every point that is
         not inside it you can't walk.
         """
+        # TODO: path.contains_path, can't overlap.
         city = Place(0.3, [[50, 75],
                            [75, 75],
                            [75,50],
@@ -122,6 +123,7 @@ class Apocalypse(Model):
                         new_agent = ApocalypseAgent((x, y), self, agent_type, properties=properties)
                         self.grid.position_agent(new_agent, x, y)
                         self.schedule.add(new_agent)
+                    break
 
 
             if not added:
