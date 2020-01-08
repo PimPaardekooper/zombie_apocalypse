@@ -43,6 +43,7 @@ happy_element = HappyElement()
 canvas_element = CanvasGrid(schelling_draw, 100, 100, 500, 500)
 happy_chart = ChartModule([{"Label": "happy", "Color": "Black"}])
 
+
 model_params = {
     "height": 20,
     "width": 20,

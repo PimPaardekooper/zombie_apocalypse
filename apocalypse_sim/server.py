@@ -28,12 +28,15 @@ def model_draw(agent):
 canvas_element = CanvasGrid(model_draw, 100, 100, 1000, 1000)
 # happy_chart = ChartModule([{"Label": "happy", "Color": "Black"}])
 
+
+# NOTE: Add sliders here
 model_params = {
     "height": 100,
     "width": 100,
     "density": UserSettableParameter("slider", "Agent density", 0.1, 0.01, 1.0, 0.01),
     "infected": UserSettableParameter("slider", "Amount infected", 0.1, 0.01, 1.0, 0.01)
 }
+
 
 server = ModularServer(Apocalypse,
                        [canvas_element],

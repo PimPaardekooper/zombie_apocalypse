@@ -14,25 +14,31 @@ class ApocalypseAgent(Agent):
         self.pos = pos
 
     def step(self):
+        # get neighbours within vision(later make vision a property of an agent?)
         vision = 5;
         neighbours = self.model.grid.get_neighbors(self.pos, False, radius=vision)
 
+        # print the neighbours for debugging purposes
         neigh = ""
         for n in neighbours:
             neigh += "(" + str(n.pos) + ", " + self.type + "), "
         print(str(self.pos) + "neighbours: " + neigh)
 
-
+        # until an AI is implemented, move the agent to a completely random
+        # square in the grid
         self.model.grid.move_to_empty(self)
 
 
 class Apocalypse(Model):
     def __init__(self, height=100, width=100, density=0.1, infected=0.05):
+        # variables to get from model_params in server.py
         self.height = height
         self.width = width
         self.density = density
         self.infected = infected
 
+
+        # NOTE: no idea what this does
         self.schedule = RandomActivation(self)
         self.grid = SingleGrid(height, width, torus=True)
 
@@ -40,6 +46,7 @@ class Apocalypse(Model):
             {"type": "zombie"},  # Model-level count of zombie agents
             # For testing purposes, agent's individual x and y
             {"x": lambda a: a.pos[0], "y": lambda a: a.pos[1]})
+        # NOTE: end of weird stuff
 
 
         # All agents are created here
@@ -57,9 +64,12 @@ class Apocalypse(Model):
                 self.grid.position_agent(new_agent, (x, y))
                 self.schedule.add(new_agent)
 
-        # no idea what this does
+
+        # NOTE: no idea what this does
         self.running = True
         self.datacollector.collect(self)
+        # NOTE: end of weird stuff
+
 
     def step(self):
         self.schedule.step()
