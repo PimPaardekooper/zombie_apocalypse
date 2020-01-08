@@ -15,6 +15,7 @@ def model_draw(agent):
     '''
     if agent is None:
         return
+
     portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 0}
 
     if agent.type == "zombie":
@@ -23,16 +24,23 @@ def model_draw(agent):
     elif agent.type == "human":
         portrayal["Color"] = ["#0000FF", "#9999FF"]
         portrayal["stroke_color"] = "#000000"
+    else:
+        portrayal["Color"] = ["#000000", "#000000"]
+        portrayal["stroke_color"] = "#000000"
+
     return portrayal
 
-canvas_element = CanvasGrid(model_draw, 100, 100, 1000, 1000)
+grid_height = 100
+grid_width = 100
+
+canvas_element = CanvasGrid(model_draw, grid_height, grid_width, 800, 800)
 # happy_chart = ChartModule([{"Label": "happy", "Color": "Black"}])
 
 
 # NOTE: Add sliders here
 model_params = {
-    "height": 100,
-    "width": 100,
+    "height": grid_height,
+    "width": grid_width,
     "density": UserSettableParameter("slider", "Agent density", 0.1, 0.01, 1.0, 0.01),
     "infected": UserSettableParameter("slider", "Amount infected", 0.1, 0.01, 1.0, 0.01)
 }
