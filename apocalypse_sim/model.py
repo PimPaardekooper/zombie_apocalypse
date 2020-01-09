@@ -7,6 +7,8 @@ from mesa.time import RandomActivation
 from mesa.space import SingleGrid
 from mesa.datacollection import DataCollector
 
+import random
+
 from matplotlib.path import Path
 
 class ApocalypseAgent(Agent):
@@ -16,35 +18,26 @@ class ApocalypseAgent(Agent):
         self.pos = pos
         self.properties = properties
 
+    def nearest_brains(self, neighbours):
+        nearby_brains = [brain.pos for brain in neighbours if brain.type == "human"]
+        if len(nearby_brains) > 0:
+            nearest = 0
+            for brain in nearby_brains:
+                distance = (abs(brain[0] - self.pos[0])**2 + abs(brain[1] - self.pos[1])**2)**0.5
+                if nearest == 0 or nearest < distance:
+                    nearest = distance
+                    nearest_x = brain[0]
+                    nearest_y = brain[1]
+        return (nearest_x, nearest_y)
+
     def step(self):
         if self.type == "human" or self.type == "zombie":
             # get neighbours within vision(later make vision a property of an agent?)
             neighbours = self.model.grid.get_neighbors(self.pos, False, radius=self.properties["vision"])
 
             if self.type == "zombie":
-                nearby_brains = [brain.pos for brain in neighbours if brain.type == "human"]
-                if len(nearby_brains) > 0:
-                    nearest = 0
-                    for brain in nearby_brains:
-                        distance = (abs(brain[0] - self.pos[0])**2 + abs(brain[1] - self.pos[1])**2)**0.5
-                        if nearest == 0 or nearest < distance:
-                            nearest = distance
-                            nearest_x = brain[0]
-                            nearest_y = brain[1]
-                    print("Nearest tasty brain for zombie on " + str(self.pos) +
-                          " is on " + str((nearest_x, nearest_y)))
-                else:
-                    print("No nearby tasty brains for zombie on " + str(self.pos))
+                tasty_brain = nearest_brain(self, neighbours)
 
-
-            # print the neighbours for debugging purposes
-            # neigh = ""
-            # for n in neighbours:
-            #     neigh += "(" + str(n.pos) + ", " + self.type + "), "
-            # print("(" + str(self.pos) + ", " + self.type + ") " + "neighbours: " + neigh)
-
-            # until an AI is implemented, move the agent to a completely random
-            # square in the grid
             self.model.grid.move_to_empty(self)
 
 class Apocalypse(Model):
