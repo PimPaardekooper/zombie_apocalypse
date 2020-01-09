@@ -4,7 +4,7 @@ Creates the model for the computational experiment that needs to run.
 """
 from mesa import Model, Agent
 from mesa.time import RandomActivation
-from mesa.space import SingleGrid
+from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
 
 from matplotlib.path import Path
@@ -25,11 +25,24 @@ class ApocalypseAgent(Agent):
         for n in neighbours:
             neigh += "(" + str(n.pos) + ", " + self.type + "), "
 
+
         # print("(" + str(self.pos) + ", " + self.type + ") " + "neighbours: " + neigh)
 
         # until an AI is implemented, move the agent to a completely random
         # square in the grid
-        # self.model.grid.move_to_empty(self)
+
+        # Checks if new position is in the same place.
+        # TODO:: new_pos
+        # self.transition(new_pos)
+
+        self.model.grid.move_to_empty(self)
+
+    def transition(self, new_pos):
+        """Transition to new place if new position is not in the same place."""
+        if not self.properties.place.contains_point(new_pos):
+            self.properties.place = self.model.get_place(new_pos)
+            # TODO:: change agents attributes given the new place.
+
 
 class Apocalypse(Model):
     def __init__(self, height=100, width=100, density=0.1, infection_change=0.05):
@@ -46,7 +59,7 @@ class Apocalypse(Model):
 
         # NOTE: no idea what this does
         self.schedule = RandomActivation(self)
-        self.grid = SingleGrid(height, width, torus=True)
+        self.grid = MultiGrid(height, width, torus=True)
 
         self.datacollector = DataCollector(
             {"infected": "infected",
@@ -57,7 +70,13 @@ class Apocalypse(Model):
 
         # All agents are created here
         # self.initial_map()
+
+        # Make different places on the map.
         self.second_map()
+        # self.third_map()
+
+        # Initialize agent and map.
+        self.make_map()
 
         # NOTE: no idea what this does
         self.running = True
@@ -85,40 +104,21 @@ class Apocalypse(Model):
                     self.susceptible += 1
 
                 new_agent = ApocalypseAgent((x, y), self, agent_type, properties=properties)
-                self.grid.position_agent(new_agent, x, y)
+                self.grid.place_agent(new_agent, (x, y))
                 self.schedule.add(new_agent)
-            else:
-                agent_type = 0
-                agent = ApocalypseAgent((x, y), self, agent_type, properties={})
-                self.grid.position_agent(agent, x, y)
-                self.schedule.add(agent)
 
-
-    def second_map(self):
-        """
-        Map that has a city and village and a road between. Every point that is
-        not inside it you can't walk.
-        """
-        # TODO: path.contains_path, can't overlap.
-        city = Place(0.3, [[50, 75],
-                           [75, 75],
-                           [75,50],
-                           [50,50],
-                           [50, 75]])
-
-        village = Place(0.1, [[5,5],[10,5],[10,10],[5, 10],[5,5]])
-        self.places = [city, village]
-
-        road = Place(0, [[8, 10] , [10, 8], [52, 50], [50, 52], [8, 10]])
-        self.roads = [road]
-
+    def make_map(self):
+        """Spawn map with place object in self.roades and self.places. Places with a population density will spawm agents."""
+        
+        print(self.paths_overlap(self.places))
+        
         for cell in self.grid.coord_iter():
             x = cell[1]
             y = cell[2]
 
             added = False
 
-            for place in [city, village]:
+            for place in self.places:
                 if place.path.contains_point((x, y)):
                     added = True
 
@@ -136,8 +136,11 @@ class Apocalypse(Model):
                             self.susceptible += 1
 
                         new_agent = ApocalypseAgent((x, y), self, agent_type, properties=properties)
-                        self.grid.position_agent(new_agent, x, y)
+                        self.grid.place_agent(new_agent, (x, y))
                         self.schedule.add(new_agent)
+
+                    new_agent = ApocalypseAgent((x, y), self, "city", properties={})
+                    self.grid.place_agent(new_agent, (x, y))
                     break
 
 
@@ -145,14 +148,78 @@ class Apocalypse(Model):
                 for r in self.roads:
                     if r.path.contains_point((x, y), radius=1):
                         added = True
+                        new_agent = ApocalypseAgent((x, y), self, "road", properties={})
+                        self.grid.place_agent(new_agent, (x, y))
                         break
 
             if not added:
                 new_agent = ApocalypseAgent((x, y), self, "wall", properties={})
-                self.grid.position_agent(new_agent, x, y)
-                # self.schedule.add(new_agent)
+                self.grid.place_agent(new_agent, (x, y))
+
+    def paths_overlap(self, places):
+        """Check if path mades don't overlap."""
+        for place in places:
+            for place2 in places:
+                if place != place2:
+                    if place.path.intersects_path(place2.path):
+                        return True
+
+        return False
+
+    def second_map(self):
+        """
+        Map that has a city and village and a road between. Every point that is
+        not inside it you can't walk.
+        """
+        # TODO: path.contains_path, can't overlap.
+        city = Place(0.3, [[50, 75],
+                           [75, 75],
+                           [75,50],
+                           [50,50],
+                           [50, 75]])
+
+        city2 = Place(0.3, [[50, 75],
+                           [75, 75],
+                           [75,50],
+                           [50,50],
+                           [50, 75]])
+
+        village = Place(0.1, [[5,5],[10,5],[10,10],[5, 10],[5,5]])
 
 
+        road = Place(0, [[8, 10] , [10, 8], [52, 50], [50, 52], [8, 10]])
+
+        self.places = [city, village]
+        self.roads = [road]
+
+
+
+
+
+    def third_map(self):
+        """
+        Map that has no roads.
+        """
+        city = Place(0.3, [[50, 75],
+                           [75, 75],
+                           [75,50],
+                           [50,50],
+                           [50, 75]])
+
+        village = Place(0.1, [[49,70],[49,55],[30,55],[30, 70],[49,70]])
+
+
+
+        self.places = [city, village]
+        self.roads = []
+       
+
+
+    def get_place(self, pos):
+        """Return place of current posiion."""
+        for place in self.places + self.roads:
+            if place.path.contains_point(pos):
+                return place
 
 
 class Place:

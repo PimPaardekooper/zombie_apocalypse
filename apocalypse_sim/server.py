@@ -16,7 +16,7 @@ def model_draw(agent):
     if agent is None:
         return
 
-    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 0}
+    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 1}
 
     if agent.type == "zombie":
         portrayal["Color"] = ["#FF0000", "#FF9999"]
@@ -24,16 +24,28 @@ def model_draw(agent):
     elif agent.type == "human":
         portrayal["Color"] = ["#0000FF", "#9999FF"]
         portrayal["stroke_color"] = "#000000"
+    elif agent.type == "city":
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
+        portrayal["Color"] = ["#dd42f5"]
+    elif agent.type == "road":
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
+        portrayal["Color"] = ["#f5e3427A"]
     else:
-        portrayal["Color"] = ["#000000", "#000000"]
-        portrayal["stroke_color"] = "#000000"
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
+        portrayal["Color"] = ["#000000"]
 
     return portrayal
 
+# Tries to fit grid_height points inside canvas_height pixels, need to 
+# be divisible
 grid_height = 100
 grid_width = 100
+canvas_height = 600
+canvas_width = canvas_height
 
-canvas_element = CanvasGrid(model_draw, grid_height, grid_width, 800, 800)
+canvas_element = CanvasGrid(model_draw, grid_height, grid_width, 
+                            canvas_height, canvas_width)
+
 # happy_chart = ChartModule([{"Label": "happy", "Color": "Black"}])
 
 
