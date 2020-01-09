@@ -18,7 +18,7 @@ class ApocalypseAgent(Agent):
         self.pos = pos
         self.properties = properties
 
-    def nearest_brains(self, neighbours):
+    def nearest_brain(self, neighbours):
         nearby_brains = [brain.pos for brain in neighbours if brain.type == "human"]
         if len(nearby_brains) > 0:
             nearest = 0
@@ -36,7 +36,7 @@ class ApocalypseAgent(Agent):
             neighbours = self.model.grid.get_neighbors(self.pos, False, radius=self.properties["vision"])
 
             if self.type == "zombie":
-                tasty_brain = nearest_brain(self, neighbours)
+                tasty_brain = self.nearest_brain(neighbours)
 
             self.model.grid.move_to_empty(self)
 
