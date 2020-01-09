@@ -4,32 +4,11 @@ Creates the model for the computational experiment that needs to run.
 """
 from mesa import Model, Agent
 from mesa.time import RandomActivation
-from mesa.space import SingleGrid
+from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
-
 from matplotlib.path import Path
-
-class ApocalypseAgent(Agent):
-    def __init__(self, pos, model, agent_type, properties={}):
-        super().__init__(pos, model)
-        self.type = agent_type
-        self.pos = pos
-        self.properties = properties
-
-    def step(self):
-        # get neighbours within vision(later make vision a property of an agent?)
-        neighbours = self.model.grid.get_neighbors(self.pos, False, radius=self.properties["vision"])
-
-        # print the neighbours for debugging purposes
-        neigh = ""
-        for n in neighbours:
-            neigh += "(" + str(n.pos) + ", " + self.type + "), "
-
-        # print("(" + str(self.pos) + ", " + self.type + ") " + "neighbours: " + neigh)
-
-        # until an AI is implemented, move the agent to a completely random
-        # square in the grid
-        # self.model.grid.move_to_empty(self)
+from human_agent import HumanAgent
+# from ZombieAgent import ZombieAgent
 
 class Apocalypse(Model):
     def __init__(self, height=100, width=100, density=0.1, infected=0.05):
@@ -41,50 +20,42 @@ class Apocalypse(Model):
 
         # NOTE: no idea what this does
         self.schedule = RandomActivation(self)
-        self.grid = SingleGrid(height, width, torus=True)
+        self.grid = MultiGrid(height, width, torus=False)
 
-        self.datacollector = DataCollector(
-            {"type": "zombie"},  # Model-level count of zombie agents
-            # For testing purposes, agent's individual x and y
-            {"x": lambda a: a.pos[0], "y": lambda a: a.pos[1]})
+        # self.datacollector = DataCollector(
+        #     {"type": "zombie"},  # Model-level count of zombie agents
+        #     # For testing purposes, agent's individual x and y
+        #     {"x": lambda a: a.pos[0], "y": lambda a: a.pos[1]})
         # NOTE: end of weird stuff
 
         # All agents are created here
-        # self.initial_map()
-        self.second_map()
+        self.initial_map()
+        # self.second_map()
 
         # NOTE: no idea what this does
         self.running = True
-        self.datacollector.collect(self)
+        # self.datacollector.collect(self)
         # NOTE: end of weird stuff
 
     def step(self):
         self.schedule.step()
-        self.datacollector.collect(self)
+        # self.datacollector.collect(self)
 
+
+    # NOTE: Pim's map code
     def initial_map(self):
         for cell in self.grid.coord_iter():
             x = cell[1]
             y = cell[2]
 
-            if self.random.random() < self.density:
-                properties = {}
-                if self.random.random() < self.infected:
-                    properties["vision"] = 4
-                    agent_type = "zombie"
-                else:
-                    properties["vision"] = 5
-                    agent_type = "human"
+            agent = HumanAgent((x, y), self)
+            self.grid.place_agent(agent, (x, y))
+            self.schedule.add(agent)
 
-                new_agent = ApocalypseAgent((x, y), self, agent_type, properties=properties)
-                self.grid.position_agent(new_agent, x, y)
-                self.schedule.add(new_agent)
-            else:
-                agent_type = 0
-                agent = ApocalypseAgent((x, y), self, agent_type, properties={})
-                self.grid.position_agent(agent, x, y)
-                self.schedule.add(agent)
-
+            # if self.random.random() < self.density:
+            #     # NOTE: aanpassen equality naar <
+            #     if self.random.random() >= self.infected:
+            #
 
     def second_map(self):
         """
@@ -120,8 +91,8 @@ class Apocalypse(Model):
                             properties["vision"] = 5
                             agent_type = "human"
 
-                        new_agent = ApocalypseAgent((x, y), self, agent_type, properties=properties)
-                        self.grid.position_agent(new_agent, x, y)
+                        new_agent = HumanAgent((x, y), self, agent_type, properties=properties)
+                        self.grid.place_agent(new_agent, x, y)
                         self.schedule.add(new_agent)
                     break
 
@@ -133,8 +104,8 @@ class Apocalypse(Model):
                         break
 
             if not added:
-                new_agent = ApocalypseAgent((x, y), self, "wall", properties={})
-                self.grid.position_agent(new_agent, x, y)
+                new_agent = HumanAgent((x, y), self, "wall", properties={})
+                self.grid.place_agent(new_agent, (x, y))
                 self.schedule.add(new_agent)
 
 

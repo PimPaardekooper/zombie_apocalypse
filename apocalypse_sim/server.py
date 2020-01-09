@@ -30,10 +30,12 @@ def model_draw(agent):
 
     return portrayal
 
-grid_height = 100
-grid_width = 100
+grid_height = 10
+grid_width = 10
+canvas_height = 600
+canvas_width = canvas_height
 
-canvas_element = CanvasGrid(model_draw, grid_height, grid_width, 800, 800)
+canvas_element = CanvasGrid(model_draw, grid_height, grid_width, canvas_height, canvas_width)
 # happy_chart = ChartModule([{"Label": "happy", "Color": "Black"}])
 
 
