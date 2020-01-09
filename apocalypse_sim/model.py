@@ -110,7 +110,7 @@ class Apocalypse(Model):
         self.places = [city, village]
 
         road = Place(0, [[8, 10] , [10, 8], [52, 50], [50, 52], [8, 10]])
-        self.roads = []
+        self.roads = [road]
 
         for cell in self.grid.coord_iter():
             x = cell[1]
@@ -142,7 +142,7 @@ class Apocalypse(Model):
 
 
             if not added:
-                for r in [road]:
+                for r in self.roads:
                     if r.path.contains_point((x, y), radius=1):
                         added = True
                         break

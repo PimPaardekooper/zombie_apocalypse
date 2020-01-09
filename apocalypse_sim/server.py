@@ -42,7 +42,7 @@ model_params = {
     "height": grid_height,
     "width": grid_width,
     "density": UserSettableParameter("slider", "Agent density", 0.1, 0.01, 1.0, 0.01),
-    "infection_change": UserSettableParameter("slider", "Change getting infection", 0.1, 0.01, 1.0, 0.01)
+    "infection_change": UserSettableParameter("slider", "Change getting infected", 0.1, 0.01, 1.0, 0.01)
 }
 
 chart = ChartModule([{"Label": "susceptible",
