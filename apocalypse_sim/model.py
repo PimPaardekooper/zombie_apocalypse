@@ -28,7 +28,8 @@ class ApocalypseAgent(Agent):
                     nearest = distance
                     nearest_x = brain[0]
                     nearest_y = brain[1]
-        return (nearest_x, nearest_y)
+            return (nearest_x, nearest_y)
+        return None
 
     def step(self):
         if self.type == "human" or self.type == "zombie":
