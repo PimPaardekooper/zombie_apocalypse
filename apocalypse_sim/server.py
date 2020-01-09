@@ -42,10 +42,15 @@ model_params = {
     "height": grid_height,
     "width": grid_width,
     "density": UserSettableParameter("slider", "Agent density", 0.1, 0.01, 1.0, 0.01),
-    "infected": UserSettableParameter("slider", "Amount infected", 0.1, 0.01, 1.0, 0.01)
+    "infection_change": UserSettableParameter("slider", "Change getting infection", 0.1, 0.01, 1.0, 0.01)
 }
 
+chart = ChartModule([{"Label": "susceptible",
+                      "Color": "Green"},
+                      {"Label": "infected",
+                      "Color": "Red"}],
+                    data_collector_name='datacollector')
 
 server = ModularServer(Apocalypse,
-                       [canvas_element],
+                       [canvas_element, chart],
                        "Apocalypse", model_params)

@@ -32,19 +32,25 @@ class ApocalypseAgent(Agent):
         # self.model.grid.move_to_empty(self)
 
 class Apocalypse(Model):
-    def __init__(self, height=100, width=100, density=0.1, infected=0.05):
+    def __init__(self, height=100, width=100, density=0.1, infection_change=0.05):
         # variables to get from model_params in server.py
         self.height = height
         self.width = width
         self.density = density
-        self.infected = infected
+        self.infection_change = infection_change
+        self.places = []
+        self.roads = []
+
+        self.infected = 0
+        self.susceptible = 0
 
         # NOTE: no idea what this does
         self.schedule = RandomActivation(self)
         self.grid = SingleGrid(height, width, torus=True)
 
         self.datacollector = DataCollector(
-            {"type": "zombie"},  # Model-level count of zombie agents
+            {"infected": "infected",
+             "susceptible": "susceptible"},  # Model-level count of zombie agents
             # For testing purposes, agent's individual x and y
             {"x": lambda a: a.pos[0], "y": lambda a: a.pos[1]})
         # NOTE: end of weird stuff
@@ -69,12 +75,14 @@ class Apocalypse(Model):
 
             if self.random.random() < self.density:
                 properties = {}
-                if self.random.random() < self.infected:
+                if self.random.random() < self.infection_change:
                     properties["vision"] = 4
                     agent_type = "zombie"
+                    self.infected += 1
                 else:
                     properties["vision"] = 5
                     agent_type = "human"
+                    self.susceptible += 1
 
                 new_agent = ApocalypseAgent((x, y), self, agent_type, properties=properties)
                 self.grid.position_agent(new_agent, x, y)
@@ -99,7 +107,10 @@ class Apocalypse(Model):
                            [50, 75]])
 
         village = Place(0.1, [[5,5],[10,5],[10,10],[5, 10],[5,5]])
+        self.places = [city, village]
+
         road = Place(0, [[8, 10] , [10, 8], [52, 50], [50, 52], [8, 10]])
+        self.roads = []
 
         for cell in self.grid.coord_iter():
             x = cell[1]
@@ -113,12 +124,16 @@ class Apocalypse(Model):
 
                     if self.random.random() < place.population_density:
                         properties = {}
-                        if self.random.random() < self.infected:
+                        properties["place"] = place
+
+                        if self.random.random() < self.infection_change:
                             properties["vision"] = 4
                             agent_type = "zombie"
+                            self.infected += 1
                         else:
                             properties["vision"] = 5
                             agent_type = "human"
+                            self.susceptible += 1
 
                         new_agent = ApocalypseAgent((x, y), self, agent_type, properties=properties)
                         self.grid.position_agent(new_agent, x, y)
@@ -135,7 +150,7 @@ class Apocalypse(Model):
             if not added:
                 new_agent = ApocalypseAgent((x, y), self, "wall", properties={})
                 self.grid.position_agent(new_agent, x, y)
-                self.schedule.add(new_agent)
+                # self.schedule.add(new_agent)
 
 
 
