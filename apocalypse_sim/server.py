@@ -16,7 +16,10 @@ def model_draw(agent):
     if agent is None:
         return
 
-    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 0}
+    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 0,
+                 "Text":  "(x, y)=" + str(agent.pos) + ", " +
+                          "Type=" + agent.type
+                 }
 
     if agent.type == "zombie":
         portrayal["Color"] = ["#FF0000", "#FF9999"]
