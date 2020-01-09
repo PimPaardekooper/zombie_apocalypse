@@ -16,7 +16,10 @@ def model_draw(agent):
     if agent is None:
         return
 
-    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 0}
+    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 0,
+                 "Text":  "(x, y)=" + str(agent.pos) + ", " +
+                          "Type=" + agent.type
+                 }
 
     if agent.type == "zombie":
         portrayal["Color"] = ["#FF0000", "#FF9999"]
@@ -24,9 +27,15 @@ def model_draw(agent):
     elif agent.type == "human":
         portrayal["Color"] = ["#0000FF", "#9999FF"]
         portrayal["stroke_color"] = "#000000"
+    elif agent.type == "city":
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
+        portrayal["Color"] = ["#dd42f5"]
+    elif agent.type == "road":
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
+        portrayal["Color"] = ["#f5e3427A"]
     else:
-        portrayal["Color"] = ["#000000", "#000000"]
-        portrayal["stroke_color"] = "#000000"
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
+        portrayal["Color"] = ["#000000"]
 
     return portrayal
 
@@ -36,6 +45,7 @@ canvas_height = 600
 canvas_width = canvas_height
 
 canvas_element = CanvasGrid(model_draw, grid_height, grid_width, canvas_height, canvas_width)
+
 # happy_chart = ChartModule([{"Label": "happy", "Color": "Black"}])
 
 
@@ -44,10 +54,15 @@ model_params = {
     "height": grid_height,
     "width": grid_width,
     "density": UserSettableParameter("slider", "Agent density", 0.1, 0.01, 1.0, 0.01),
-    "infected": UserSettableParameter("slider", "Amount infected", 0.1, 0.01, 1.0, 0.01)
+    "infection_change": UserSettableParameter("slider", "Change getting infected", 0.1, 0.01, 1.0, 0.01)
 }
 
+chart = ChartModule([{"Label": "susceptible",
+                      "Color": "Green"},
+                      {"Label": "infected",
+                      "Color": "Red"}],
+                    data_collector_name='datacollector')
 
 server = ModularServer(Apocalypse,
-                       [canvas_element],
+                       [canvas_element, chart],
                        "Apocalypse", model_params)
