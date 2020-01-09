@@ -39,15 +39,12 @@ def model_draw(agent):
 
     return portrayal
 
-# Tries to fit grid_height points inside canvas_height pixels, need to 
-# be divisible
-grid_height = 100
-grid_width = 100
+grid_height = 10
+grid_width = 10
 canvas_height = 600
 canvas_width = canvas_height
 
-canvas_element = CanvasGrid(model_draw, grid_height, grid_width, 
-                            canvas_height, canvas_width)
+canvas_element = CanvasGrid(model_draw, grid_height, grid_width, canvas_height, canvas_width)
 
 # happy_chart = ChartModule([{"Label": "happy", "Color": "Black"}])
 
