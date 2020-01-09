@@ -7,6 +7,8 @@ from mesa.time import RandomActivation
 from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
 
+import random
+
 from matplotlib.path import Path
 
 class ApocalypseAgent(Agent):
@@ -16,14 +18,24 @@ class ApocalypseAgent(Agent):
         self.pos = pos
         self.properties = properties
 
-    def step(self):
-        # get neighbours within vision(later make vision a property of an agent?)
-        neighbours = self.model.grid.get_neighbors(self.pos, False, radius=self.properties["vision"])
+    def nearest_brain(self, neighbours):
+        nearby_brains = [brain.pos for brain in neighbours if brain.type == "human"]
+        if len(nearby_brains) > 0:
+            nearest = 0
+            for brain in nearby_brains:
+                distance = (abs(brain[0] - self.pos[0])**2 + abs(brain[1] - self.pos[1])**2)**0.5
+                if nearest == 0 or nearest < distance:
+                    nearest = distance
+                    nearest_x = brain[0]
+                    nearest_y = brain[1]
+            return (nearest_x, nearest_y)
+        return None
 
-        # print the neighbours for debugging purposes
-        neigh = ""
-        for n in neighbours:
-            neigh += "(" + str(n.pos) + ", " + self.type + "), "
+    def step(self):
+        if self.type == "human" or self.type == "zombie":
+            # get neighbours within vision(later make vision a property of an agent?)
+            neighbours = self.model.grid.get_neighbors(self.pos, False, radius=self.properties["vision"])
+            self.model.grid.move_to_empty(self)
 
 
         # print("(" + str(self.pos) + ", " + self.type + ") " + "neighbours: " + neigh)
@@ -35,13 +47,16 @@ class ApocalypseAgent(Agent):
         # TODO:: new_pos
         # self.transition(new_pos)
 
-        self.model.grid.move_to_empty(self)
+        if self.type == "zombie":
+            tasty_brain = self.nearest_brain(neighbours)
+
 
     def transition(self, new_pos):
         """Transition to new place if new position is not in the same place."""
         if not self.properties.place.contains_point(new_pos):
             self.properties.place = self.model.get_place(new_pos)
             # TODO:: change agents attributes given the new place.
+
 
 
 class Apocalypse(Model):
@@ -69,14 +84,14 @@ class Apocalypse(Model):
         # NOTE: end of weird stuff
 
         # All agents are created here
-        # self.initial_map()
+        self.initial_map()
 
         # Make different places on the map.
-        self.second_map()
+        # self.second_map()
         # self.third_map()
 
         # Initialize agent and map.
-        self.make_map()
+        # self.make_map()
 
         # NOTE: no idea what this does
         self.running = True
