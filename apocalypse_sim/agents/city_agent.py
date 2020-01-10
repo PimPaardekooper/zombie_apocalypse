@@ -1,4 +1,4 @@
-from agent import Agent
+from .agent import Agent
 
 class BuildingAgent(Agent):
     def __init__(self, pos, type, model):

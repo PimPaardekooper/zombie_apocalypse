@@ -1,4 +1,4 @@
-from agent import Agent
+from .agent import Agent
 
 class HumanAgent(Agent):
     def __init__(self, pos, model):
@@ -8,4 +8,4 @@ class HumanAgent(Agent):
 
 
     def setVision(self, visionRadius):
-        self.traits.vision = max(9, visionRadius);
+        self.traits.vision = max(9, visionRadius)
