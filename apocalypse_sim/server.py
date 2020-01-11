@@ -39,8 +39,8 @@ def model_draw(agent):
 
     return portrayal
 
-grid_height = 10
-grid_width = 10
+grid_height = 100
+grid_width = 100
 canvas_height = 600
 canvas_width = canvas_height
 
