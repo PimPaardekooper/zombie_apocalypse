@@ -9,9 +9,9 @@ from mesa.datacollection import DataCollector
 from matplotlib.path import Path
 from agents.human_agent import HumanAgent
 from agents.zombie_agent import ZombieAgent
-from agents.city_agent import BuildingAgent
+from agents.map_object_agent import MapObjectAgent
 
-from mapGen import MapGen
+from agents.map_gen import MapGen
 
 class Apocalypse(Model):
     def __init__(self, height=100, width=100, density=0.1, infection_change=0.05):
@@ -34,7 +34,7 @@ class Apocalypse(Model):
             {"x": lambda a: a.pos[0], "y": lambda a: a.pos[1]})
         # NOTE: end of weird stuff
 
-        self.map = MapGen(1, self)
+        self.map = MapGen(3, self)
 
         # NOTE: no idea what this does
         self.running = True

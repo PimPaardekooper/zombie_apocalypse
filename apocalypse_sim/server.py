@@ -16,15 +16,18 @@ def model_draw(agent):
     if agent is None:
         return
 
-    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 0,
-                 "Text":  "(x, y)=" + str(agent.pos) + ", " +
-                          "Type=" + agent.type
-                 }
+    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 1,
+                 "Text": "(x, y)=" + str(agent.pos)}
 
     if agent.type == "zombie":
+        portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type \
+                                      + ", Place=" + str(agent.place)
+
         portrayal["Color"] = ["#FF0000", "#FF9999"]
         portrayal["stroke_color"] = "#00FF00"
     elif agent.type == "human":
+        portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type \
+                                      + ", Place=" + str(agent.place)
         portrayal["Color"] = ["#0000FF", "#9999FF"]
         portrayal["stroke_color"] = "#000000"
     elif agent.type == "city":
