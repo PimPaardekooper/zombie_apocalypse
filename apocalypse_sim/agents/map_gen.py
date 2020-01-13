@@ -1,7 +1,6 @@
 from .human_agent import HumanAgent
 from .zombie_agent import ZombieAgent
-from .map_object_agent import MapObjectAgent
-from .map_object import Place, Road
+from .map_object import Place, Road, MapObjectAgent
 
 
 class MapGen:
@@ -13,8 +12,6 @@ class MapGen:
         maps[map_id]()
 
         self.places, self.roads = maps[map_id]()
-
-        print(self.paths_overlap(self.places))
 
         self.spawn_agents()
 

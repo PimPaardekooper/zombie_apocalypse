@@ -86,10 +86,6 @@ class Agent(MesaAgent):
 
     def transition(self):
         """Check if the place the agent just moved to is a new place."""
-
-        if not self.place.path.contains_point(self.pos):
-            print("change")
-
         if not self.place.path.contains_point(self.pos):
             self.place = self.model.map.get_place(self.pos)
 

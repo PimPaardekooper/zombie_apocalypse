@@ -9,7 +9,7 @@ from mesa.datacollection import DataCollector
 from matplotlib.path import Path
 from agents.human_agent import HumanAgent
 from agents.zombie_agent import ZombieAgent
-from agents.map_object_agent import MapObjectAgent
+from agents.map_object import MapObjectAgent
 
 from agents.map_gen import MapGen
 

@@ -1,5 +1,13 @@
 from matplotlib.path import Path
 from copy import deepcopy
+from mesa import Agent as MesaAgent
+
+class MapObjectAgent(MesaAgent):
+    def __init__(self, pos, agent_type, model):
+        super().__init__(pos, model)
+
+        self.type = agent_type
+
 
 class MapObject:
     def __init__(self, vertices):
@@ -41,8 +49,6 @@ class Road(MapObject):
 
         if min([abs(max(ys) - y), abs(min(ys) - y)]) == abs(max(ys) - y):
             new_dir[1] = -new_dir[1]
-
-        print(new_dir)
 
         return tuple(new_dir)
 
