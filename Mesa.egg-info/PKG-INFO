@@ -1,0 +1,22 @@
+Metadata-Version: 2.1
+Name: Mesa
+Version: 0.8.6
+Summary: Agent-based modeling (ABM) in Python 3+
+Home-page: https://github.com/PimPaardekooper/zombie_apocalypse
+Author: Project Mesa Team
+Author-email: projectmesa@googlegroups.com
+License: Apache 2.0
+Description: UNKNOWN
+Keywords: agent based modeling model ABM simulation multi-agent
+Platform: UNKNOWN
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Artificial Life
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Intended Audience :: Science/Research
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 3 - Alpha
+Classifier: Natural Language :: English
+Provides-Extra: dev
+Provides-Extra: docs
