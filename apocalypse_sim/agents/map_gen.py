@@ -2,12 +2,13 @@ from .human_agent import HumanAgent
 from .zombie_agent import ZombieAgent
 from .map_object import Place, Road, MapObjectAgent
 
+from shapely.geometry import Polygon, Point
 
 class MapGen:
     def __init__(self, map_id, model):
         self.model = model
 
-        maps = [self.initial_map, self.second_map, self.third_map, self.fourth_map]
+        maps = [self.initial_map, self.second_map, self.third_map, self.fourth_map, self.fifth_map]
 
         maps[map_id]()
 
@@ -64,14 +65,14 @@ class MapGen:
 
 
     def fourth_map(self):
-        city1 = Place([[35, 35], [35,65],[65,65],[65,35],[35,35]], 0.3)
+        city1 = Place([[35, 37], [37,35], [35,65],[65,65],[65,35],[35,37]], 0.3)
 
-        city2 = Place([[15, 15], [15,25],[25,25],[25,15],[15,15]], 0.3)
+        city2 = Place([[15, 15], [15,25],[23,25],[25,23],[25,15],[15,15]], 0.3)
         city3 = Place([[75, 75], [75,85],[85,85],[85,75],[75,75]], 0.3)
         city4 = Place([[15, 75], [15,85],[25,85],[25,75],[15,75]], 0.3)
         city5 = Place([[75, 15], [85,15],[85,25],[75,25],[75,15]], 0.3)
 
-        road = Road([[23, 25], [25, 22], [37, 35], [35, 37], [23, 25]], (1, 1), 2)
+        road = Road([[23, 25], [25, 23], [37, 35], [35, 37], [23, 25]], (1, 1), 2)
 
         road2 = Road([[77, 75], [75, 77], [60, 62], [62, 60], [77, 75]], (1, 1), 2)
 
@@ -81,6 +82,21 @@ class MapGen:
         road4 = Road([[25, 77], [22, 75], [35, 61], [37, 65], [25, 77]], (1, 1), 2)
 
         return [city1, city2, city3, city4, city5], [road, road2, road3, road4]
+
+    def fifth_map(self):
+        city1 = Place([[10, 90], [10, 70], [25, 70], [30,75], [30,90], [10,90]], 0.3)
+        city2 = Place([[10, 10], [30, 10], [30, 25], [25,30], [10,30], [10,10]], 0.3)
+        city3 = Place([[70, 10], [90, 10], [90, 30], [75,30], [70,25], [70,10]], 0.3)
+        city4 = Place([[90, 70], [90, 90], [70, 90], [70,75], [75,70], [90,70]], 0.3)
+        city5 = Place([[40, 55], [40, 45], [45, 40], [55,40], [60,45], [60,55],
+                        [55, 60], [45, 60], [40,55]], 0.3)
+
+        road1 = Road([[25,30], [30,25], [45, 40], [40, 45]], (1, 1), 2)
+        road2 = Road([[55,40], [60,45], [75, 30], [70, 25]], (1, 1), 2)
+        road3 = Road([[60,55], [75,70], [70, 75], [55, 60]], (1, 1), 2)
+        road4 = Road([[30,75], [25,70], [40, 55], [45, 60]], (1, 1), 2)
+
+        return [city1, city2, city3, city4, city5], [road1, road2, road3, road4]
 
     def spawn_agents(self):
         # TODO:: Edges path not right
@@ -100,7 +116,7 @@ class MapGen:
             added = False
 
             for place in self.places:
-                if place.path.contains_point((x, y)):
+                if place.path.intersects(Point(x, y)):
                     added = True
 
                     if self.model.random.random() < place.population_density:
@@ -125,7 +141,7 @@ class MapGen:
 
             if not added:
                 for r in self.roads:
-                    if r.path.contains_point((x, y)):
+                    if r.path.intersects(Point(x, y)):
                         added = True
                         new_agent = MapObjectAgent((x, y), "road", self.model)
                         self.model.grid.place_agent(new_agent, (x, y))
@@ -138,7 +154,7 @@ class MapGen:
     def get_place(self, pos):
         """Return place of current position."""
         for place in self.places + self.roads:
-            if place.path.contains_point(pos):
+            if place.path.intersects(Point(pos)):
                 return place
 
         return False
