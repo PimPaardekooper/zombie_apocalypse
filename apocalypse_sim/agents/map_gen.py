@@ -140,6 +140,13 @@ class MapGen:
                 if place.path.intersects(Point(x, y)):
                     added = True
 
+                    cell_count = self.model.grid.width * self.model.grid.height
+                    human_count = int(cell_count * place.population_density)
+                    zombie_count = int((cell_count - human_count) * self.model.infection_change)
+
+                    print(cell_count, human_count, zombie_count)
+                    print(self.model.infection_change)
+
                     if self.model.random.random() < place.population_density:
                         properties = {}
                         properties["place"] = place

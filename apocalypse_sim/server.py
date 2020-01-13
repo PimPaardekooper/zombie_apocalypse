@@ -7,21 +7,33 @@ from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import CanvasGrid, ChartModule, TextElement
 from mesa.visualization.UserParam import UserSettableParameter
 
+import os
 import webbrowser
 import tornado.ioloop
 
 from model import Apocalypse
 
 class ModularServerExtd(ModularServer):
+
+    def __init__(self, model_cls, visualization_elements, name="Mesa Model",
+                 model_params={}):
+        super().__init__(model_cls, visualization_elements, name, model_params)
+
     def launch(self, port=None):
+
         """ Run the app. """
         if port is not None:
             self.port = port
         url = 'http://127.0.0.1:{PORT}'.format(PORT=self.port)
         print('Interface starting at {url}'.format(url=url))
         self.listen(self.port)
-        webbrowser.open(url)
-        # tornado.autoreload.start()
+
+        if os.getenv('WEBBY', "0") == "0":
+            webbrowser.open(url)
+
+        os.environ["WEBBY"] = "1"
+
+        tornado.autoreload.start()
         tornado.ioloop.IOLoop.current().start()
 
 def model_draw(agent):
@@ -73,7 +85,7 @@ model_params = {
     "width": grid_width,
     "density": UserSettableParameter("slider", "Agent density", 0.1, 0.01, 1.0, 0.01),
     "infection_change": UserSettableParameter("slider", "Change getting infected", 0.1, 0.01, 1.0, 0.01),
-    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=4, min_value=0, max_value=4, step=1, choices=[0,1,2,3,4])
+    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=0, min_value=0, max_value=4, step=1, choices=[0,1,2,3,4])
 }
 
 chart = ChartModule([{"Label": "susceptible",
