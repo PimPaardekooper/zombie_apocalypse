@@ -3,6 +3,8 @@ from agents.zombie_agent import ZombieAgent
 from agents.city_agent import BuildingAgent
 
 from matplotlib.path import Path
+from agents.automaton import Automaton
+from agents.states import *
 
 
 class MapGen:
@@ -15,7 +17,7 @@ class MapGen:
 
         self.places, self.roads = maps[map_id]()
 
-        print(self.paths_overlap(self.places))
+        # print(self.paths_overlap(self.places))
 
         self.spawn_agents()
 
@@ -96,6 +98,10 @@ class MapGen:
 
 
     def spawn_agents(self):
+        fsm = Automaton()
+
+        fsm.event(Idle(), Tracking())
+
         for cell in self.model.grid.coord_iter():
             x = cell[1]
             y = cell[2]
@@ -112,16 +118,18 @@ class MapGen:
 
                         if self.model.random.random() < self.model.infection_change:
                             # properties["vision"] = 4
-                            new_agent = ZombieAgent((x, y), self.model)
+                            new_agent = ZombieAgent((x, y), self.model, fsm)
+                            print(x, y)
                             self.model.infected += 1
                         else:
-                            new_agent=HumanAgent((x, y), self.model)
+                            print(x, y)
+                            new_agent=HumanAgent((x, y), self.model, fsm)
                             self.model.susceptible += 1
 
                         self.model.grid.place_agent(new_agent, (x, y))
                         self.model.schedule.add(new_agent)
 
-                    new_agent=BuildingAgent((x, y), "city", self.model)
+                    new_agent=BuildingAgent((x, y), "city", self.model, fsm)
 
                     self.model.grid.place_agent(new_agent, (x, y))
                     break
@@ -131,12 +139,12 @@ class MapGen:
                 for r in self.roads:
                     if r.path.contains_point((x, y), radius=1):
                         added=True
-                        new_agent=BuildingAgent((x, y), "road", self.model)
+                        new_agent=BuildingAgent((x, y), "road", self.model, fsm)
                         self.model.grid.place_agent(new_agent, (x, y))
                         break
 
             if not added:
-                new_agent=BuildingAgent((x, y), "wall", self.model)
+                new_agent=BuildingAgent((x, y), "wall", self.model, fsm)
                 self.model.grid.place_agent(new_agent, (x, y))
 
 

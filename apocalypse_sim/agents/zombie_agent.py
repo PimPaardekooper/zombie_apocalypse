@@ -1,8 +1,8 @@
 from .agent import Agent
 
 class ZombieAgent(Agent):
-    def __init__(self, pos, model):
-        super().__init__(pos, model)
+    def __init__(self, pos, model, fsm):
+        super().__init__(pos, model, fsm)
 
         self.type = "zombie"
 
@@ -33,4 +33,4 @@ class ZombieAgent(Agent):
 
 
     def setVision(self, visionRadius):
-        self.traits.vision = max(9, visionRadius);
+        self.traits['vision'] = min(9, visionRadius);

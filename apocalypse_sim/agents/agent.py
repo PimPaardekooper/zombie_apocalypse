@@ -2,11 +2,13 @@ from mesa import Model
 from mesa import Agent as MesaAgent
 
 class Agent(MesaAgent):
-    def __init__(self, pos, model):
+    def __init__(self, pos, model, fsm):
         super().__init__(pos, model)
 
-        self.pos = pos
+        self.states = []
         self.traits = {}
+        self.fsm = fsm
+        self.pos = pos
 
 
     def get_moves(self):
@@ -45,10 +47,19 @@ class Agent(MesaAgent):
 
 
     def step(self):
-        self.move()
+        for state in self.states:
+            state.on_update(self)
+
+        self.fsm.transition(self)
+
 
     def transition(self, new_pos):
         """Transition to new place if new position is not in the same place."""
         if not self.traits["place"].contains_point(new_pos):
             self.traits.place = self.model.get_place(new_pos)
             # TODO:: change agents attributes given the new place.
+
+
+    # Set the initial state(s) an agent is in
+    def set_initial_states(self, states):
+        self.states = states

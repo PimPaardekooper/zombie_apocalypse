@@ -34,7 +34,7 @@ class Apocalypse(Model):
             {"x": lambda a: a.pos[0], "y": lambda a: a.pos[1]})
         # NOTE: end of weird stuff
 
-        self.map = MapGen(1, self)
+        self.map = MapGen(0, self)
 
         # NOTE: no idea what this does
         self.running = True
