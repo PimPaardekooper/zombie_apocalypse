@@ -16,15 +16,18 @@ def model_draw(agent):
     if agent is None:
         return
 
-    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 0,
-                 "Text":  "(x, y)=" + str(agent.pos) + ", " +
-                          "Type=" + agent.type
-                 }
+    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 1,
+                 "Text": "(x, y)=" + str(agent.pos)}
 
     if agent.type == "zombie":
+        portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type \
+                                      + ", Place=" + str(agent.place)
+
         portrayal["Color"] = ["#FF0000", "#FF9999"]
         portrayal["stroke_color"] = "#00FF00"
     elif agent.type == "human":
+        portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type \
+                                      + ", Place=" + str(agent.place)
         portrayal["Color"] = ["#0000FF", "#9999FF"]
         portrayal["stroke_color"] = "#000000"
     elif agent.type == "city":
@@ -54,7 +57,8 @@ model_params = {
     "height": grid_height,
     "width": grid_width,
     "density": UserSettableParameter("slider", "Agent density", 0.1, 0.01, 1.0, 0.01),
-    "infection_change": UserSettableParameter("slider", "Change getting infected", 0.1, 0.01, 1.0, 0.01)
+    "infection_change": UserSettableParameter("slider", "Change getting infected", 0.1, 0.01, 1.0, 0.01),
+    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=4, min_value=0, max_value=4, step=1, choices=[0,1,2,3,4])
 }
 
 chart = ChartModule([{"Label": "susceptible",

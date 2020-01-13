@@ -1,8 +1,12 @@
 from mesa import Model
 from mesa import Agent as MesaAgent
 
+from .map_object import Road
+
+from shapely.geometry import Point
+
 class Agent(MesaAgent):
-    def __init__(self, pos, model, fsm):
+    def __init__(self, pos, model, fsm, place):
         super().__init__(pos, model)
 
         self.states = []
@@ -10,6 +14,11 @@ class Agent(MesaAgent):
         self.fsm = fsm
         self.pos = pos
 
+        self.model = model
+
+        self.place = place
+        self.direction = (0, 0)
+        self.on_road = False
 
     def get_moves(self):
         grid = self.model.grid
@@ -46,6 +55,33 @@ class Agent(MesaAgent):
         grid.move_agent(self, new_cell)
 
 
+    def move_road(self):
+        if self.on_road:
+            # TODO:: check if transition move in one direction
+            new_cell = (self.pos[0] + self.direction[0] * self.place.speed,
+                       self.pos[1] + self.direction[1] * self.place.speed)
+
+            if not self.model.map.get_place(new_cell):
+                print("Off roading", self.pos, new_cell)
+                exit(1)
+
+            self.model.grid.move_agent(self, new_cell)
+
+            # NOTE:: Can add multiple roads to make a curve add isinstance.
+            if self.transition():
+                # print("transistion to place")
+                self.on_road = False
+
+        else:
+            # TODO:: check if transition else move normal
+            # print("Place")
+            self.move()
+
+            if self.transition() and isinstance(self.place, Road):
+                self.direction = self.place.flip(self.pos)
+                self.on_road = True
+
+
     def step(self):
         for state in self.states:
             state.on_update(self)
@@ -63,3 +99,16 @@ class Agent(MesaAgent):
     # Set the initial state(s) an agent is in
     def set_initial_states(self, states):
         self.states = states
+        if self.model.map.roads:
+            self.move_road()
+        else:
+            self.move()
+
+    def transition(self):
+        """Check if the place the agent just moved to is a new place."""
+        if not self.place.path.intersects(Point(self.pos)):
+            self.place = self.model.map.get_place(self.pos)
+
+            return True
+
+        return False

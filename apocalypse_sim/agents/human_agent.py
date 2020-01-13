@@ -1,8 +1,8 @@
 from .agent import Agent
 
 class HumanAgent(Agent):
-    def __init__(self, pos, model, fsm):
-        super().__init__(pos, model, fsm)
+    def __init__(self, pos, model, fsm, place):
+        super().__init__(pos, model, place=place)
 
         self.type = "human"
         self.traits['wants_to_bang'] = True
