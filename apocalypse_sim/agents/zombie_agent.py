@@ -46,8 +46,4 @@ class ZombieAgent(Agent):
 
 
     def setVision(self, visionRadius):
-<<<<<<< HEAD
-        self.traits['vision'] = min(9, visionRadius);
-=======
         self.traits["vision"] = min(9, visionRadius)
->>>>>>> master

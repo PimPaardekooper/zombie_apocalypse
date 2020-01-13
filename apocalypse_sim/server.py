@@ -7,7 +7,22 @@ from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import CanvasGrid, ChartModule, TextElement
 from mesa.visualization.UserParam import UserSettableParameter
 
+import webbrowser
+import tornado.ioloop
+
 from model import Apocalypse
+
+class ModularServerExtd(ModularServer):
+    def launch(self, port=None):
+        """ Run the app. """
+        if port is not None:
+            self.port = port
+        url = 'http://127.0.0.1:{PORT}'.format(PORT=self.port)
+        print('Interface starting at {url}'.format(url=url))
+        self.listen(self.port)
+        webbrowser.open(url)
+        # tornado.autoreload.start()
+        tornado.ioloop.IOLoop.current().start()
 
 def model_draw(agent):
     '''
@@ -67,6 +82,6 @@ chart = ChartModule([{"Label": "susceptible",
                       "Color": "Red"}],
                     data_collector_name='datacollector')
 
-server = ModularServer(Apocalypse,
+server = ModularServerExtd(Apocalypse,
                        [canvas_element, chart],
                        "Apocalypse", model_params)

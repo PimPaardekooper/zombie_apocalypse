@@ -1,7 +1,8 @@
 from .human_agent import HumanAgent
 from .zombie_agent import ZombieAgent
 from .map_object import Place, Road, MapObjectAgent
-
+from .automaton import Automaton
+from .states import *
 from shapely.geometry import Polygon, Point
 
 class MapGen:
@@ -124,6 +125,11 @@ class MapGen:
         If the coordinate doesn't contain a place it checks if it needs to spawn
         a road agent. If also isn't a road a wall agent is spawned.
         """
+
+        fsm = Automaton()
+
+        fsm.event(Idle(), Tracking())
+
         for cell in self.model.grid.coord_iter():
             x = cell[1]
             y = cell[2]
@@ -140,10 +146,10 @@ class MapGen:
 
                         if self.model.random.random() < self.model.infection_change:
                             # properties["vision"] = 4
-                            new_agent = ZombieAgent((x, y), self.model, place)
+                            new_agent = ZombieAgent((x, y), self.model, fsm, place)
                             self.model.infected += 1
                         else:
-                            new_agent = HumanAgent((x, y), self.model, place)
+                            new_agent = HumanAgent((x, y), self.model, fsm, place)
                             self.model.susceptible += 1
 
                         self.model.grid.place_agent(new_agent, (x, y))
@@ -183,5 +189,3 @@ class MapGen:
                         return True
 
         return False
-
-
