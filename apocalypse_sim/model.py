@@ -14,12 +14,12 @@ from agents.map_object import MapObjectAgent
 from agents.map_gen import MapGen
 
 class Apocalypse(Model):
-    def __init__(self, height=100, width=100, density=0.1, infection_change=0.05, map_id=4):
+    def __init__(self, height=100, width=100, density=0.1, infected_chance=0.05, map_id=5, city_id=0):
         # variables to get from model_params in server.py
         self.height = height
         self.width = width
         self.density = density
-        self.infection_change = infection_change
+        self.infected_chance = infected_chance
         self.infected = 0
         self.susceptible = 0
 
@@ -34,7 +34,7 @@ class Apocalypse(Model):
             {"x": lambda a: a.pos[0], "y": lambda a: a.pos[1]})
         # NOTE: end of weird stuff
 
-        self.map = MapGen(map_id, self)
+        self.map = MapGen(map_id, city_id, infected_chance, self)
 
         # NOTE: no idea what this does
         self.running = True

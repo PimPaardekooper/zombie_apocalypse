@@ -88,7 +88,7 @@ class Agent(MesaAgent):
 
     def transition(self):
         """Check if the place the agent just moved to is a new place."""
-        if not self.place.path.intersects(Point(self.pos)):
+        if not self.place.poly.intersects(Point(self.pos)):
             self.place = self.model.map.get_place(self.pos)
 
             return True
