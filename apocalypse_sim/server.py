@@ -32,7 +32,7 @@ def model_draw(agent):
         portrayal["stroke_color"] = "#000000"
     elif agent.type == "city":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
-        portrayal["Color"] = ["#dd42f5"]
+        portrayal["Color"] = ["#dd42f540"]
     elif agent.type == "road":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
         portrayal["Color"] = ["#f5e3427A"]
@@ -56,9 +56,9 @@ canvas_element = CanvasGrid(model_draw, grid_height, grid_width, canvas_height, 
 model_params = {
     "height": grid_height,
     "width": grid_width,
-    "density": UserSettableParameter("slider", "Agent density", 0.1, 0.01, 1.0, 0.01),
+    "density": UserSettableParameter("slider", "Agent density", 0.05, 0.01, 1.0, 0.01),
     "infection_change": UserSettableParameter("slider", "Change getting infected", 0.1, 0.01, 1.0, 0.01),
-    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=4, min_value=0, max_value=4, step=1, choices=[0,1,2,3,4])
+    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=0, min_value=0, max_value=4, step=1, choices=[0,1,2,3,4])
 }
 
 chart = ChartModule([{"Label": "susceptible",
