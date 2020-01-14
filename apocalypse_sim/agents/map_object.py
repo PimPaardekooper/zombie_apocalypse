@@ -1,8 +1,9 @@
 from matplotlib.path import Path
 from copy import deepcopy
 from mesa import Agent as MesaAgent
+from math import floor, ceil
 
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, Point
 
 
 class MapObjectAgent(MesaAgent):
@@ -14,10 +15,18 @@ class MapObjectAgent(MesaAgent):
 
 class MapObject:
     def __init__(self, vertices):
-        self.path = Polygon(vertices)
+        self.poly = Polygon(vertices)
 
     def __str__(self):
         return "None"
+
+    def get_coords(self):
+        min_x, min_y, max_x, max_y = self.poly.bounds
+
+        xs = [x for x in range(floor(min_x), ceil(max_x))]
+        ys = [y for y in range(floor(min_y), ceil(max_y))]
+
+        return [(x,y) for y in ys for x in xs if self.poly.intersects(Point(x,y))]
 
 class Place(MapObject):
     def __init__(self, vertices, population_density,
@@ -29,6 +38,9 @@ class Place(MapObject):
 
     def __str__(self):
         return "Place"
+
+    def density_to_amount(self, density):
+        return ceil(len(self.get_coords()) * density)
 
 class Road(MapObject):
     def __init__(self, vertices, direction, speed):
@@ -42,8 +54,8 @@ class Road(MapObject):
     def flip(self, pos):
         x, y = pos
 
-        xs = self.path.exterior.coords.xy[0]
-        ys = self.path.exterior.coords.xy[1]
+        xs = self.poly.exterior.coords.xy[0]
+        ys = self.poly.exterior.coords.xy[1]
 
 
         new_dir = [self.direction[0], self.direction[1]]

@@ -28,17 +28,27 @@ class Agent(MesaAgent):
         # occupied cells
         all_cells = grid.get_neighborhood(self.pos, True, False, 1)
 
+        # for x in all_cells:
+        #     print(x)
+
         # Always give the option to not move
         free_cells = [self.pos]
 
         # Get rid of cells that we may not move to
         for x, y in all_cells:
+
             if grid.is_cell_empty((x, y)):
                 free_cells.append((x, y))
             else:
-                occupant = next(iter(grid[x][y]))
+                panzerkampfwagen = False
 
-                if occupant.type not in no_overlap:
+                for cell in grid[x][y]:
+                    if cell.type in no_overlap:
+                        panzerkampfwagen = True
+
+                        break
+
+                if not panzerkampfwagen:
                     free_cells.append((x, y))
 
         return free_cells
@@ -55,8 +65,8 @@ class Agent(MesaAgent):
 
         # Move the agent to the selected cell
         grid.move_agent(self, new_cell)
-    #
-    #
+
+
     # # def move_road(self):
     # #     if self.on_road:
     # #         # TODO:: check if transition move in one direction
@@ -85,32 +95,20 @@ class Agent(MesaAgent):
     # #
     # #
     def step(self):
+        # if self.model.map.roads:
+        #     self.move_road()
+        # else:
         for state in self.states:
             state.on_update(self)
 
         self.fsm.update(self)
-    # #
-    # #
-    # # def transition(self, new_pos):
-    # #     """Transition to new place if new position is not in the same place."""
-    # #     if not self.traits["place"].contains_point(new_pos):
-    # #         self.traits.place = self.model.get_place(new_pos)
-    # #         # TODO:: change agents attributes given the new place.
-    # #
-    # #
-    # # # Set the initial state(s) an agent is in
-    # # def set_initial_states(self, states):
-    # #     self.states = states
-    # #     if self.model.map.roads:
-    # #         self.move_road()
-    # #     else:
-    # #         self.move()
-    # #
-    # # def transition(self):
-    # #     """Check if the place the agent just moved to is a new place."""
-    # #     if not self.place.path.intersects(Point(self.pos)):
-    # #         self.place = self.model.map.get_place(self.pos)
-    # #
-    # #         return True
-    # #
-    # #     return False
+
+
+    # def transition(self):
+    #     """Check if the place the agent just moved to is a new place."""
+    #     if not self.place.poly.intersects(Point(self.pos)):
+    #         self.place = self.model.map.get_place(self.pos)
+    #
+    #         return True
+    #
+    #     return False

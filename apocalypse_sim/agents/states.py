@@ -101,9 +101,7 @@ class Wandering(State):
 
 
     def on_update(self, agent):
-        print(agent)
         agent.move()
-        print("x")
 
 
 class Infect(State):

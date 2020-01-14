@@ -60,7 +60,7 @@ def model_draw(agent):
 
     elif agent.type == "city":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
-        portrayal["Color"] = ["#dd42f5"]
+        portrayal["Color"] = ["#ffffff"]
     elif agent.type == "road":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
         portrayal["Color"] = ["#f5e3427A"]
@@ -70,8 +70,8 @@ def model_draw(agent):
 
     return portrayal
 
-grid_height = 2
-grid_width = 2
+grid_height = 30
+grid_width = 30
 canvas_height = 600
 canvas_width = canvas_height
 
@@ -84,9 +84,10 @@ canvas_element = CanvasGrid(model_draw, grid_height, grid_width, canvas_height, 
 model_params = {
     "height": grid_height,
     "width": grid_width,
-    "density": UserSettableParameter("slider", "Agent density", 0.1, 0.01, 1.0, 0.01),
-    "infection_change": UserSettableParameter("slider", "Change getting infected", 0.1, 0.01, 1.0, 0.01),
-    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=0, min_value=0, max_value=4, step=1, choices=[0,1,2,3,4])
+    "density": UserSettableParameter("slider", "Agent density", value=0.5, min_value=0.01, max_value=1.0, step=0.01),
+    "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
+    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=0, min_value=0, max_value=5, step=1, choices=[0,1,2,3,4,5]),
+    "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1)
 }
 
 chart = ChartModule([{"Label": "susceptible",
