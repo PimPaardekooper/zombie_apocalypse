@@ -20,30 +20,18 @@ class ZombieAgent(Agent):
             return (nearest_x, nearest_y)
         return None
 
-    # def move(self):
-    #     grid = self.model.grid
-    #     free_cells = self.get_moves()
-    #
-    #     neighbours = self.model.grid.get_neighbors(self.pos, True, True, self.traits["vision"])
-    #
-    #     tasty_brain = self.nearest_brain(neighbours)
-    #     # print(str(self.pos) + "has nearest brain " + str(tasty_brain))
-    #
-    #     if tasty_brain:
-    #         smol_d = float("Inf")
-    #         for cell in free_cells:
-    #             d_x = abs(tasty_brain[0] - cell[0])
-    #             d_y = abs(tasty_brain[1] - cell[1])
-    #             d = (d_x**2 + d_y**2)**0.5
-    #             if d < smol_d:
-    #                 smol_d = d
-    #                 new_cell = cell
-    #     else:
-    #         # Randomly select a new cell to move to
-    #         new_cell = self.random.choice(free_cells)
-    #     # Move the agent to the selected cell
-    #     grid.move_agent(self, new_cell)
-    #     # print("moved to " + str(new_cell))
+    def move(self):
+        neighbours = self.model.grid.get_neighbors(self.pos, True, True, self.traits["vision"])
+        nearest_human = self.nearest_brain(neighbours)
+
+        if nearest_human:
+            new_cell = self.best_cell([nearest_human[0], nearest_human[1]])
+        else:
+            # Randomly select a new cell to move to
+            new_cell = self.random.choice(self.get_moves())
+
+        # Move the agent to the selected cell
+        self.model.grid.move_agent(self, new_cell)
 
 
     def setVision(self, visionRadius):

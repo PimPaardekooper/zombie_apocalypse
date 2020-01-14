@@ -87,7 +87,6 @@ class Reproduce(State):
 
 
     def on_leave(self, agent):
-        # print("Left reproductive state")
         pass
 
 
@@ -102,6 +101,16 @@ class Wandering(State):
 
     def on_update(self, agent):
         agent.move()
+
+
+class ChasingHuman(State):
+    def __init__(self):
+        self.name = "ChasingHuman"
+
+
+    def transition(self, agent):
+        neighbours = agent.model.grid.get_neighbors(agent.pos, True, True, agent.traits["vision"])
+        nearest_human = agent.nearest_brain(neighbours)
 
 
 class Infect(State):
