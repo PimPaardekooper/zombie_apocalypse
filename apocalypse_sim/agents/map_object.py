@@ -2,6 +2,9 @@ from matplotlib.path import Path
 from copy import deepcopy
 from mesa import Agent as MesaAgent
 
+from shapely.geometry import Polygon
+
+
 class MapObjectAgent(MesaAgent):
     def __init__(self, pos, agent_type, model):
         super().__init__(pos, model)
@@ -11,7 +14,7 @@ class MapObjectAgent(MesaAgent):
 
 class MapObject:
     def __init__(self, vertices):
-        self.path = Path(vertices)
+        self.path = Polygon(vertices)
 
     def __str__(self):
         return "None"
@@ -39,8 +42,9 @@ class Road(MapObject):
     def flip(self, pos):
         x, y = pos
 
-        xs = [z[0] for z in self.path.vertices]
-        ys = [z[1] for z in self.path.vertices]
+        xs = self.path.exterior.coords.xy[0]
+        ys = self.path.exterior.coords.xy[1]
+
 
         new_dir = [self.direction[0], self.direction[1]]
 

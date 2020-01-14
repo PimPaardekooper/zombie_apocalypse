@@ -3,6 +3,8 @@ from mesa import Agent as MesaAgent
 
 from .map_object import Road
 
+from shapely.geometry import Point
+
 class Agent(MesaAgent):
     def __init__(self, pos, model, place):
         super().__init__(pos, model)
@@ -86,7 +88,7 @@ class Agent(MesaAgent):
 
     def transition(self):
         """Check if the place the agent just moved to is a new place."""
-        if not self.place.path.contains_point(self.pos):
+        if not self.place.path.intersects(Point(self.pos)):
             self.place = self.model.map.get_place(self.pos)
 
             return True
