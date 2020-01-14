@@ -12,8 +12,13 @@ COPY /apocalypse_sim /opt/sim
 
 COPY requirements.txt ./
 
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+RUN apt-get update &&\
+    apt-get install -y \
+        make \
+        gcc \
+        libgdal20 libgdal-dev \
+    && pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8521
 
