@@ -26,7 +26,7 @@ class Agent(MesaAgent):
 
         # Get all cells surrounding the current cell, including already
         # occupied cells
-        all_cells = grid.get_neighborhood(self.pos, True, True, 1)
+        all_cells = grid.get_neighborhood(self.pos, True, False, 1)
 
         # Always give the option to not move
         free_cells = [self.pos]
@@ -43,16 +43,18 @@ class Agent(MesaAgent):
 
         return free_cells
 
-    # # Default move
-    # def move(self):
-    #     grid = self.model.grid
-    #     free_cells = self.get_moves()
-    #
-    #     # Randomly select a new cell to move to
-    #     new_cell = self.random.choice(free_cells)
-    #
-    #     # Move the agent to the selected cell
-    #     grid.move_agent(self, new_cell)
+    # Default move
+    def move(self):
+        grid = self.model.grid
+        free_cells = self.get_moves()
+
+        # Randomly select a new cell to move to
+        new_cell = self.random.choice(free_cells)
+
+        print("Old pos:", self.pos, "Available:", free_cells, "Chose cell:", new_cell)
+
+        # Move the agent to the selected cell
+        grid.move_agent(self, new_cell)
     #
     #
     # # def move_road(self):
@@ -82,11 +84,11 @@ class Agent(MesaAgent):
     # #             self.on_road = True
     # #
     # #
-    # # def step(self):
-    # #     for state in self.states:
-    # #         state.on_update(self)
-    # #
-    # #     self.fsm.transition(self)
+    def step(self):
+        for state in self.states:
+            state.on_update(self)
+
+        self.fsm.update(self)
     # #
     # #
     # # def transition(self, new_pos):

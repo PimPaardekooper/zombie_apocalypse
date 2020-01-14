@@ -18,15 +18,18 @@ class Automaton():
         self.states[a.name]['transitions'].append(b.name)
 
 
-    def get_state(self, state_name):
-        if state_name in self.states:
-            return self.states[state_name]['object']
+    def set_initial_states(self, state_names, agent):
+        agent.states = []
 
-        raise ValueError("State does not exist")
+        for state_name in state_names:
+            state = self.states[state_name]['object']
+
+            state.on_enter(agent)
+            agent.states.append(state)
 
 
-    def transition(self, agent):
-        for state in agent.states:
+    def update(self, agent):
+        for state in agent.states.copy():
             state_name = state.name
             transitions = self.states[state_name]['transitions']
 

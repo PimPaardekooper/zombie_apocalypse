@@ -38,9 +38,9 @@ class Apocalypse(Model):
 
         # NOTE: no idea what this does
         self.running = True
-        # self.datacollector.collect(self)
+        self.datacollector.collect(self)
         # NOTE: end of weird stuff
 
     def step(self):
         self.schedule.step()
-        # self.datacollector.collect(self)
+        self.datacollector.collect(self)

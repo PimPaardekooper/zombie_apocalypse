@@ -128,56 +128,75 @@ class MapGen:
 
         fsm = Automaton()
 
-        fsm.event(Idle(), Tracking())
+        # Human zombie interaction
+        fsm.event(Wandering(), Infect())
+        fsm.event(Infect(), Wandering())
 
-        for cell in self.model.grid.coord_iter():
-            x = cell[1]
-            y = cell[2]
+        # for cell in self.model.grid.coord_iter():
+        #     x = cell[1]
+        #     y = cell[2]
+        #
+        #     added = False
+#
+            # for place in self.places:
+            #     if place.path.intersects(Point(x, y)):
+            #         added = True
+            #
+            #         cell_count = self.model.grid.width * self.model.grid.height
+            #
+            #         human_count = int(cell_count * place.population_density)
+            #         zombie_count = int(human_count * self.model.infection_change)
+            #         human_count -= zombie_count
 
-            added = False
+                    # if self.model.random.random() < place.population_density:
+                    #     properties = {}
+                    #     properties["place"] = place
+                    #
+                    #     if self.model.random.random() < self.model.infection_change:
+                    #         # properties["vision"] = 4
+                    #         new_agent = ZombieAgent((x, y), self.model, fsm, place)
+                    #         self.model.infected += 1
+                    #     else:
+                    #         new_agent = HumanAgent((x, y), self.model, fsm, place)
+                    #         self.model.susceptible += 1
+                    #
+                    #     self.model.grid.place_agent(new_agent, (x, y))
+                    #     self.model.schedule.add(new_agent)
 
-            for place in self.places:
-                if place.path.intersects(Point(x, y)):
-                    added = True
+        # new_agent = HumanAgent((0, 0), self.model, fsm, {})
+        # self.model.grid.place_agent(new_agent, (0, 0))
+        # self.model.schedule.add(new_agent)
 
-                    cell_count = self.model.grid.width * self.model.grid.height
-                    human_count = int(cell_count * place.population_density)
-                    zombie_count = int((cell_count - human_count) * self.model.infection_change)
+        new_agent = HumanAgent((0, 0), self.model, fsm, {})
 
-                    print(cell_count, human_count, zombie_count)
-                    print(self.model.infection_change)
+        fsm.set_initial_states(["Wandering"], new_agent)
 
-                    if self.model.random.random() < place.population_density:
-                        properties = {}
-                        properties["place"] = place
+        self.model.grid.place_agent(new_agent, (0, 0))
+        self.model.schedule.add(new_agent)
 
-                        if self.model.random.random() < self.model.infection_change:
-                            # properties["vision"] = 4
-                            new_agent = ZombieAgent((x, y), self.model, fsm, place)
-                            self.model.infected += 1
-                        else:
-                            new_agent = HumanAgent((x, y), self.model, fsm, place)
-                            self.model.susceptible += 1
+        new_agent = ZombieAgent((1, 1), self.model, fsm, {})
 
-                        self.model.grid.place_agent(new_agent, (x, y))
-                        self.model.schedule.add(new_agent)
+        fsm.set_initial_states(["Wandering"], new_agent)
 
-                    new_agent = MapObjectAgent((x, y), "city", self.model)
+        self.model.grid.place_agent(new_agent, (1, 1))
+        self.model.schedule.add(new_agent)
 
-                    self.model.grid.place_agent(new_agent, (x, y))
-                    break
+        # new_agent = MapObjectAgent((x, y), "city", self.model)
 
-            if not added:
-                for r in self.roads:
-                    if r.path.intersects(Point(x, y)):
-                        added = True
-                        new_agent = MapObjectAgent((x, y), "road", self.model)
-                        self.model.grid.place_agent(new_agent, (x, y))
-                        break
+        # self.model.grid.place_agent(new_agent, (x, y))
+            # break
 
-            if not added:
-                new_agent = MapObjectAgent((x, y), "wall", self.model)
-                self.model.grid.place_agent(new_agent, (x, y))
+            # if not added:
+            #     for r in self.roads:
+            #         if r.path.intersects(Point(x, y)):
+            #             added = True
+            #             new_agent = MapObjectAgent((x, y), "road", self.model)
+            #             self.model.grid.place_agent(new_agent, (x, y))
+            #             break
+            #
+            # if not added:
+            #     new_agent = MapObjectAgent((x, y), "wall", self.model)
+            #     self.model.grid.place_agent(new_agent, (x, y))
 
     def get_place(self, pos):
         """Return place of current position."""

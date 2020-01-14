@@ -57,6 +57,7 @@ def model_draw(agent):
                                       + ", Place=" + str(agent.place)
         portrayal["Color"] = ["#0000FF", "#9999FF"]
         portrayal["stroke_color"] = "#000000"
+
     elif agent.type == "city":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
         portrayal["Color"] = ["#dd42f5"]
@@ -69,8 +70,8 @@ def model_draw(agent):
 
     return portrayal
 
-grid_height = 10
-grid_width = 10
+grid_height = 2
+grid_width = 2
 canvas_height = 600
 canvas_width = canvas_height
 
