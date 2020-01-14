@@ -1,20 +1,107 @@
 from .human_agent import HumanAgent
 from .zombie_agent import ZombieAgent
 from .map_object import Place, Road, MapObjectAgent
+import random
+from math import floor
 
 from shapely.geometry import Polygon, Point
 
+
 class MapGen:
-    def __init__(self, map_id, model):
+    def __init__(self, map_id, city_id, infected_chance, model):
         self.model = model
 
-        maps = [self.initial_map, self.second_map, self.third_map, self.fourth_map, self.fifth_map]
+        maps = [self.initial_map, self.second_map, self.third_map, self.fourth_map, self.fifth_map,
+                self.sixth_map]
 
         maps[map_id]()
 
         self.places, self.roads = maps[map_id]()
 
-        self.spawn_agents()
+        self.spawn_map()
+        self.spawn_agents(city_id, infected_chance)
+
+
+    def spawn_map(self):
+        for cell in self.model.grid.coord_iter():
+            x = cell[1]
+            y = cell[2]
+
+            added = False
+
+            for place in self.places:
+                if place.poly.intersects(Point(x, y)):
+                    added = True
+                    new_agent = MapObjectAgent((x, y), "city", self.model)
+                    self.model.grid.place_agent(new_agent, (x, y))
+                    break
+
+            if not added:
+                for r in self.roads:
+                    if r.poly.intersects(Point(x, y)):
+                        added = True
+                        new_agent = MapObjectAgent((x, y), "road", self.model)
+                        self.model.grid.place_agent(new_agent, (x, y))
+                        break
+
+            if not added:
+                new_agent = MapObjectAgent((x, y), "wall", self.model)
+                self.model.grid.place_agent(new_agent, (x, y))
+
+    def spawn_agents(self, city_id, infected_chance):
+        # TODO:: Edges path not right
+        """Spawn agents like humans and cities.
+
+        Loops through the grid coordinates and if a coordinate is part of a
+        place it has a chance to spawn a agent and that agent has a chance to
+        be infected. On that same coordinate is also a place agent spawned.
+
+        If the coordinate doesn't contain a place it checks if it needs to spawn
+        a road agent. If also isn't a road a wall agent is spawned.
+        """
+        for c_id, place in enumerate(self.places):
+            p_coords = place.get_coords()
+
+            infected_coords = []
+            agent_coords = random.sample(range(len(p_coords)),
+                                         place.density_to_amount(place.population_density))
+
+            if city_id == c_id:
+                infected_coords = random.sample(agent_coords,
+                                                floor(len(agent_coords) * (infected_chance)))
+                
+            for i in agent_coords:
+                pos = p_coords[int(i)]
+                properties = {}
+                properties["place"] = self.get_place(pos)
+
+                if i in infected_coords:
+                    new_agent = ZombieAgent(pos, self.model, place)
+                    self.model.infected += 1
+                else:
+                    new_agent = HumanAgent(pos, self.model, place)
+                    self.model.susceptible += 1
+
+                self.model.grid.place_agent(new_agent, pos)
+                self.model.schedule.add(new_agent)
+
+    def get_place(self, pos):
+        """Return place of current position."""
+        for place in self.places + self.roads:
+            if place.poly.intersects(Point(pos)):
+                return place
+
+        return False
+
+    def paths_overlap(self, places):
+        """Check if the places don't overlap."""
+        for place in places:
+            for place2 in places:
+                if place != place2:
+                    if place.poly.intersects_path(place2.path):
+                        return True
+
+        return False
 
     def initial_map(self):
         """Square map no walls."""
@@ -92,8 +179,8 @@ class MapGen:
                         [55, 60], [45, 60], [40,55]], self.model.density)
 
         city6 = Place([[0, 40], [0, 60], [20, 60], [20,40]], self.model.density)
-        city7 = Place([[80, 40], [80, 60], [100, 60], [100,40]], self.model.density)
-        city8 = Place([[40, 0], [60, 0], [60, 20], [40,20]], self.model.density)
+        city7 = Place([[40, 0], [60, 0], [60, 20], [40,20]], self.model.density)
+        city8 = Place([[80, 40], [80, 60], [100, 60], [100,40]], self.model.density)
         city9 = Place([[40, 80], [60, 80], [60, 100], [40,100]], self.model.density)
 
 
@@ -113,75 +200,49 @@ class MapGen:
         return [city1, city2, city3, city4, city5, city6, city7, city8, city9], \
                 [road1, road2, road3, road4, road5, road6, road7, road8]
 
-    def spawn_agents(self):
-        # TODO:: Edges path not right
-        """Spawn agents like humans and cities.
+    def sixth_map(self):
+        city1 = Place([[40, 55], [40, 45], [45, 40], [55,40], [60,45], [60,55],
+                [55, 60], [45, 60], [40,55]], self.model.density)
 
-        Loops through the grid coordinates and if a coordinate is part of a
-        place it has a chance to spawn a agent and that agent has a chance to
-        be infected. On that same coordinate is also a place agent spawned.
+        city2 = Place([[0, 0], [0, 20], [15, 20], [20,15], [20,0], [0,0]], self.model.density)
+        city3 = Place([[80, 0], [100, 0], [100, 20], [85,20], [80,15], [80,0]], self.model.density)
+        city4 = Place([[100, 80], [100, 100], [80, 100], [80,85], [85,80], [100,80]], self.model.density)
+        city5 = Place([[20, 100], [0, 100], [0, 80], [15,80], [20,85], [20,100]], self.model.density)
 
-        If the coordinate doesn't contain a place it checks if it needs to spawn
-        a road agent. If also isn't a road a wall agent is spawned.
-        """
-        for cell in self.model.grid.coord_iter():
-            x = cell[1]
-            y = cell[2]
 
-            added = False
+        city6 = Place([[0, 40], [0, 60], [20, 60], [20,40]], self.model.density)
+        city7 = Place([[40, 0], [60, 0], [60, 20], [40,20]], self.model.density)
+        city8 = Place([[80, 40], [80, 60], [100, 60], [100,40]], self.model.density)
+        city9 = Place([[40, 80], [60, 80], [60, 100], [40,100]], self.model.density)
 
-            for place in self.places:
-                if place.path.intersects(Point(x, y)):
-                    added = True
 
-                    if self.model.random.random() < place.population_density:
-                        properties = {}
-                        properties["place"] = place
+        road1 = Road([[15,20], [20,15], [45, 40], [40, 45]], (1, 1), 2)
+        road2 = Road([[55,40], [60,45], [85, 20], [80, 15]], (1, 1), 2)
+        road3 = Road([[60,55], [85,80], [80, 85], [55, 60]], (1, 1), 2)
+        road4 = Road([[20,85], [15,80], [40, 55], [45, 60]], (1, 1), 2)
 
-                        if self.model.random.random() < self.model.infection_change:
-                            # properties["vision"] = 4
-                            new_agent = ZombieAgent((x, y), self.model, place)
-                            self.model.infected += 1
-                        else:
-                            new_agent = HumanAgent((x, y), self.model, place)
-                            self.model.susceptible += 1
+        # Horizontal
+        road5 = Road([[45,40], [55,40], [55, 20], [45, 20]], (0, 1), 2)
+        road6 = Road([[45,60], [55,60], [55, 80], [45, 80]], (0, 1), 2)
 
-                        self.model.grid.place_agent(new_agent, (x, y))
-                        self.model.schedule.add(new_agent)
+        # Vertical
+        road7 = Road([[40,45], [40,55], [20, 55], [20, 45]], (1, 0), 2)
+        road8 = Road([[60,45], [60,55], [80, 55], [80, 45]], (1, 0), 2)
 
-                    new_agent = MapObjectAgent((x, y), "city", self.model)
 
-                    self.model.grid.place_agent(new_agent, (x, y))
-                    break
+        road9 = Road([[5, 20], [15,20], [15,40], [5, 40]], (0, 1), 2)
+        road10 = Road([[5, 60], [15,60], [15,80], [5, 80]], (0, 1), 2)
 
-            if not added:
-                for r in self.roads:
-                    if r.path.intersects(Point(x, y)):
-                        added = True
-                        new_agent = MapObjectAgent((x, y), "road", self.model)
-                        self.model.grid.place_agent(new_agent, (x, y))
-                        break
+        road11 = Road([[85, 60], [95,60], [95,80], [85, 80]], (0, 1), 2)
+        road12 = Road([[85, 20], [95,20], [95,40], [85, 40]], (0, 1), 2)
 
-            if not added:
-                new_agent = MapObjectAgent((x, y), "wall", self.model)
-                self.model.grid.place_agent(new_agent, (x, y))
+        road13 = Road([[20, 5], [20,15], [40,15], [40, 5]], (1, 0), 2)
+        road14 = Road([[60, 5], [60,15], [80,15], [80, 5]], (1, 0), 2)
 
-    def get_place(self, pos):
-        """Return place of current position."""
-        for place in self.places + self.roads:
-            if place.path.intersects(Point(pos)):
-                return place
+        road15 = Road([[60, 85], [60,95], [80,95], [80, 85]], (1, 0), 2)
+        road16 = Road([[20, 85], [20,95], [40,95], [40, 85]], (1, 0), 2)
 
-        return False
-
-    def paths_overlap(self, places):
-        """Check if the places don't overlap."""
-        for place in places:
-            for place2 in places:
-                if place != place2:
-                    if place.path.intersects_path(place2.path):
-                        return True
-
-        return False
-
+        return [city1, city2, city3, city4, city5, city6, city7, city8, city9], \
+                [road1, road2, road3, road4, road5, road6, road7, road8, road9,
+                road10, road11, road12, road13, road14, road15, road16]
 
