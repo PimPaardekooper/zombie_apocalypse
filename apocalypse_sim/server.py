@@ -32,7 +32,7 @@ def model_draw(agent):
         portrayal["stroke_color"] = "#000000"
     elif agent.type == "city":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
-        portrayal["Color"] = ["#ffffff"]
+        portrayal["Color"] = ["#dd42f540"]
     elif agent.type == "road":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
         portrayal["Color"] = ["#f5e3427A"]
