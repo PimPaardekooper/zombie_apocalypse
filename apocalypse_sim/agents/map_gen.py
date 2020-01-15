@@ -5,6 +5,8 @@ from .automaton import Automaton
 from .states import *
 import random
 from math import floor, ceil
+# import pprint
+
 
 from shapely.geometry import Polygon, Point
 
@@ -65,8 +67,21 @@ class MapGen:
         fsm = Automaton()
 
         # Human zombie interaction
-        fsm.event(Wandering(), Infect())
+        fsm.event(ChasingHuman(), Infect())
+        fsm.event(ChasingHuman(), Wandering())
+
         fsm.event(Infect(), Wandering())
+        fsm.event(Infect(), ChasingHuman())
+
+        fsm.event(Wandering(), ChasingHuman())
+        fsm.event(Wandering(), AvoidingZombie())
+        fsm.event(Wandering(), Infect())
+
+        # Human
+        fsm.event(AvoidingZombie(), Wandering())
+
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(fsm.states)
 
         for c_id, place in enumerate(self.places):
             p_coords = place.get_coords()
@@ -93,7 +108,8 @@ class MapGen:
 
                     fsm.set_initial_states(["Wandering"], new_agent)
 
-                print(pos)
+
+                new_agent.id = self.model.random.randint(0, 1000)
 
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)
@@ -107,6 +123,7 @@ class MapGen:
 
         return False
 
+
     def paths_overlap(self, places):
         """Check if the places don't overlap."""
         for place in places:
@@ -116,6 +133,7 @@ class MapGen:
                         return True
 
         return False
+
 
     def initial_map(self):
         """Square map no walls."""
@@ -128,6 +146,7 @@ class MapGen:
                      self.model.density)
 
         return [city], []
+
 
     def second_map(self):
         """
@@ -146,6 +165,7 @@ class MapGen:
         road = Road([[8, 10], [10, 8], [52, 50], [50, 52], [8, 10]], (1, 1), 2)
 
         return [city, village], [road]
+
 
     def third_map(self):
         """
@@ -184,6 +204,7 @@ class MapGen:
 
         return [city1, city2, city3, city4, city5], [road, road2, road3, road4]
 
+
     def fifth_map(self):
         city1 = Place([[10, 90], [10, 70], [25, 70], [30,75], [30,90], [10,90]], self.model.density)
         city2 = Place([[10, 10], [30, 10], [30, 25], [25,30], [10,30], [10,10]], self.model.density)
@@ -213,6 +234,7 @@ class MapGen:
 
         return [city1, city2, city3, city4, city5, city6, city7, city8, city9], \
                 [road1, road2, road3, road4, road5, road6, road7, road8]
+
 
     def sixth_map(self):
         city1 = Place([[40, 55], [40, 45], [45, 40], [55,40], [60,45], [60,55],

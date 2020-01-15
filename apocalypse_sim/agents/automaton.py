@@ -24,22 +24,43 @@ class Automaton():
         for state_name in state_names:
             state = self.states[state_name]['object']
 
-            state.on_enter(agent)
+            # state.on_enter(agent)
             agent.states.append(state)
 
 
     def update(self, agent):
-        for state in agent.states.copy():
+        # print("Agent:", agent.id, "States on update call", agent.states)
+
+        fr = agent.states.copy()
+
+        print("POS:", agent.pos, "STATES:", [x.name for x in fr])
+
+        # print("Agent:", agent.id, "States on copy", fr)
+
+        for state in fr:
+
             state_name = state.name
+            # print("\n\n", "State_name:  ", state_name, "\n\n")
             transitions = self.states[state_name]['transitions']
 
+            new_states = []
+
+            if state_name == "Infect":
+                print("I'm infected")
+
             for transition in transitions:
+
+
                 state_object = self.states[transition]['object']
 
                 if state_object.transition(agent):
-                    state.on_leave(agent)
+                    new_states.append(state_object)
 
-                    agent.states.remove(state)
-                    agent.states.append(state_object)
 
-                    state_object.on_enter(agent)
+            if new_states:
+                state.on_leave(agent)
+                agent.states.remove(state)
+
+            for new_state in new_states:
+                agent.states.append(new_state)
+                new_state.on_enter(agent)

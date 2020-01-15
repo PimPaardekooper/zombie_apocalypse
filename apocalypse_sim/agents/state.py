@@ -29,3 +29,7 @@ class State():
     """
     def on_leave(self, agent):
         pass
+
+
+    def __str__(self):
+        return self.name

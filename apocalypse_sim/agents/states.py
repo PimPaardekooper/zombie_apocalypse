@@ -95,12 +95,74 @@ class Wandering(State):
         self.name = "Wandering"
 
 
+    def random_move(self, agent):
+        free_cells = agent.get_moves()
+        new_cell = agent.random.choice(free_cells)
+
+        agent.model.grid.move_agent(agent, new_cell)
+
+
     def transition(self, agent):
-        return True
+        f = [x.name for x in agent.states]
+
+        if "Infect" in f:
+            print("Transitioning from Infect")
+
+        neighbours = agent.model.grid.get_neighbors(agent.pos, True, True, agent.traits["vision"])
+
+        if agent.type == "zombie":
+            x = not agent.nearest_brain(neighbours)
+            # print(agent.id, "wants to transition to wandering from", agent.states, x)
+            return x
+
+
+        return not agent.find_escape(neighbours)
+
+
+    def on_enter(self, agent):
+        # print("Just wandering about")
+
+        self.random_move(agent)
 
 
     def on_update(self, agent):
-        agent.move()
+        self.random_move(agent)
+
+
+class AvoidingZombie(State):
+    def __init__(self):
+        self.name = "AvoidingZombie"
+
+
+    def get_best_cell(self, agent):
+        neighbours = agent.model.grid.get_neighbors(agent.pos, True, True, agent.traits["vision"])
+        direction = agent.find_escape(neighbours)
+
+        if direction:
+            # Calculate the coordinate the agent wants to move to
+            new_x = agent.pos[0] + direction[0]
+            new_y = agent.pos[1] + direction[1]
+
+            return agent.best_cell([new_x, new_y])
+
+        return None
+
+
+    def transition(self, agent):
+        return agent.type == "human" and self.get_best_cell(agent)
+
+
+    def on_enter(self, agent):
+        best_cell = self.get_best_cell(agent)
+
+        agent.model.grid.move_agent(agent, best_cell)
+
+
+    def on_update(self, agent):
+        best_cell = self.get_best_cell(agent)
+
+        if best_cell:
+            agent.model.grid.move_agent(agent, best_cell)
 
 
 class ChasingHuman(State):
@@ -108,9 +170,54 @@ class ChasingHuman(State):
         self.name = "ChasingHuman"
 
 
-    def transition(self, agent):
+    def get_best_cell(self, agent):
         neighbours = agent.model.grid.get_neighbors(agent.pos, True, True, agent.traits["vision"])
         nearest_human = agent.nearest_brain(neighbours)
+
+        if nearest_human:
+            return agent.best_cell([nearest_human[0], nearest_human[1]])
+
+        return None
+
+
+    def transition(self, agent):
+        if agent.type != "zombie":
+            return False
+
+        human = self.get_best_cell(agent)
+
+        if not human:
+            return False
+            
+        self_x = agent.pos[0]
+        self_y = agent.pos[1]
+        human_x = human[0]
+        human_y = human[1]
+
+        if ((abs(self_x - human_x) == 1 and abs(self_y - human_y) == 0) or
+           (abs(self_y - human_y) == 1 and abs(self_x - human_x) == 0)):
+            return True
+
+        return False
+
+
+
+    def on_enter(self, agent):
+        # print("Mon wants to go again")
+        best_cell = self.get_best_cell(agent)
+
+        agent.model.grid.move_agent(agent, best_cell)
+
+
+    def on_update(self, agent):
+        best_cell = self.get_best_cell(agent)
+
+        if best_cell:
+            agent.model.grid.move_agent(agent, best_cell)
+
+
+    # def on_leave(self, agent):
+    #     print(agent.id, "leaving ChasingHuman")
 
 
 class Infect(State):
@@ -126,7 +233,12 @@ class Infect(State):
 
         for neighbour in neighbors:
             if neighbour.type == "human":
+
+                # print(agent.id, "About to transition into Infect")
+
                 self.target = neighbour
+
+                # print(agent.id, "targets", self.target.id)
 
                 return True
 
@@ -134,6 +246,8 @@ class Infect(State):
 
 
     def on_enter(self, agent):
+        # print("Infecting")
+
         pos = self.target.pos
         grid = agent.model.grid
         fsm = self.target.fsm
@@ -143,10 +257,18 @@ class Infect(State):
 
         fsm.set_initial_states(["Wandering"], zombie)
 
+        # print("'Deleted target'", self.target.pos)
+
         grid.remove_agent(self.target)
         schedule.remove(self.target)
+
+        # zombie.id = zombie.model.random.randint(0, 1000)
 
         del self.target
 
         grid.place_agent(zombie, pos)
         schedule.add(zombie)
+
+
+    # def on_leave(self, agent):
+    #     print("left infection")

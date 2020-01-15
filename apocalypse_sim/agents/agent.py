@@ -13,6 +13,7 @@ class Agent(MesaAgent):
         self.traits = {}
         self.fsm = fsm
         self.pos = pos
+        self.id = "0000"
 
         self.model = model
 
@@ -26,10 +27,7 @@ class Agent(MesaAgent):
 
         # Get all cells surrounding the current cell, including already
         # occupied cells
-        all_cells = grid.get_neighborhood(self.pos, True, False, 1)
-
-        # for x in all_cells:
-        #     print(x)
+        all_cells = grid.get_neighborhood(self.pos, False, False, 1)
 
         # Always give the option to not move
         free_cells = [self.pos]
@@ -66,18 +64,18 @@ class Agent(MesaAgent):
                 new_cell = cell
         return new_cell
 
-    # Default move
-    def move(self):
-        grid = self.model.grid
-        free_cells = self.get_moves()
-
-        # Randomly select a new cell to move to
-        new_cell = self.random.choice(free_cells)
-
-        print("Old pos:", self.pos, "Available:", free_cells, "Chose cell:", new_cell)
-
-        # Move the agent to the selected cell
-        grid.move_agent(self, new_cell)
+    # # Default move
+    # def move(self):
+    #     grid = self.model.grid
+    #     free_cells = self.get_moves()
+    #
+    #     # Randomly select a new cell to move to
+    #     new_cell = self.random.choice(free_cells)
+    #
+    #     print("Old pos:", self.pos, "Available:", free_cells, "Chose cell:", new_cell)
+    #
+    #     # Move the agent to the selected cell
+    #     grid.move_agent(self, new_cell)
 
 
     # # def move_road(self):
@@ -111,10 +109,12 @@ class Agent(MesaAgent):
         # if self.model.map.roads:
         #     self.move_road()
         # else:
-        for state in self.states:
-            state.on_update(self)
-
+        # print("Called", self.id, "'s FSM update")
         self.fsm.update(self)
+
+        for state in self.states:
+            # print("Running on_update of", state.name, "on", self.id)
+            state.on_update(self)
 
 
     # def transition(self):
