@@ -41,6 +41,19 @@ class Agent(MesaAgent):
 
         return free_cells
 
+    # Gets the nearest available cell of a coordinate
+    def best_cell(self, coord):
+        free_cells = self.get_moves()
+        smal_dist = float("Inf")
+        for cell in free_cells:
+            d_x = abs(coord[0] - cell[0])
+            d_y = abs(coord[1] - cell[1])
+            dist = (d_x**2 + d_y**2)**0.5
+            if dist < smal_dist:
+                smal_dist = dist
+                new_cell = cell
+        return new_cell
+
     # Default move
     def move(self):
         grid = self.model.grid
