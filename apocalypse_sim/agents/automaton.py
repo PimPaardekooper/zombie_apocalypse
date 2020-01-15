@@ -28,10 +28,7 @@ class Automaton():
 
 
     def update(self, agent):
-        fr = agent.states.copy()
-
-        for state in fr:
-
+        for state in agent.states.copy():
             state_name = state.name
             transitions = self.states[state_name]['transitions']
 
