@@ -13,6 +13,7 @@ class Agent(MesaAgent):
         self.traits = {}
         self.fsm = fsm
         self.pos = pos
+        self.time_alive = 0
 
         self.model = model
         self.model.total += 1
@@ -106,8 +107,7 @@ class Agent(MesaAgent):
     # #
     # #
     def step(self):
-        if self in self.model.locked:
-            return
+        self.time_alive += 1
 
         # if self.model.map.roads:
         #     self.move_road()
@@ -116,7 +116,6 @@ class Agent(MesaAgent):
         self.fsm.update(self)
 
         for state in self.states:
-            # print("Running on_update of", state.name, "on", self.id)
             state.on_update(self)
 
 
