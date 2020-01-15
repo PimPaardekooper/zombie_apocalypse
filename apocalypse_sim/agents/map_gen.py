@@ -1,8 +1,12 @@
 from .human_agent import HumanAgent
 from .zombie_agent import ZombieAgent
 from .map_object import Place, Road, MapObjectAgent
+from .automaton import Automaton
+from .states import *
 import random
-from math import floor
+from math import floor, ceil
+# import pprint
+
 
 from shapely.geometry import Polygon, Point
 
@@ -59,6 +63,27 @@ class MapGen:
         If the coordinate doesn't contain a place it checks if it needs to spawn
         a road agent. If also isn't a road a wall agent is spawned.
         """
+
+        fsm = Automaton()
+
+        # Human zombie interaction
+        fsm.event(ChasingHuman(), Infect())
+        fsm.event(ChasingHuman(), ZombieWandering())
+
+        fsm.event(Infect(), ZombieWandering())
+        fsm.event(Infect(), ChasingHuman())
+
+        fsm.event(ZombieWandering(), ChasingHuman())
+        fsm.event(ZombieWandering(), Infect())
+
+        # Human
+        fsm.event(HumanWandering(), AvoidingZombie())
+
+        fsm.event(AvoidingZombie(), HumanWandering())
+
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(fsm.states)
+
         for c_id, place in enumerate(self.places):
             p_coords = place.get_coords()
 
@@ -68,22 +93,27 @@ class MapGen:
 
             if city_id == c_id:
                 infected_coords = random.sample(agent_coords,
-                                                floor(len(agent_coords) * (infected_chance)))
-                
+                                                ceil(len(agent_coords) * (infected_chance)))
+
+            open('remove_add.txt', 'w').close()
+
             for i in agent_coords:
                 pos = p_coords[int(i)]
                 properties = {}
                 properties["place"] = self.get_place(pos)
 
                 if i in infected_coords:
-                    new_agent = ZombieAgent(pos, self.model, place)
-                    self.model.infected += 1
+                    new_agent = ZombieAgent(pos, self.model, fsm, place)
+
+                    fsm.set_initial_states(["ZombieWandering"], new_agent)
                 else:
-                    new_agent = HumanAgent(pos, self.model, place)
-                    self.model.susceptible += 1
+                    new_agent = HumanAgent(pos, self.model, fsm, place)
+
+                    fsm.set_initial_states(["HumanWandering"], new_agent)
 
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)
+
 
     def get_place(self, pos):
         """Return place of current position."""
@@ -92,6 +122,7 @@ class MapGen:
                 return place
 
         return False
+
 
     def paths_overlap(self, places):
         """Check if the places don't overlap."""
@@ -102,6 +133,7 @@ class MapGen:
                         return True
 
         return False
+
 
     def initial_map(self):
         """Square map no walls."""
@@ -114,6 +146,7 @@ class MapGen:
                      self.model.density)
 
         return [city], []
+
 
     def second_map(self):
         """
@@ -132,6 +165,7 @@ class MapGen:
         road = Road([[8, 10], [10, 8], [52, 50], [50, 52], [8, 10]], (1, 1), 2)
 
         return [city, village], [road]
+
 
     def third_map(self):
         """
@@ -170,6 +204,7 @@ class MapGen:
 
         return [city1, city2, city3, city4, city5], [road, road2, road3, road4]
 
+
     def fifth_map(self):
         city1 = Place([[10, 90], [10, 70], [25, 70], [30,75], [30,90], [10,90]], self.model.density)
         city2 = Place([[10, 10], [30, 10], [30, 25], [25,30], [10,30], [10,10]], self.model.density)
@@ -199,6 +234,7 @@ class MapGen:
 
         return [city1, city2, city3, city4, city5, city6, city7, city8, city9], \
                 [road1, road2, road3, road4, road5, road6, road7, road8]
+
 
     def sixth_map(self):
         city1 = Place([[40, 55], [40, 45], [45, 40], [55,40], [60,45], [60,55],
@@ -245,4 +281,3 @@ class MapGen:
         return [city1, city2, city3, city4, city5, city6, city7, city8, city9], \
                 [road1, road2, road3, road4, road5, road6, road7, road8, road9,
                 road10, road11, road12, road13, road14, road15, road16]
-

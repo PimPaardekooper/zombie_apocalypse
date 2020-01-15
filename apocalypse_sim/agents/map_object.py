@@ -40,7 +40,7 @@ class Place(MapObject):
         return "Place"
 
     def density_to_amount(self, density):
-        return floor(len(self.get_coords()) * density)
+        return ceil(len(self.get_coords()) * density)
 
 class Road(MapObject):
     def __init__(self, vertices, direction, speed):
