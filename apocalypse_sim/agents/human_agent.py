@@ -26,6 +26,9 @@ class HumanAgent(Agent):
                 direction[0] += ((self.traits["vision"] - d) * d_x)
                 direction[1] += ((self.traits["vision"] - d) * d_y)
 
+        else:
+            return None
+
         # Normalize the direction vector that was found
         d = (direction[0]**2 + direction[1]**2)**0.5
         if direction[0]:
@@ -34,7 +37,7 @@ class HumanAgent(Agent):
             direction[1] /= d
         if direction[0] or direction[1]:
             return (direction[0], direction[1])
-        return None
+        return [0, 0]
 
     def move(self):
         neighbours = self.model.grid.get_neighbors(self.pos, True, True, self.traits["vision"])

@@ -48,14 +48,14 @@ def model_draw(agent):
 
     if agent.type == "zombie":
         portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type \
-                                      + ", Place=" + str(agent.place) + ", Id=" + str(agent.id) \
+                                      + ", Place=" + str(agent.place) + ", Id=" + str(agent.unique_id) \
                                       + ", States=" + str([x.name for x in agent.states])
 
         portrayal["Color"] = ["#FF0000", "#FF9999"]
         portrayal["stroke_color"] = "#00FF00"
     elif agent.type == "human":
         portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type \
-                                      + ", Place=" + str(agent.place) + ", Id=" + str(agent.id) \
+                                      + ", Place=" + str(agent.place) + ", Id=" + str(agent.unique_id) \
                                       + ", States=" + str([x.name for x in agent.states])
         portrayal["Color"] = ["#0000FF", "#9999FF"]
         portrayal["stroke_color"] = "#000000"
@@ -72,8 +72,8 @@ def model_draw(agent):
 
     return portrayal
 
-grid_height = 20
-grid_width = 20
+grid_height = 10
+grid_width = 10
 canvas_height = 600
 canvas_width = canvas_height
 
@@ -86,7 +86,7 @@ canvas_element = CanvasGrid(model_draw, grid_height, grid_width, canvas_height, 
 model_params = {
     "height": grid_height,
     "width": grid_width,
-    "density": UserSettableParameter("slider", "Agent density", value=0.3, min_value=0.01, max_value=1.0, step=0.01),
+    "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
     "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
     "map_id": UserSettableParameter("slider", "Map id (max 4)", value=0, min_value=0, max_value=5, step=1, choices=[0,1,2,3,4,5]),
     "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1)

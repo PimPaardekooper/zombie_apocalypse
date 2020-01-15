@@ -22,6 +22,8 @@ class Apocalypse(Model):
         self.infected_chance = infected_chance
         self.infected = 0
         self.susceptible = 0
+        self.locked = []
+        self.total = 0
 
         # NOTE: no idea what this does
         self.schedule = RandomActivation(self)
@@ -43,4 +45,22 @@ class Apocalypse(Model):
 
     def step(self):
         self.schedule.step()
+
+        for human in self.locked:
+            zombie = ZombieAgent(human.pos, self, human.fsm, {})
+            pos = human.pos
+
+            # zombie.id = agent.model.our_sexy_id
+            # agent.model.our_sexy_id += 1
+
+            human.fsm.set_initial_states(["ZombieWandering"], zombie)
+
+            self.grid.remove_agent(human)
+            self.schedule.remove(human)
+            self.locked.remove(human)
+            del human
+
+            self.grid.place_agent(zombie, pos)
+            self.schedule.add(zombie)
+
         self.datacollector.collect(self)

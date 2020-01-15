@@ -7,15 +7,15 @@ from shapely.geometry import Point
 
 class Agent(MesaAgent):
     def __init__(self, pos, model, fsm, place):
-        super().__init__(pos, model)
+        super().__init__(model.total, model)
 
         self.states = []
         self.traits = {}
         self.fsm = fsm
         self.pos = pos
-        self.id = "0000"
 
         self.model = model
+        self.model.total += 1
 
         self.place = place
         self.direction = (0, 0)
@@ -106,6 +106,9 @@ class Agent(MesaAgent):
     # #
     # #
     def step(self):
+        if self in self.model.locked:
+            return
+
         # if self.model.map.roads:
         #     self.move_road()
         # else:

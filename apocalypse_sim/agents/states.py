@@ -102,23 +102,6 @@ class Wandering(State):
         agent.model.grid.move_agent(agent, new_cell)
 
 
-    def transition(self, agent):
-        f = [x.name for x in agent.states]
-
-        if "Infect" in f:
-            print("Transitioning from Infect")
-
-        neighbours = agent.model.grid.get_neighbors(agent.pos, True, True, agent.traits["vision"])
-
-        if agent.type == "zombie":
-            x = not agent.nearest_brain(neighbours)
-            # print(agent.id, "wants to transition to wandering from", agent.states, x)
-            return x
-
-
-        return not agent.find_escape(neighbours)
-
-
     def on_enter(self, agent):
         # print("Just wandering about")
 
@@ -127,6 +110,27 @@ class Wandering(State):
 
     def on_update(self, agent):
         self.random_move(agent)
+
+
+class HumanWandering(Wandering):
+    def __init__(self):
+        self.name = "HumanWandering"
+
+    def transition(self, agent):
+        neighbours = agent.model.grid.get_neighbors(agent.pos, True, True, agent.traits["vision"])
+
+        return agent.find_escape(neighbours) == None
+
+
+class ZombieWandering(Wandering):
+    def __init__(self):
+        self.name = "ZombieWandering"
+
+
+    def transition(self, agent):
+        neighbours = agent.model.grid.get_neighbors(agent.pos, True, True, agent.traits["vision"])
+
+        return agent.nearest_brain(neighbours) == None
 
 
 class AvoidingZombie(State):
@@ -181,25 +185,29 @@ class ChasingHuman(State):
 
 
     def transition(self, agent):
-        if agent.type != "zombie":
-            return False
-
         human = self.get_best_cell(agent)
 
-        if not human:
+        # If a human is not found in your vision, you can't
+        # chase any, so you should go to the wandering state
+        # instead.
+        if human == None:
             return False
-            
+
         self_x = agent.pos[0]
         self_y = agent.pos[1]
         human_x = human[0]
         human_y = human[1]
 
-        if ((abs(self_x - human_x) == 1 and abs(self_y - human_y) == 0) or
-           (abs(self_y - human_y) == 1 and abs(self_x - human_x) == 0)):
-            return True
+        # If a human is one block away you must infect him,
+        # otherwise can chase him.
+        neighbors = agent.model.grid.get_neighbors(agent.pos, moore=False)
 
-        return False
+        for neighbour in neighbors:
+            if neighbour.type == "human":
+                return False
 
+        # You are ready to chase someone
+        return True
 
 
     def on_enter(self, agent):
@@ -226,49 +234,27 @@ class Infect(State):
 
 
     def transition(self, agent):
-        if agent.type != "zombie":
-            return False
-
         neighbors = agent.model.grid.get_neighbors(agent.pos, moore=False)
 
         for neighbour in neighbors:
             if neighbour.type == "human":
-
-                # print(agent.id, "About to transition into Infect")
-
-                self.target = neighbour
-
-                # print(agent.id, "targets", self.target.id)
-
                 return True
 
         return False
 
 
     def on_enter(self, agent):
-        # print("Infecting")
+        neighbors = agent.model.grid.get_neighbors(agent.pos, moore=False)
 
-        pos = self.target.pos
+        for neighbour in neighbors:
+            if neighbour.type == "human":
+                target = neighbour
+
+                break
+
         grid = agent.model.grid
-        fsm = self.target.fsm
-        schedule = self.target.model.schedule
+        fsm = agent.fsm
+        schedule = agent.model.schedule
 
-        zombie = ZombieAgent(pos, agent.model, fsm, {})
-
-        fsm.set_initial_states(["Wandering"], zombie)
-
-        # print("'Deleted target'", self.target.pos)
-
-        grid.remove_agent(self.target)
-        schedule.remove(self.target)
-
-        # zombie.id = zombie.model.random.randint(0, 1000)
-
-        del self.target
-
-        grid.place_agent(zombie, pos)
-        schedule.add(zombie)
-
-
-    # def on_leave(self, agent):
-    #     print("left infection")
+        if target not in agent.model.locked:
+            agent.model.locked.append(target)

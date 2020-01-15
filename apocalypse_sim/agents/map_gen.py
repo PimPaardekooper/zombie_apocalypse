@@ -68,17 +68,18 @@ class MapGen:
 
         # Human zombie interaction
         fsm.event(ChasingHuman(), Infect())
-        fsm.event(ChasingHuman(), Wandering())
+        fsm.event(ChasingHuman(), ZombieWandering())
 
-        fsm.event(Infect(), Wandering())
+        fsm.event(Infect(), ZombieWandering())
         fsm.event(Infect(), ChasingHuman())
 
-        fsm.event(Wandering(), ChasingHuman())
-        fsm.event(Wandering(), AvoidingZombie())
-        fsm.event(Wandering(), Infect())
+        fsm.event(ZombieWandering(), ChasingHuman())
+        fsm.event(ZombieWandering(), Infect())
 
         # Human
-        fsm.event(AvoidingZombie(), Wandering())
+        fsm.event(HumanWandering(), AvoidingZombie())
+
+        fsm.event(AvoidingZombie(), HumanWandering())
 
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(fsm.states)
@@ -94,6 +95,8 @@ class MapGen:
                 infected_coords = random.sample(agent_coords,
                                                 ceil(len(agent_coords) * (infected_chance)))
 
+            open('remove_add.txt', 'w').close()
+
             for i in agent_coords:
                 pos = p_coords[int(i)]
                 properties = {}
@@ -102,14 +105,16 @@ class MapGen:
                 if i in infected_coords:
                     new_agent = ZombieAgent(pos, self.model, fsm, place)
 
-                    fsm.set_initial_states(["Wandering"], new_agent)
+                    fsm.set_initial_states(["ZombieWandering"], new_agent)
                 else:
                     new_agent = HumanAgent(pos, self.model, fsm, place)
 
-                    fsm.set_initial_states(["Wandering"], new_agent)
+                    fsm.set_initial_states(["HumanWandering"], new_agent)
 
 
-                new_agent.id = self.model.random.randint(0, 1000)
+                # new_agent.id = self.model.our_sexy_id
+
+                # self.model.our_sexy_id += 1
 
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)
