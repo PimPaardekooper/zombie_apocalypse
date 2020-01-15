@@ -8,6 +8,7 @@ from shapely.geometry import Polygon, Point
 
 
 class MapGen:
+    """Hold a generated map and agents spawned within it."""
     def __init__(self, map_id, city_id, infected_chance, model):
         self.model = model
 
@@ -23,6 +24,10 @@ class MapGen:
 
 
     def spawn_map(self):
+        """Spawns map agents
+        
+        Loops through the grid and checks first if it is a place then a road and otherwise it spawns a wall.
+        """
         for cell in self.model.grid.coord_iter():
             x = cell[1]
             y = cell[2]
@@ -48,16 +53,14 @@ class MapGen:
                 new_agent = MapObjectAgent((x, y), "wall", self.model)
                 self.model.grid.place_agent(new_agent, (x, y))
 
+
     def spawn_agents(self, city_id, infected_chance):
-        # TODO:: Edges path not right
-        """Spawn agents like humans and cities.
+        """Spawn agents like humans and zombies.
 
-        Loops through the grid coordinates and if a coordinate is part of a
-        place it has a chance to spawn a agent and that agent has a chance to
-        be infected. On that same coordinate is also a place agent spawned.
-
-        If the coordinate doesn't contain a place it checks if it needs to spawn
-        a road agent. If also isn't a road a wall agent is spawned.
+        For each place it will calculate how much agents need to spawn given 
+        the place area and agent density. Then it will pick so much random coordinates 
+        from that place. From those coordinates a percentage will randomly be infected and
+        spawns a ZombieAgent the rest will spawn as HumanAgents.
         """
         for c_id, place in enumerate(self.places):
             p_coords = place.get_coords()
@@ -163,7 +166,6 @@ class MapGen:
 
         road2 = Road([[77, 75], [75, 77], [60, 62], [62, 60], [77, 75]], (1, 1), 2)
 
-        # TODO:: symmetric if matplotlib.path is fixed
         road3 = Road([[77, 25], [75, 22], [62, 35], [65, 36], [77, 25]], (1, 1), 2)
 
         road4 = Road([[25, 77], [22, 75], [35, 61], [37, 65], [25, 77]], (1, 1), 2)
