@@ -42,8 +42,8 @@ def model_draw(agent):
 
     return portrayal
 
-grid_height = 100
-grid_width = 100
+grid_height = 10
+grid_width = 10
 canvas_height = 600
 canvas_width = canvas_height
 
@@ -58,7 +58,7 @@ model_params = {
     "width": grid_width,
     "density": UserSettableParameter("slider", "Agent density", 0.1, 0.01, 1.0, 0.01),
     "infected_chance": UserSettableParameter("slider", "Change getting infected", 0.1, 0.01, 1.0, 0.01),
-    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=5, min_value=0, max_value=5, step=1, choices=[0,1,2,3,4,5]),
+    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=6, min_value=0, max_value=5, step=1, choices=[0,1,2,3,4,5]),
     "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1)
 }
 

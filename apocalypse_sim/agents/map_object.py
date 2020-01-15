@@ -1,3 +1,9 @@
+"""map_object.py
+
+Map object represent the shape of places and roads and can give attributes
+to these places which can then change the agents attributes.
+"""
+
 from matplotlib.path import Path
 from copy import deepcopy
 from mesa import Agent as MesaAgent
@@ -48,7 +54,7 @@ class Place(MapObject):
 
 class Road(MapObject):
     """Move all agents within in a certain direction with a certain speed."""
-    
+
     def __init__(self, vertices, direction, speed):
         super().__init__(vertices)
         self.direction = direction
