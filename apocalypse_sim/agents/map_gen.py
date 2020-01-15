@@ -111,11 +111,6 @@ class MapGen:
 
                     fsm.set_initial_states(["HumanWandering"], new_agent)
 
-
-                # new_agent.id = self.model.our_sexy_id
-
-                # self.model.our_sexy_id += 1
-
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)
 

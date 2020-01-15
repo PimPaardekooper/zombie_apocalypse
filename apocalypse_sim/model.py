@@ -45,22 +45,5 @@ class Apocalypse(Model):
 
     def step(self):
         self.schedule.step()
-
-        for human in self.locked:
-            zombie = ZombieAgent(human.pos, self, human.fsm, {})
-            pos = human.pos
-
-            # zombie.id = agent.model.our_sexy_id
-            # agent.model.our_sexy_id += 1
-
-            human.fsm.set_initial_states(["ZombieWandering"], zombie)
-
-            self.grid.remove_agent(human)
-            self.schedule.remove(human)
-            self.locked.remove(human)
-            del human
-
-            self.grid.place_agent(zombie, pos)
-            self.schedule.add(zombie)
-
         self.datacollector.collect(self)
+        

@@ -61,6 +61,4 @@ class HumanAgent(Agent):
 
 
     def __del__(self):
-        # print(self.model.susceptible)
         self.model.susceptible -= 1
-        # print(self.model.susceptible)

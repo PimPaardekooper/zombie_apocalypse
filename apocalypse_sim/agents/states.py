@@ -233,6 +233,22 @@ class Infect(State):
         self.name = "Infect"
 
 
+    def add_zombie(self, target):
+        zombie = ZombieAgent(target.pos, target.model, target.fsm, {})
+
+        target.model.grid.place_agent(zombie, target.pos)
+        target.model.schedule.add(zombie)
+
+        target.fsm.set_initial_states(["ZombieWandering"], zombie)
+
+
+    def remove_human(self, human):
+        human.model.grid.remove_agent(human)
+        human.model.schedule.remove(human)
+
+        del human
+
+
     def transition(self, agent):
         neighbors = agent.model.grid.get_neighbors(agent.pos, moore=False)
 
@@ -252,9 +268,5 @@ class Infect(State):
 
                 break
 
-        grid = agent.model.grid
-        fsm = agent.fsm
-        schedule = agent.model.schedule
-
-        if target not in agent.model.locked:
-            agent.model.locked.append(target)
+        self.add_zombie(target)
+        self.remove_human(target)
