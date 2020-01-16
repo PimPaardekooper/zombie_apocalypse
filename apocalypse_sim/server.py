@@ -57,7 +57,7 @@ def model_draw(agent):
         portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type \
                                       + ", Place=" + str(agent.place) + ", Id=" + str(agent.unique_id) \
                                       + ", States=" + str([x.name for x in agent.states])
-        portrayal["Color"] = ["#0000FF", "#9999FF"]
+        portrayal["Color"] = ["#80C904", "#4D7902"] if "infected" in agent.traits else ["#0000FF", "#9999FF"]
         portrayal["stroke_color"] = "#000000"
 
     elif agent.type == "city":
@@ -72,8 +72,8 @@ def model_draw(agent):
 
     return portrayal
 
-grid_height = 50
-grid_width = 50
+grid_height = 3
+grid_width = 3
 canvas_height = 600
 canvas_width = canvas_height
 

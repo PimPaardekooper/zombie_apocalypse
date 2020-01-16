@@ -78,11 +78,10 @@ class MapGen:
 
         # Human
         fsm.event(HumanWandering(), AvoidingZombie())
+        fsm.event(Susceptible(), Infected())
+        fsm.event(Infected(), Turned())
 
         fsm.event(AvoidingZombie(), HumanWandering())
-
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(fsm.states)
 
         for c_id, place in enumerate(self.places):
             p_coords = place.get_coords()
@@ -109,7 +108,7 @@ class MapGen:
                 else:
                     new_agent = HumanAgent(pos, self.model, fsm, place)
 
-                    fsm.set_initial_states(["HumanWandering"], new_agent)
+                    fsm.set_initial_states(["HumanWandering", "Susceptible"], new_agent)
 
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)

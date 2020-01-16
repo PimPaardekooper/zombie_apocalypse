@@ -8,7 +8,16 @@ class ZombieAgent(Agent):
         self.model.infected += 1
 
     def nearest_brain(self, neighbours):
-        nearby_brains = [brain.pos for brain in neighbours if brain.type == "human"]
+        nearby_brains = []
+
+        for neighbour in neighbours:
+            if not neighbour.type == "human":
+                continue
+
+            if "Infected" not in [state.name for state in neighbour.states]:
+                nearby_brains.append(neighbour.pos)
+
+
         if len(nearby_brains) > 0:
             nearest = 0
             for brain in nearby_brains:

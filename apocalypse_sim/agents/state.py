@@ -9,6 +9,14 @@ class State():
 
 
     """
+    Allows a state to not allow an agent to
+    transtion to a new state.
+    """
+    def halt(self, agent):
+        pass
+        
+
+    """
     Run a certain action when an agent transitions
     into the current state.
     """
