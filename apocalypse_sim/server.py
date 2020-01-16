@@ -3,7 +3,7 @@
 Visualize the current state, says what each object looks like given there
 attributes and makes slider so you can change the model.
 """
-from mesa.visualization.ModularVisualization import ModularServer
+from /mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import CanvasGrid, ChartModule, TextElement
 from mesa.visualization.UserParam import UserSettableParameter
 
