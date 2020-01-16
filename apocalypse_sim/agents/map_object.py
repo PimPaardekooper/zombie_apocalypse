@@ -50,7 +50,7 @@ class Place(MapObject):
         return "Place"
 
     def density_to_amount(self, density):
-        return floor(len(self.get_coords()) * density)
+        return ceil(len(self.get_coords()) * density)
 
 class Road(MapObject):
     """Move all agents within in a certain direction with a certain speed."""

@@ -7,8 +7,12 @@ from .zombie_agent import ZombieAgent
 from .map_object import Place, Road, MapObjectAgent
 from .map_layouts import Map
 
+from .automaton import Automaton
+from .states import *
 import random
-from math import floor
+from math import floor, ceil
+# import pprint
+
 
 from shapely.geometry import Polygon, Point
 
@@ -81,6 +85,27 @@ class MapGen:
         from that place. From those coordinates a percentage will randomly be infected and
         spawns a ZombieAgent the rest will spawn as HumanAgents.
         """
+
+        fsm = Automaton()
+
+        # Human zombie interaction
+        fsm.event(ChasingHuman(), Infect())
+        fsm.event(ChasingHuman(), ZombieWandering())
+
+        fsm.event(Infect(), ZombieWandering())
+        fsm.event(Infect(), ChasingHuman())
+
+        fsm.event(ZombieWandering(), ChasingHuman())
+        fsm.event(ZombieWandering(), Infect())
+
+        # Human
+        fsm.event(HumanWandering(), AvoidingZombie())
+
+        fsm.event(AvoidingZombie(), HumanWandering())
+
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(fsm.states)
+
         for c_id, place in enumerate(self.map.places):
             p_coords = place.get_coords()
 
@@ -90,7 +115,9 @@ class MapGen:
 
             if city_id == c_id:
                 infected_coords = random.sample(agent_coords,
-                                                floor(len(agent_coords) * (infected_chance)))
+                                                ceil(len(agent_coords) * (infected_chance)))
+
+            open('remove_add.txt', 'w').close()
 
             for i in agent_coords:
                 pos = p_coords[int(i)]
@@ -98,11 +125,13 @@ class MapGen:
                 properties["place"] = self.get_place(pos)
 
                 if i in infected_coords:
-                    new_agent = ZombieAgent(pos, self.model, place)
-                    self.model.infected += 1
+                    new_agent = ZombieAgent(pos, self.model, fsm, place)
+
+                    fsm.set_initial_states(["ZombieWandering"], new_agent)
                 else:
-                    new_agent = HumanAgent(pos, self.model, place)
-                    self.model.susceptible += 1
+                    new_agent = HumanAgent(pos, self.model, fsm, place)
+
+                    fsm.set_initial_states(["HumanWandering"], new_agent)
 
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)
@@ -117,6 +146,7 @@ class MapGen:
                 return place
 
         return False
+
 
     def paths_overlap(self, places):
         """Check if the places don't overlap."""

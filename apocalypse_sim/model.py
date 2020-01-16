@@ -22,6 +22,8 @@ class Apocalypse(Model):
         self.infected_chance = infected_chance
         self.infected = 0
         self.susceptible = 0
+        self.locked = []
+        self.total = 0
 
         # NOTE: no idea what this does
         self.schedule = RandomActivation(self)
@@ -38,9 +40,10 @@ class Apocalypse(Model):
 
         # NOTE: no idea what this does
         self.running = True
-        # self.datacollector.collect(self)
+        self.datacollector.collect(self)
         # NOTE: end of weird stuff
 
     def step(self):
         self.schedule.step()
-        # self.datacollector.collect(self)
+        self.datacollector.collect(self)
+        

@@ -1,10 +1,11 @@
 from .agent import Agent
 
 class ZombieAgent(Agent):
-    def __init__(self, pos, model, place):
-        super().__init__(pos, model, place=place)
+    def __init__(self, pos, model, fsm, place):
+        super().__init__(pos, model, fsm, place)
         self.setVision(4)
         self.type = "zombie"
+        self.model.infected += 1
 
     def nearest_brain(self, neighbours):
         nearby_brains = [brain.pos for brain in neighbours if brain.type == "human"]
@@ -35,3 +36,7 @@ class ZombieAgent(Agent):
 
     def setVision(self, visionRadius):
         self.traits["vision"] = min(9, visionRadius)
+
+
+    def __del__(self):
+        self.model.infected -= 1
