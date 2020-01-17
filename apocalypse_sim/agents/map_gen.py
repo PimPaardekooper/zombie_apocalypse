@@ -66,22 +66,24 @@ class MapGen:
 
         fsm = Automaton()
 
-        # Human zombie interaction
-        fsm.event(ChasingHuman(), Infect())
+        # Zombie movement FSM
+        fsm.event(ZombieWandering(), ChasingHuman())
         fsm.event(ChasingHuman(), ZombieWandering())
 
-        fsm.event(Infect(), ZombieWandering())
-        fsm.event(Infect(), ChasingHuman())
+        # Zombie human interaction FSM
+        fsm.event(Idle(), InteractionHuman())
+        fsm.event(InteractionHuman(), InfectHuman())
+        fsm.event(InteractionHuman(), RemoveZombie())
+        fsm.event(InfectHuman(), Idle())
 
-        fsm.event(ZombieWandering(), ChasingHuman())
-        fsm.event(ZombieWandering(), Infect())
-
-        # Human
+        # Human movement FSM
         fsm.event(HumanWandering(), AvoidingZombie())
+        fsm.event(AvoidingZombie(), HumanWandering())
+
+        # Human health FSM
         fsm.event(Susceptible(), Infected())
         fsm.event(Infected(), Turned())
 
-        fsm.event(AvoidingZombie(), HumanWandering())
 
         for c_id, place in enumerate(self.places):
             p_coords = place.get_coords()
@@ -104,7 +106,7 @@ class MapGen:
                 if i in infected_coords:
                     new_agent = ZombieAgent(pos, self.model, fsm, place)
 
-                    fsm.set_initial_states(["ZombieWandering"], new_agent)
+                    fsm.set_initial_states(["ZombieWandering", "Idle"], new_agent)
                 else:
                     new_agent = HumanAgent(pos, self.model, fsm, place)
 

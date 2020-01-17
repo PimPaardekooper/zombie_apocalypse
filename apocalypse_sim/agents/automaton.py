@@ -27,8 +27,22 @@ class Automaton():
             agent.states.append(state)
 
 
+    def switch_to_state(self, agent, old_state_name, new_state_name):
+        if new_state_name in self.states[old_state_name]["transitions"]:
+            old_state_obj = self.states[old_state_name]["object"]
+            new_state_obj = self.states[new_state_name]["object"]
+
+            agent.states.remove(old_state_obj)
+            old_state_obj.on_leave(agent)
+
+            agent.states.append(new_state_obj)
+            new_state_obj.on_enter(agent)
+
+
     def update(self, agent):
         for state in agent.states.copy():
+            if not agent.pos:
+                continue
 
             # Make sure an agent is actually allowed
             # to leave a state.
@@ -44,6 +58,9 @@ class Automaton():
             new_states = []
 
             for transition in transitions:
+                if not agent.pos:
+                    continue
+
                 state_object = self.states[transition]['object']
 
                 # Ask a state whether the given agent is allowed
@@ -60,6 +77,5 @@ class Automaton():
             # We add the list of new states to our
             # active states list.
             for new_state in new_states:
-                print("New state:", new_state)
                 agent.states.append(new_state)
                 new_state.on_enter(agent)

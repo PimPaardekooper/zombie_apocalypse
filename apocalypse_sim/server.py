@@ -51,12 +51,13 @@ def model_draw(agent):
                                       + ", Place=" + str(agent.place) + ", Id=" + str(agent.unique_id) \
                                       + ", States=" + str([x.name for x in agent.states])
 
-        portrayal["Color"] = ["#FF0000", "#FF9999"]
-        portrayal["stroke_color"] = "#00FF00"
+        portrayal["Color"] = ["#A41E1F", "#DE6C6B"]
+        portrayal["stroke_color"] = "#A41E1F"
     elif agent.type == "human":
         portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type \
                                       + ", Place=" + str(agent.place) + ", Id=" + str(agent.unique_id) \
-                                      + ", States=" + str([x.name for x in agent.states])
+                                      + ", States=" + str([x.name for x in agent.states]) \
+                                      + ', Kills=' + str(agent.traits["zombie_kills"]) if "zombie_kills" in agent.traits else "0"
         portrayal["Color"] = ["#80C904", "#4D7902"] if "infected" in agent.traits else ["#0000FF", "#9999FF"]
         portrayal["stroke_color"] = "#000000"
 
@@ -72,15 +73,12 @@ def model_draw(agent):
 
     return portrayal
 
-grid_height = 3
-grid_width = 3
+grid_height = 20
+grid_width = 20
 canvas_height = 600
 canvas_width = canvas_height
 
 canvas_element = CanvasGrid(model_draw, grid_height, grid_width, canvas_height, canvas_width)
-
-# happy_chart = ChartModule([{"Label": "happy", "Color": "Black"}])
-
 
 # NOTE: Add sliders here
 model_params = {

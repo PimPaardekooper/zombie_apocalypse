@@ -69,10 +69,24 @@ class Agent(MesaAgent):
         return new_cell
 
 
+    def remove_agent(self):
+        self.model.grid.remove_agent(self)
+        self.model.schedule.remove(self)
+
+        del self
+
+
+    def neighbors(self, moore=True, include_center=True, radius=1):
+        return self.model.grid.get_neighbors(self.pos, moore, include_center, radius)
+
+
     def step(self):
         self.time_alive += 1
 
         self.fsm.update(self)
 
         for state in self.states:
+            if not self.pos:
+                continue
+
             state.on_update(self)
