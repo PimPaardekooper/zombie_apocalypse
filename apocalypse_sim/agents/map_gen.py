@@ -20,18 +20,15 @@ from shapely.geometry import Polygon, Point
 class MapGen:
     """Hold a generated map and agents spawned within it."""
 
-    def __init__(self, map_id, city_id, infected_chance, model):
+    def __init__(self, map_id, city_id, infected_chance, province, model):
         self.model = model
 
         self.map = Map(map_id, model)
 
-        self.spawn(city_id, infected_chance)
 
-    def spawn(self, city_id, infected_chance):
-        "First spawn map object then agents."
         self.spawn_map()
         self.spawn_agents()
-        self.spawn_agents_in_city(city_id, infected_chance)
+        self.spawn_agents_in_city(city_id, infected_chance, province)
 
     def spawn_map(self):
         """Spawns map agents
@@ -47,7 +44,7 @@ class MapGen:
             for place in self.map.places:
                 if place.poly.intersects(Point(x, y)):
                     added = True
-                    new_agent = MapObjectAgent((x, y), "city", self.model)
+                    new_agent = MapObjectAgent((x, y), "city", self.model, color=place.color)
                     self.model.grid.place_agent(new_agent, (x, y))
                     break
 
@@ -63,6 +60,7 @@ class MapGen:
                 new_agent = MapObjectAgent((x, y), "wall", self.model)
                 self.model.grid.place_agent(new_agent, (x, y))
 
+
     def spawn_agents(self):
         """Spawn hard coded agents, good for situations."""
         for agent in self.map.agents:
@@ -77,7 +75,7 @@ class MapGen:
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)
 
-    def spawn_agents_in_city(self, city_id, infected_chance):
+    def spawn_agents_in_city(self, city_id, infected_chance, province):
         """Spawn agents like humans and zombies, defined by place densities.
 
         For each place it will calculate how much agents need to spawn given
@@ -113,7 +111,7 @@ class MapGen:
             agent_coords = random.sample(range(len(p_coords)),
                                          place.density_to_amount(place.population_density))
 
-            if city_id == c_id:
+            if (province == "" and city_id == c_id) or (province == place.name):
                 infected_coords = random.sample(agent_coords,
                                                 ceil(len(agent_coords) * (infected_chance)))
 
@@ -136,9 +134,6 @@ class MapGen:
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)
 
-
-
-
     def get_place(self, pos):
         """Return place of current position."""
         for place in self.map.places + self.map.roads:
@@ -157,6 +152,3 @@ class MapGen:
                         return True
 
         return False
-
-
-

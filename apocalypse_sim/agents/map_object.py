@@ -13,17 +13,19 @@ from shapely.geometry import Polygon, Point
 
 
 class MapObjectAgent(MesaAgent):
-    """Hold all inmovable agents as a Mesa Agent."""
-    def __init__(self, pos, agent_type, model):
+    """Hold all immovable agents as a Mesa Agent."""
+    def __init__(self, pos, agent_type, model, color=""):
         super().__init__(pos, model)
 
         self.type = agent_type
+        self.color = color
 
 
 class MapObject:
     """Hold the map object that is represented by a polygon."""
-    def __init__(self, vertices):
+    def __init__(self, vertices, color=""):
         self.poly = Polygon(vertices)
+        self.color = color
 
     def __str__(self):
         return "None"
@@ -39,10 +41,11 @@ class MapObject:
 
 class Place(MapObject):
     """A map object that can change attributes of the agent within it."""
-    def __init__(self, vertices, population_density,
+    def __init__(self, vertices, population_density, name="", color="",
                  human_speed=2, zombie_speed=1):
-        super().__init__(vertices)
+        super().__init__(vertices, color=color)
         self.population_density = population_density
+        self.name = name
         self.human_speed = human_speed
         self.zombie_speed = zombie_speed
 
