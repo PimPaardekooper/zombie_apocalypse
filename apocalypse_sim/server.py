@@ -10,6 +10,7 @@ from mesa.visualization.UserParam import UserSettableParameter
 import os
 import webbrowser
 import tornado.ioloop
+import numpy as np
 
 from model import Apocalypse
 
@@ -43,8 +44,7 @@ def model_draw(agent):
     if agent is None:
         return
 
-    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 1,
-                 "Text": "(x, y)=" + str(agent.pos)}
+    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 1}
 
     if agent.type == "zombie":
         portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type \
@@ -61,21 +61,29 @@ def model_draw(agent):
         portrayal["stroke_color"] = "#000000"
 
     elif agent.type == "city":
-        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
-        portrayal["Color"] = ["#dd42f540"]
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0,
+                      "Text": "(x, y)=" + str(agent.pos)}
+        if agent.color:
+            portrayal["Color"] = ["#" + agent.color + "30"]
+        else:
+            portrayal["Color"] = ["#f5e3427A"]
     elif agent.type == "road":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
         portrayal["Color"] = ["#f5e3427A"]
     else:
-        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 1,
+                     "Text": "(x, y)=" + str(agent.pos)}
         portrayal["Color"] = ["#000000"]
 
     return portrayal
 
-grid_height = 50
-grid_width = 50
-canvas_height = 600
+grid_height = 200
+grid_width = 200
+canvas_height = 1000
 canvas_width = canvas_height
+provinces = ["Groningen", "Friesland", "Drenthe", "Overijssel", "Flevoland",
+            "Gelderland", "Utrecht", "Noord-Holland", "Zuid-Holland", "Zeeland",
+            "Noord-Brabant", "Limburg", ""]
 
 canvas_element = CanvasGrid(model_draw, grid_height, grid_width, canvas_height, canvas_width)
 
@@ -88,8 +96,9 @@ model_params = {
     "width": grid_width,
     "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
     "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
-    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=0, min_value=0, max_value=5, step=1, choices=[0,1,2,3,4,5]),
-    "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1)
+    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=7, min_value=0, max_value=7, step=1),
+    "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
+    "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces)
 }
 
 chart = ChartModule([{"Label": "susceptible",

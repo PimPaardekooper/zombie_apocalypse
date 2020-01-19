@@ -1,7 +1,7 @@
 from .agent import Agent
 
 class ZombieAgent(Agent):
-    def __init__(self, pos, model, fsm, place):
+    def __init__(self, pos, model, fsm, place=None):
         super().__init__(pos, model, fsm, place)
         self.setVision(4)
         self.type = "zombie"
