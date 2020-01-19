@@ -46,7 +46,3 @@ class Apocalypse(Model):
     def step(self):
         self.schedule.step()
         self.datacollector.collect(self)
-<<<<<<< HEAD
-=======
-
->>>>>>> master
