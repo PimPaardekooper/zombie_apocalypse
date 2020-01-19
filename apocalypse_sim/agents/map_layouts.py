@@ -6,6 +6,7 @@ from .map_object import Place, Road
 import pygeoj
 import numpy as np
 import pandas as pd
+from mode import is_verification
 # TODO: delete
 from shapely.geometry import Point
 
@@ -14,12 +15,19 @@ class Map:
     def __init__(self, map_id, model):
         self.model = model
 
+
         maps = [self.initial_map, self.second_map, self.third_map, self.fourth_map, self.fifth_map,
                 self.sixth_map, self.situation_map, self.nethelands_map]
+
+        if is_verification():
+            maps = [
+               self.convert_test, self.situation_map, self.second_map, self.third_map, self.fourth_map, self.fifth_map,
+                self.sixth_map, self.situation_map            ]
 
         self.places, self.roads, self.agents = maps[map_id]()
 
     def nethelands_map(self):
+
         cities = []
 
 
@@ -253,6 +261,20 @@ class Map:
         humans = Agents("human", [(0, 1), (1, 0)])
 
         return [city], [], [humans]
+    
+    ### TEST MAPS ###
+    def convert_test(self):
+        humans = Agents("human", [(0, 1)])
+        zombies = Agents("zombie", [(0, 2)])
+        city = Place([[0, 0],
+                [0, self.model.grid.height],
+                [self.model.grid.width,
+                self.model.grid.height],
+                [self.model.grid.width, 0],
+                [0, 0]],
+                0)
+
+        return [city], [], [humans, zombies]
 
 
 class Agents:
