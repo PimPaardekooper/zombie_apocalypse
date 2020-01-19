@@ -54,10 +54,10 @@ def model_draw(agent):
         portrayal["Color"] = ["#A41E1F", "#DE6C6B"]
         portrayal["stroke_color"] = "#A41E1F"
     elif agent.type == "human":
-        portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type \
-                                      + ", Place=" + str(agent.place) + ", Id=" + str(agent.unique_id) \
-                                      + ", States=" + str([x.name for x in agent.states]) \
-                                      + ', Kills=' + str(agent.traits["zombie_kills"]) if "zombie_kills" in agent.traits else "0"
+        portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type + "<br />" \
+                                      + ", Place=" + str(agent.place) + ", Id=" + str(agent.unique_id) + "<br />" \
+                                      + ", States=" + str([x.name for x in agent.states]) + "<br />" \
+                                      + ', Kills=' + (str(agent.traits["zombie_kills"]) if "zombie_kills" in agent.traits else "0")
         portrayal["Color"] = ["#80C904", "#4D7902"] if "infected" in agent.traits else ["#0000FF", "#9999FF"]
         portrayal["stroke_color"] = "#000000"
 

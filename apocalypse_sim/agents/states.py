@@ -280,7 +280,7 @@ class InteractionHuman(State):
         chance = agent.model.random.random()
 
         if "zombie_kills" in self.target.traits:
-            extra = min(self.target.traits["zombie_kills"] * 0.1, 0.4)
+            extra = min(self.target.traits["zombie_kills"] * 0.15, 0.3)
 
             chance = min(1, chance + extra)
         else:
