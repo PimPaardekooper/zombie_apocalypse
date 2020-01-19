@@ -1,5 +1,4 @@
-"""model.py
-
+"""
 Creates the model for the computational experiment that needs to run.
 """
 from mesa import Model, Agent
@@ -47,4 +46,3 @@ class Apocalypse(Model):
     def step(self):
         self.schedule.step()
         self.datacollector.collect(self)
-

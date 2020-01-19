@@ -44,35 +44,45 @@ def model_draw(agent):
     if agent is None:
         return
 
-    portrayal = {"Shape": "circle", "r": 1, "Filled": "true", "Layer": 1}
+
+    agent_properties = {}
+
+    portrayal = {
+        "Shape": "circle",
+        "r": 1,
+        "Filled": "true",
+        "Layer": 1
+    }
 
     if agent.type == "zombie":
-        portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type \
-                                      + ", Place=" + str(agent.place) + ", Id=" + str(agent.unique_id) \
-                                      + ", States=" + str([x.name for x in agent.states])
+        agent_properties["Pos"] = "(x, y) =" + str(agent.pos)
+        agent_properties["Type"] = agent.type
+        agent_properties["States"] = str([x.name for x in agent.states])
+        agent_properties["Identifier"] = str(agent.unique_id)
 
-        portrayal["Color"] = ["#FF0000", "#FF9999"]
-        portrayal["stroke_color"] = "#00FF00"
+        portrayal["Color"] = ["#A41E1F", "#DE6C6B"]
+        portrayal["stroke_color"] = "#A41E1F"
+
+        portrayal = {**portrayal, **agent_properties}
     elif agent.type == "human":
-        portrayal["Text"] = "(x, y)=" + str(agent.pos) + ", Type=" + agent.type \
-                                      + ", Place=" + str(agent.place) + ", Id=" + str(agent.unique_id) \
-                                      + ", States=" + str([x.name for x in agent.states])
-        portrayal["Color"] = ["#0000FF", "#9999FF"]
+        agent_properties["Pos"] = "(x, y) =" + str(agent.pos)
+        agent_properties["Type"] = agent.type
+        agent_properties["States"] = str([x.name for x in agent.states])
+        agent_properties["Identifier"] = str(agent.unique_id)
+        agent_properties["Kills"] = str(agent.traits["zombie_kills"]) if "zombie_kills" in agent.traits else "0"
+
+        portrayal["Color"] = ["#80C904", "#4D7902"] if "infected" in agent.traits else ["#0000FF", "#9999FF"]
         portrayal["stroke_color"] = "#000000"
 
+        portrayal = {**portrayal, **agent_properties}
     elif agent.type == "city":
-        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0,
-                      "Text": "(x, y)=" + str(agent.pos)}
-        if agent.color:
-            portrayal["Color"] = ["#" + agent.color + "30"]
-        else:
-            portrayal["Color"] = ["#f5e3427A"]
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
+        portrayal["Color"] = ["#dd42f540"]
     elif agent.type == "road":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
         portrayal["Color"] = ["#f5e3427A"]
     else:
-        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 1,
-                     "Text": "(x, y)=" + str(agent.pos)}
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
         portrayal["Color"] = ["#000000"]
 
     return portrayal
@@ -86,9 +96,6 @@ provinces = ["Groningen", "Friesland", "Drenthe", "Overijssel", "Flevoland",
             "Noord-Brabant", "Limburg", ""]
 
 canvas_element = CanvasGrid(model_draw, grid_height, grid_width, canvas_height, canvas_width)
-
-# happy_chart = ChartModule([{"Label": "happy", "Color": "Black"}])
-
 
 # NOTE: Add sliders here
 model_params = {
