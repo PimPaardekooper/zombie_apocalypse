@@ -13,7 +13,7 @@ from agents.map_object import MapObjectAgent
 from agents.map_gen import MapGen
 
 class Apocalypse(Model):
-    def __init__(self, height=100, width=100, density=0.1, infected_chance=0.05, map_id=5, city_id=0, province="", total_agents=0):
+    def __init__(self, height=100, width=100, density=0.1, infected_chance=0.05, map_id=5, city_id=0, province="", total_agents=0, seed=None):
         # variables to get from model_params in server.py
         self.height = height
         self.width = width

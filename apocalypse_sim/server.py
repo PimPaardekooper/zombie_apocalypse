@@ -15,10 +15,10 @@ import numpy as np
 from model import Apocalypse
 
 class ModularServerExtd(ModularServer):
-
     def __init__(self, model_cls, visualization_elements, name="Mesa Model",
                  model_params={}):
         super().__init__(model_cls, visualization_elements, name, model_params)
+
 
     def launch(self, port=None):
 
@@ -87,9 +87,9 @@ def model_draw(agent):
 
     return portrayal
 
-grid_height = 200
-grid_width = 200
-canvas_height = 1000
+grid_height = 20
+grid_width = 20
+canvas_height = 600
 canvas_width = canvas_height
 provinces = ["Groningen", "Friesland", "Drenthe", "Overijssel", "Flevoland",
             "Gelderland", "Utrecht", "Noord-Holland", "Zuid-Holland", "Zeeland",
@@ -103,9 +103,10 @@ model_params = {
     "width": grid_width,
     "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
     "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
-    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=7, min_value=0, max_value=7, step=1),
+    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=0, min_value=0, max_value=7, step=1),
     "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
-    "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces)
+    "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces),
+    "seed": 0
 }
 
 chart = ChartModule([{"Label": "susceptible",
