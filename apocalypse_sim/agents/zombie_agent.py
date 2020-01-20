@@ -3,21 +3,30 @@ from .agent import Agent
 class ZombieAgent(Agent):
     def __init__(self, pos, model, fsm, place=None):
         super().__init__(pos, model, fsm, place)
-        self.setVision(4)
+        self.setVision(7)
         self.type = "zombie"
         self.model.infected += 1
+        self.target = None
 
     def nearest_brain(self, neighbours):
-        nearby_brains = [brain.pos for brain in neighbours if brain.type == "human"]
-        if len(nearby_brains) > 0:
-            nearest = 0
-            for brain in nearby_brains:
-                distance = (abs(brain[0] - self.pos[0])**2 + abs(brain[1] - self.pos[1])**2)**0.5
-                if nearest == 0 or nearest < distance:
-                    nearest = distance
-                    nearest_x = brain[0]
-                    nearest_y = brain[1]
-            return (nearest_x, nearest_y)
+        nearby_humans = [agent for agent in neighbours if agent.type == "human" and "Infected" not in [state.name for state in agent.states]]
+        if len(nearby_humans) > 0:
+            nearest = None
+            for human in nearby_humans:
+                distance = ((abs(human.pos[0] - self.pos[0])**2 + abs(human.pos[1] - self.pos[1])**2))**0.5
+                if not nearest:
+                    nearest = [distance, [human]]
+                elif distance < nearest[0]:
+                    nearest = [distance, [human]]
+                elif distance == nearest[0]:
+                    nearest[1].append(human)
+
+            # If your target is not in list of nearest humans, pick a new
+            # target
+            if (not (self.target and self.target in nearest[1])):
+                self.target = self.random.choice(nearest[1])
+
+            return self.target.pos
         return None
 
     def move(self):

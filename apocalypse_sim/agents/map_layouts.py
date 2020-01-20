@@ -6,6 +6,7 @@ from .map_object import Place, Road
 import pygeoj
 import numpy as np
 import pandas as pd
+from mode import is_verification
 # TODO: delete
 from shapely.geometry import Point
 
@@ -14,12 +15,19 @@ class Map:
     def __init__(self, map_id, model):
         self.model = model
 
+
         maps = [self.initial_map, self.second_map, self.third_map, self.fourth_map, self.fifth_map,
                 self.sixth_map, self.situation_map, self.nethelands_map]
+
+        if is_verification():
+            maps = [
+               self.convert_test, self.range_test, self.runaway_test, self.group_test, self.third_map, self.fourth_map, self.fifth_map,
+                self.sixth_map, self.situation_map            ]
 
         self.places, self.roads, self.agents = maps[map_id]()
 
     def nethelands_map(self):
+
         cities = []
 
 
@@ -32,6 +40,7 @@ class Map:
         for feature in poly_data:
             color = "".join(["{0:02X}".format(x) for x in
                             np.random.choice(range(256), size=3)])
+            color = "#" + color
             statnaam = feature.properties["statnaam"]
 
             if feature.geometry.type == "Polygon":
@@ -263,7 +272,65 @@ class Map:
         humans = Agents("human", [(0, 1), (1, 0)])
 
         return [city], [], [humans]
+    
+    ### TEST MAPS ###
+    def convert_test(self):
+        humans = Agents("human", [(0, 1)])
+        zombies = Agents("zombie", [(0, 2)])
+        city = Place([[0, 0],
+                [0, self.model.grid.height],
+                [self.model.grid.width,
+                self.model.grid.height],
+                [self.model.grid.width, 0],
+                [0, 0]],
+                0)
 
+        return [city], [], [humans, zombies]
+
+    def range_test(self):
+        """Square map no walls."""
+        city = Place([[0, 0],
+                      [0, self.model.grid.height],
+                      [self.model.grid.width,
+                       self.model.grid.height],
+                      [self.model.grid.width, 0],
+                      [0, 0]],
+                     0)
+
+        humans = Agents("human", [(0, 0)])
+        zombies = Agents("zombie", [(0, 7)])
+
+        return [city], [], [humans, zombies]
+
+    def runaway_test(self):
+        """Square map no walls."""
+        city = Place([[0, 0],
+                      [0, self.model.grid.height],
+                      [self.model.grid.width,
+                       self.model.grid.height],
+                      [self.model.grid.width, 0],
+                      [0, 0]],
+                     0)
+
+        humans = Agents("human", [(0, 5)])
+        zombies = Agents("zombie", [(0, 9)])
+
+        return [city], [], [humans, zombies]
+    
+
+    def group_test(self):
+        """Square map no walls."""
+        city = Place([[0, 0],
+                      [0, self.model.grid.height],
+                      [self.model.grid.width,
+                       self.model.grid.height],
+                      [self.model.grid.width, 0],
+                      [0, 0]],
+                     0)
+
+        humans = Agents("human", [(0, 0), (4, 0), (0, 4), (3, 3)])
+
+        return [city], [], [humans]
 
 class Agents:
     def __init__(self, agent_type, positions, attr={}):

@@ -9,12 +9,32 @@ from .map_layouts import Map
 
 from .automaton import Automaton
 from .states import *
-import random
 from math import floor, ceil
-# import pprint
-
+from mode import is_verification
 
 from shapely.geometry import Polygon, Point
+
+def getFsm():
+    fsm = Automaton()
+
+    # Zombie movement FSM
+    fsm.event(ZombieWandering(), ChasingHuman())
+    fsm.event(ChasingHuman(), ZombieWandering())
+
+    # Zombie human interaction FSM
+    fsm.event(Idle(), InteractionHuman())
+    fsm.event(InteractionHuman(), InfectHuman())
+    fsm.event(InteractionHuman(), RemoveZombie())
+    fsm.event(InfectHuman(), Idle())
+
+    # Human movement FSM
+    fsm.event(HumanWandering(), AvoidingZombie())
+    fsm.event(AvoidingZombie(), HumanWandering())
+
+    # Human health FSM
+    fsm.event(Susceptible(), Infected())
+    fsm.event(Infected(), Turned())
+    return fsm
 
 
 class MapGen:
@@ -28,7 +48,8 @@ class MapGen:
 
         self.spawn_map()
         self.spawn_agents()
-        self.spawn_agents_in_city(city_id, infected_chance, province)
+        if not is_verification():
+            self.spawn_agents_in_city(city_id, infected_chance, province)
 
     def spawn_map(self):
         """Spawns map agents
@@ -65,11 +86,14 @@ class MapGen:
         """Spawn hard coded agents, good for situations."""
         for agent in self.map.agents:
             for pos in agent.positions:
+                fsm = getFsm()
                 if agent.agent_type == "zombie":
-                    new_agent = ZombieAgent(pos, self.model, self.get_place(pos))
+                    new_agent = ZombieAgent(pos, self.model, fsm, self.get_place(pos))
+                    fsm.set_initial_states(["ZombieWandering", "Idle"], new_agent)
                     self.model.infected += 1
                 else:
-                    new_agent = HumanAgent(pos, self.model, self.get_place(pos))
+                    new_agent = HumanAgent(pos, self.model, fsm, self.get_place(pos))
+                    fsm.set_initial_states(["HumanWandering", "Susceptible"], new_agent)
                     self.model.susceptible += 1
 
                 self.model.grid.place_agent(new_agent, pos)
@@ -86,33 +110,33 @@ class MapGen:
 
         fsm = Automaton()
 
-        # Human zombie interaction
-        fsm.event(ChasingHuman(), Infect())
+        # Zombie movement FSM
+        fsm.event(ZombieWandering(), ChasingHuman())
         fsm.event(ChasingHuman(), ZombieWandering())
 
-        fsm.event(Infect(), ZombieWandering())
-        fsm.event(Infect(), ChasingHuman())
+        # Zombie human interaction FSM
+        fsm.event(Idle(), InteractionHuman())
+        fsm.event(InteractionHuman(), InfectHuman())
+        fsm.event(InteractionHuman(), RemoveZombie())
+        fsm.event(InfectHuman(), Idle())
 
-        fsm.event(ZombieWandering(), ChasingHuman())
-        fsm.event(ZombieWandering(), Infect())
-
-        # Human
+        # Human movement FSM
         fsm.event(HumanWandering(), AvoidingZombie())
-
         fsm.event(AvoidingZombie(), HumanWandering())
 
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(fsm.states)
+        # Human health FSM
+        fsm.event(Susceptible(), Infected())
+        fsm.event(Infected(), Turned())
 
         for c_id, place in enumerate(self.map.places):
             p_coords = place.get_coords()
 
             infected_coords = []
-            agent_coords = random.sample(range(len(p_coords)),
+            agent_coords = self.model.random.sample(range(len(p_coords)),
                                          place.density_to_amount(place.population_density))
 
             if (province == "" and city_id == c_id) or (province == place.name):
-                infected_coords = random.sample(agent_coords,
+                infected_coords = self.model.random.sample(agent_coords,
                                                 ceil(len(agent_coords) * (infected_chance)))
 
             open('remove_add.txt', 'w').close()
@@ -125,11 +149,11 @@ class MapGen:
                 if i in infected_coords:
                     new_agent = ZombieAgent(pos, self.model, fsm, place)
 
-                    fsm.set_initial_states(["ZombieWandering"], new_agent)
+                    fsm.set_initial_states(["ZombieWandering", "Idle"], new_agent)
                 else:
                     new_agent = HumanAgent(pos, self.model, fsm, place)
 
-                    fsm.set_initial_states(["HumanWandering"], new_agent)
+                    fsm.set_initial_states(["HumanWandering", "Susceptible"], new_agent)
 
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)

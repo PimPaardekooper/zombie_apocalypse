@@ -2,46 +2,17 @@ from .state import State
 from .human_agent import HumanAgent
 from .zombie_agent import ZombieAgent
 
-class Idle(State):
-    def __init__(self):
-        self.name = "Idle"
-
-    # Function that determines if another state may transition
-    # into the current state.
-    def transition(self, agent):
-        return agent.traits["desire"] == 0
-
-
-    def on_enter(self, agent):
-        if agent.pos[1] > 0:
-            agent.traits["desire"] = 1
-        else:
-            agent.traits["desire"] = 0
-
-
-    def on_update(self, agent):
-        agent.move()
-
-        agent.traits["desire"] += 1
-
-
-    def on_leave(self, agent):
-        print("Left Idle state")
-
-        pass
-
 
 class Reproduce(State):
     def reproduce(self, agent):
-        neighbors = agent.model.grid.get_neighbors(agent.pos, moore=False)
+        neighbors = agent.neighbors()
 
+        # Continue only if a human neighbour is found
         for neighbour in neighbors:
             if neighbour.type != "human":
                 return False
 
-            desire = neighbour.traits["desire"]
-
-            if desire and desire > 2:
+            if self.name in agent.states:
                 birth_cells = agent.get_moves()
 
                 if not birth_cells:
@@ -63,31 +34,23 @@ class Reproduce(State):
         self.name = "Reproduce"
 
 
+    """
+    An agent may transition into the current state if it has
+    been alive for at least 3 steps, or the time since the
+    last reproduction is greater than 3 steps.
+    """
     def transition(self, agent):
-        if agent.traits["desire"] > 2:
-            return True
+        if "time_at_reproduction" in agent.traits:
+            most_recent = agent.traits["time_at_reproduction"]
 
+            return agent.time_alive - most_recent > 3
 
-    def on_enter(self, agent):
-        mate = self.reproduce(agent)
-
-        if mate:
-            agent.traits["desire"] = 0
-            mate.traits["desire"] = 0
+        return agent.time_alive > 3
 
 
     def on_update(self, agent):
-        mate = self.reproduce(agent)
-
-        if mate:
-            agent.traits["desire"] = 0
-            mate.traits["desire"] = 0
-
-        agent.move()
-
-
-    def on_leave(self, agent):
-        pass
+        if self.reproduce(agent):
+            agent.traits["time_at_reproduction"] = agent.time_alive
 
 
 class Wandering(State):
@@ -103,8 +66,6 @@ class Wandering(State):
 
 
     def on_enter(self, agent):
-        # print("Just wandering about")
-
         self.random_move(agent)
 
 
@@ -116,10 +77,11 @@ class HumanWandering(Wandering):
     def __init__(self):
         self.name = "HumanWandering"
 
-    def transition(self, agent):
-        neighbours = agent.model.grid.get_neighbors(agent.pos, True, True, agent.traits["vision"])
 
-        return agent.find_escape(neighbours) == None
+    def transition(self, agent):
+        neighbors = agent.neighbors(radius=agent.traits["vision"])
+
+        return agent.find_escape(neighbors) == None
 
 
 class ZombieWandering(Wandering):
@@ -128,9 +90,9 @@ class ZombieWandering(Wandering):
 
 
     def transition(self, agent):
-        neighbours = agent.model.grid.get_neighbors(agent.pos, True, True, agent.traits["vision"])
+        neighbors = agent.neighbors(radius=agent.traits["vision"])
 
-        return agent.nearest_brain(neighbours) == None
+        return agent.nearest_brain(neighbors) == None
 
 
 class AvoidingZombie(State):
@@ -139,8 +101,11 @@ class AvoidingZombie(State):
 
 
     def get_best_cell(self, agent):
-        neighbours = agent.model.grid.get_neighbors(agent.pos, True, True, agent.traits["vision"])
-        direction = agent.find_escape(neighbours)
+        if not agent.pos:
+            return None
+
+        neighbors = agent.neighbors(radius=agent.traits["vision"])
+        direction = agent.find_escape(neighbors)
 
         if direction:
             # Calculate the coordinate the agent wants to move to
@@ -153,20 +118,49 @@ class AvoidingZombie(State):
 
 
     def transition(self, agent):
-        return agent.type == "human" and self.get_best_cell(agent)
+        return self.get_best_cell(agent)
+
+
+    def halt(self, agent):
+        return self.get_best_cell(agent)
 
 
     def on_enter(self, agent):
         best_cell = self.get_best_cell(agent)
 
-        agent.model.grid.move_agent(agent, best_cell)
+        if best_cell:
+            agent.model.grid.move_agent(agent, best_cell)
 
 
+    """
+    Make sure the agent is still on the grid
+    """
     def on_update(self, agent):
         best_cell = self.get_best_cell(agent)
 
         if best_cell:
             agent.model.grid.move_agent(agent, best_cell)
+
+
+class Idle(State):
+    def __init__(self):
+        self.name = "Idle"
+
+
+    """
+    Only transition into current state if not surrounded by
+    any humans.
+    """
+    def transition(self, agent):
+        neighbors = agent.neighbors()
+
+        for neighbour in neighbors:
+            if neighbour.type == "human":
+                for state in neighbour.states:
+                    if state.name == "Infected":
+                        return False
+
+        return True
 
 
 class ChasingHuman(State):
@@ -175,8 +169,8 @@ class ChasingHuman(State):
 
 
     def get_best_cell(self, agent):
-        neighbours = agent.model.grid.get_neighbors(agent.pos, True, True, agent.traits["vision"])
-        nearest_human = agent.nearest_brain(neighbours)
+        neighbors = agent.neighbors(radius=agent.traits["vision"])
+        nearest_human = agent.nearest_brain(neighbors)
 
         if nearest_human:
             return agent.best_cell([nearest_human[0], nearest_human[1]])
@@ -193,28 +187,18 @@ class ChasingHuman(State):
         if human == None:
             return False
 
-        self_x = agent.pos[0]
-        self_y = agent.pos[1]
-        human_x = human[0]
-        human_y = human[1]
-
         # If a human is one block away you must infect him,
         # otherwise can chase him.
-        neighbors = agent.model.grid.get_neighbors(agent.pos, moore=False)
+        neighbors = agent.neighbors()
 
         for neighbour in neighbors:
             if neighbour.type == "human":
-                return False
+                for state in neighbour.states:
+                    if state.name == "Infected":
+                        return False
 
         # You are ready to chase someone
         return True
-
-
-    def on_enter(self, agent):
-        # print("Mon wants to go again")
-        best_cell = self.get_best_cell(agent)
-
-        agent.model.grid.move_agent(agent, best_cell)
 
 
     def on_update(self, agent):
@@ -224,13 +208,31 @@ class ChasingHuman(State):
             agent.model.grid.move_agent(agent, best_cell)
 
 
-    # def on_leave(self, agent):
-    #     print(agent.id, "leaving ChasingHuman")
-
-
-class Infect(State):
+class Susceptible(State):
     def __init__(self):
-        self.name = "Infect"
+        self.name = "Susceptible"
+
+
+class Infected(State):
+    def __init__(self):
+        self.name = "Infected"
+
+
+    """
+    A human may transition into the Infected state if
+    it's infected trait has been set in the Infect state.
+    """
+    def transition(self, agent):
+        return "infected" in agent.traits
+
+
+    def on_enter(self, agent):
+        agent.traits["time_at_infection"] = agent.time_alive
+
+
+class Turned(State):
+    def __init__(self):
+        self.name = "Turned"
 
 
     def add_zombie(self, target):
@@ -239,34 +241,91 @@ class Infect(State):
         target.model.grid.place_agent(zombie, target.pos)
         target.model.schedule.add(zombie)
 
-        target.fsm.set_initial_states(["ZombieWandering"], zombie)
-
-
-    def remove_human(self, human):
-        human.model.grid.remove_agent(human)
-        human.model.schedule.remove(human)
-
-        del human
+        target.fsm.set_initial_states(["ZombieWandering", "Idle"], zombie)
 
 
     def transition(self, agent):
-        neighbors = agent.model.grid.get_neighbors(agent.pos, moore=False)
+        return agent.time_alive - agent.traits["time_at_infection"] > 2
 
+
+    def on_enter(self, agent):
+        self.add_zombie(agent)
+
+        agent.remove_agent()
+
+
+class InteractionHuman(State):
+    def __init__(self):
+        self.name = "InteractionHuman"
+
+
+    def transition(self, agent):
+        neighbors = agent.neighbors()
+
+        # Find any human that is not yet been infected
         for neighbour in neighbors:
-            if neighbour.type == "human":
-                return True
+            if not neighbour.type == "human":
+                continue
+
+            for state in neighbour.states:
+                if state.name == "Susceptible":
+                    self.target = neighbour
+
+                    return True
 
         return False
 
 
     def on_enter(self, agent):
-        neighbors = agent.model.grid.get_neighbors(agent.pos, moore=False)
+        chance = agent.model.random.random()
 
+        if "zombie_kills" in self.target.traits:
+            extra = min(self.target.traits["zombie_kills"] * 0.15, 0.3)
+
+            chance = min(1, chance + extra)
+        else:
+            self.target.traits["zombie_kills"] = 0
+
+        if chance > 0.6:
+            agent.fsm.switch_to_state(agent, self.name, "RemoveZombie")
+
+            self.target.traits["zombie_kills"] += 1
+        else:
+            agent.fsm.switch_to_state(agent, self.name, "InfectHuman")
+
+
+class RemoveZombie(State):
+    def __init__(self):
+        self.name = "RemoveZombie"
+
+
+    def on_enter(self, agent):
+        agent.remove_agent()
+        
+
+"""
+State that represents a zombie infecting a human.
+"""
+class InfectHuman(State):
+    def __init__(self):
+        self.name = "InfectHuman"
+
+
+    """
+    A zombie has spotted a nearby human and will 'infect' it by
+    setting it's infected trait.
+    """
+    def on_enter(self, agent):
+        neighbors = agent.neighbors()
+
+        # Find any human that is susceptible to
+        # being infected.
         for neighbour in neighbors:
-            if neighbour.type == "human":
-                target = neighbour
+            if not neighbour.type == "human":
+                continue
 
-                break
+            for state in neighbour.states:
+                if state.name == "Susceptible":
+                    neighbour.traits["infected"] = True
 
-        self.add_zombie(target)
-        self.remove_human(target)
+                    return
