@@ -27,7 +27,6 @@ class Map:
         self.places, self.roads, self.agents = maps[map_id]()
 
     def nethelands_map(self):
-
         cities = []
 
 
@@ -62,7 +61,8 @@ class Map:
 
                         if province.poly.area > 10:
                             cities.append(province)
-
+                    
+                
         road1 = Place([[88,156], [87,157], [104, 168], [104,166]], 0)
         road2 = Place([[101,139], [99,138], [110, 129], [111,129]], 0)
         road3 = Place([[25,42], [26,42], [26, 45], [24,45]], 0)
