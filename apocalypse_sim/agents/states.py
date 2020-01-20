@@ -383,7 +383,7 @@ class InteractionHuman(State):
                     return True
 
         return False
-
+ 
 
     def on_enter(self, agent):
         chance = agent.model.random.random()
