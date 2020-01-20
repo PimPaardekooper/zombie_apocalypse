@@ -92,32 +92,6 @@ class HumanAgent(Agent):
                 vector = self.bruteforce(nearby_zombies)
             return vector
 
-
-    def move(self):
-        neighbours = self.model.grid.get_neighbors(self.pos, True, True, self.traits["vision"])
-        direction = self.find_escape(neighbours, 1)
-
-        if direction:
-            # Calculate the coordinate the agent wants to move to
-            new_x = self.pos[0] + direction[0]
-            new_y = self.pos[1] + direction[1]
-            new_cell = self.best_cell([new_x, new_y])
-
-            # No move found using the fast algorithm, try the slower
-            # bruteforce algorithm
-            if new_cell == self.pos:
-                direction = self.find_escape(neighbours, 2)
-                new_x = self.pos[0] + direction[0]
-                new_y = self.pos[1] + direction[1]
-                new_cell = self.best_cell([new_x, new_y])
-        else:
-            # Randomly select a new cell to move to
-            new_cell = self.random.choice(self.get_moves())
-
-        # Move the agent to the selected cell
-        self.model.grid.move_agent(self, new_cell)
-
-
     def setVision(self, vision_radius):
         self.traits['vision'] = min(9, vision_radius)
 
