@@ -25,7 +25,7 @@ class HumanAgent(Agent):
                 # priority)
                 d = (d_x**2 + d_y**2)**0.5
                 direction[0] += ((self.traits["vision"] + 1 - d) * d_x)
-                direction[1] += ((self.traits["vision"] + 1     - d) * d_y)
+                direction[1] += ((self.traits["vision"] + 1 - d) * d_y)
         else:
             return None
 
@@ -49,6 +49,7 @@ class HumanAgent(Agent):
         best_cells = None
 
         if len(nearby_zombies) > 0:
+            # Get the best possible cells
             for cell in free_cells:
                 priority = 0
                 for zombie in nearby_zombies:
@@ -62,32 +63,54 @@ class HumanAgent(Agent):
                     best_cells = [priority, [cell]]
                 elif priority == best_cells[0]:
                     best_cells[1].append(cell)
-            return self.random.choice(best_cells[1])
+            # Pick a random cell out of the best options
+            choice = self.random.choice(best_cells[1])
+
+            # Create a normalized vector for the direction the agent wants to
+            # go
+            vector = [choice[0] - self.pos[0], choice[1] - self.pos[1]]
+            length = (vector[0]**2 + vector[1]**2)**0.5
+            if vector[0]:
+                vector[0] /= length
+            if vector[1]:
+                vector[1] /= length
+            return vector
         else:
             return None
 
     def find_escape(self, neighbours):
-        algorithm = 1
         nearby_zombies = [agent for agent in neighbours if agent.type == "zombie"]
 
-        if algorithm == 1:
-            return self.running_direction(nearby_zombies)
-        elif algorithm == 2:
-            return self.bruteforce(nearby_zombies)
+        vector = self.running_direction(nearby_zombies)
+        if vector:
+            # If the vector doesnt find an escape route(agent stands still),
+            # try the bruteforce algorithm.
+            new_x = self.pos[0] + vector[0]
+            new_y = self.pos[1] + vector[1]
+            new_cell = self.best_cell([new_x, new_y])
+            if new_cell == self.pos:
+                vector = self.bruteforce(nearby_zombies)
+            return vector
 
 
     def move(self):
         neighbours = self.model.grid.get_neighbors(self.pos, True, True, self.traits["vision"])
-        direction = self.find_escape(neighbours)
+        direction = self.find_escape(neighbours, 1)
 
         if direction:
-
             # Calculate the coordinate the agent wants to move to
             new_x = self.pos[0] + direction[0]
             new_y = self.pos[1] + direction[1]
             new_cell = self.best_cell([new_x, new_y])
-        else:
 
+            # No move found using the fast algorithm, try the slower
+            # bruteforce algorithm
+            if new_cell == self.pos:
+                direction = self.find_escape(neighbours, 2)
+                new_x = self.pos[0] + direction[0]
+                new_y = self.pos[1] + direction[1]
+                new_cell = self.best_cell([new_x, new_y])
+        else:
             # Randomly select a new cell to move to
             new_cell = self.random.choice(self.get_moves())
 
