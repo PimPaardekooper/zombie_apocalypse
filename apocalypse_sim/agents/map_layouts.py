@@ -32,6 +32,7 @@ class Map:
         for feature in poly_data:
             color = "".join(["{0:02X}".format(x) for x in
                             np.random.choice(range(256), size=3)])
+            color = "#" + color
             statnaam = feature.properties["statnaam"]
 
             if feature.geometry.type == "Polygon":

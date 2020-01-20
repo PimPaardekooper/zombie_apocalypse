@@ -77,7 +77,11 @@ def model_draw(agent):
         portrayal = {**portrayal, **agent_properties}
     elif agent.type == "city":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
-        portrayal["Color"] = ["#dd42f540"]
+
+        if agent.color != "":
+            portrayal["Color"] = agent.color + "40"
+        else:
+            portrayal["Color"] = ["#dd42f540"]
     elif agent.type == "road":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
         portrayal["Color"] = ["#f5e3427A"]
