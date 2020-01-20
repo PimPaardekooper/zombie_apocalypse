@@ -7,12 +7,10 @@ class HumanAgent(Agent):
         self.type = "human"
         self.model.susceptible += 1
 
-    def find_escape(self, neighbours):
-        nearby_zombies = [agent for agent in neighbours if agent.type == "zombie"]
-        direction = [0, 0]
-
+    def running_direction(self, nearby_zombies):
         # Get the optimal escape route by checking all zombie positions and
         # getting the route away from all zombies
+        direction = [0, 0]
         if len(nearby_zombies) > 0:
             for zombie in nearby_zombies:
 
@@ -26,8 +24,8 @@ class HumanAgent(Agent):
                 # gives a higher direction x and y, since closer zombies have
                 # priority)
                 d = (d_x**2 + d_y**2)**0.5
-                direction[0] += ((self.traits["vision"] - d) * d_x)
-                direction[1] += ((self.traits["vision"] - d) * d_y)
+                direction[0] += ((self.traits["vision"] + 1 - d) * d_x)
+                direction[1] += ((self.traits["vision"] + 1     - d) * d_y)
         else:
             return None
 
@@ -37,10 +35,46 @@ class HumanAgent(Agent):
             direction[0] /= d
         if direction[1]:
             direction[1] /= d
-        if direction[0] or direction[1]:
-            return (direction[0], direction[1])
+        return (direction[0], direction[1])
 
-        return [0, 0]
+    # For every free cell, calculates the priority for moving to the cell, and
+    # returns the cell with the highest priority.
+    # The priority is determined by adding the squared distances between the
+    # cell and zombies.
+    def bruteforce(self, nearby_zombies):
+        # all available cells
+        free_cells = self.get_moves()
+        # list with priority of the highest priority cells, and the
+        # corresponding cells
+        best_cells = None
+
+        if len(nearby_zombies) > 0:
+            for cell in free_cells:
+                priority = 0
+                for zombie in nearby_zombies:
+                    dist_x = abs(cell[0] - zombie.pos[0])
+                    dist_y =  abs(cell[1] - zombie.pos[1])
+                    distance = (dist_x**2 + dist_y**2)**0.5
+                    priority += distance**0.5
+                if not best_cells:
+                    best_cells = [priority, [cell]]
+                elif priority > best_cells[0]:
+                    best_cells = [priority, [cell]]
+                elif priority == best_cells[0]:
+                    best_cells[1].append(cell)
+            return self.random.choice(best_cells[1])
+        else:
+            return None
+
+    def find_escape(self, neighbours):
+        algorithm = 1
+        nearby_zombies = [agent for agent in neighbours if agent.type == "zombie"]
+
+        if algorithm == 1:
+            return self.running_direction(nearby_zombies)
+        elif algorithm == 2:
+            return self.bruteforce(nearby_zombies)
+
 
     def move(self):
         neighbours = self.model.grid.get_neighbors(self.pos, True, True, self.traits["vision"])
