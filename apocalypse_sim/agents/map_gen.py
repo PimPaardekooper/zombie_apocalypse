@@ -11,7 +11,6 @@ from .automaton import Automaton
 from .states import *
 from math import floor, ceil
 
-
 from shapely.geometry import Polygon, Point
 
 
