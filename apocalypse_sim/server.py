@@ -12,6 +12,7 @@ import os
 import webbrowser
 import tornado.ioloop
 import numpy as np
+from mode import is_verification
 
 import random
 import sys
@@ -48,7 +49,6 @@ def model_draw(agent):
     if agent is None:
         return
 
-
     agent_properties = {}
 
     portrayal = {
@@ -81,7 +81,11 @@ def model_draw(agent):
         portrayal = {**portrayal, **agent_properties}
     elif agent.type == "city":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
-        portrayal["Color"] = ["#dd42f540"]
+
+        if agent.color != "":
+            portrayal["Color"] = agent.color + "40"
+        else:
+            portrayal["Color"] = ["#dd42f540"]
     elif agent.type == "road":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
         portrayal["Color"] = ["#f5e3427A"]
@@ -93,9 +97,16 @@ def model_draw(agent):
 
 seed = random.randrange(sys.maxsize)
 
-grid_height = 20
-grid_width = 20
-canvas_height = 600
+map_id = 0
+grid_height = 200
+grid_width = 200
+if is_verification():
+    grid_height = 10
+    grid_width = 10
+    map_id = 0
+
+
+canvas_height = 1000
 canvas_width = canvas_height
 provinces = ["Groningen", "Friesland", "Drenthe", "Overijssel", "Flevoland",
             "Gelderland", "Utrecht", "Noord-Holland", "Zuid-Holland", "Zeeland",
@@ -110,7 +121,7 @@ model_params = {
     "seed": UserSettableParameter("number", "seed", value=str(seed)),
     "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
     "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
-    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=0, min_value=0, max_value=7, step=1),
+    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=map_id, min_value=0, max_value=7, step=1),
     "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
     "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces)
 }
