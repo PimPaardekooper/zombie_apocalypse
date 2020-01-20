@@ -318,19 +318,6 @@ class Map:
                       [0, 0]],
                      0)
 
-    def range_test(self):
-        """Square map no walls."""
-        city = Place([[0, 0],
-                      [0, self.model.grid.height],
-                      [self.model.grid.width,
-                       self.model.grid.height],
-                      [self.model.grid.width, 0],
-                      [0, 0]],
-                     0)
-
-        humans = Agents("human", [(0, 0)])
-        zombies = Agents("zombie", [(0, 7)])
-
         humans = Agents("human", [(0, 0), (4, 0), (0, 4), (3, 3)])
 
         return [city], [], [humans]
