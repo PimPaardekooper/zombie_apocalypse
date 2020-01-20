@@ -100,14 +100,16 @@ seed = random.randrange(sys.maxsize)
 map_id = 0
 grid_height = 200
 grid_width = 200
+canvas_height = 1000
+
 if is_verification():
     grid_height = 10
     grid_width = 10
     map_id = 0
+    canvas_height = 400
 
-
-canvas_height = 1000
 canvas_width = canvas_height
+
 provinces = ["Groningen", "Friesland", "Drenthe", "Overijssel", "Flevoland",
             "Gelderland", "Utrecht", "Noord-Holland", "Zuid-Holland", "Zeeland",
             "Noord-Brabant", "Limburg", ""]
