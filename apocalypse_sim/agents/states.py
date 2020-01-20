@@ -246,7 +246,7 @@ class AvoidingZombie(State):
         if best_cell:
             agent.direction = (best_cell[0] - agent.pos[0], best_cell[1] - agent.pos[1])
 
-            # agent.model.grid.move_agent(agent, best_cell)
+            agent.model.grid.move_agent(agent, best_cell)
         else:
             agent.direction = (0, 0)
 

@@ -32,6 +32,7 @@ def getFsm():
     fsm.event(HumanWandering(), FormingHerd())
     fsm.event(AvoidingZombie(), HumanWandering())
     fsm.event(FormingHerd(), HumanWandering())
+    fsm.event(FormingHerd(), AvoidingZombie())
 
     # Human health FSM
     fsm.event(Susceptible(), Infected())

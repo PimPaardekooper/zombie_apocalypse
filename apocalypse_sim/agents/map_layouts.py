@@ -321,8 +321,9 @@ class Map:
                      0)
 
         humans = Agents("human", [(0, 0), (4, 0), (0, 4), (3, 3)])
+        zombies = Agents("zombie", [(0, 9)])
 
-        return [city], [], [humans]
+        return [city], [], [humans, zombies]
 
 
 class Agents:
