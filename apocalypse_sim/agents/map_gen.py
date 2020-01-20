@@ -29,11 +29,14 @@ def getFsm():
 
     # Human movement FSM
     fsm.event(HumanWandering(), AvoidingZombie())
+    fsm.event(HumanWandering(), FormingHerd())
     fsm.event(AvoidingZombie(), HumanWandering())
+    fsm.event(FormingHerd(), HumanWandering())
 
     # Human health FSM
     fsm.event(Susceptible(), Infected())
     fsm.event(Infected(), Turned())
+
     return fsm
 
 
@@ -42,14 +45,14 @@ class MapGen:
 
     def __init__(self, map_id, city_id, infected_chance, province, model):
         self.model = model
-
         self.map = Map(map_id, model)
-
 
         self.spawn_map()
         self.spawn_agents()
+
         if not is_verification():
             self.spawn_agents_in_city(city_id, infected_chance, province)
+
 
     def spawn_map(self):
         """Spawns map agents
@@ -84,9 +87,10 @@ class MapGen:
 
     def spawn_agents(self):
         """Spawn hard coded agents, good for situations."""
+        fsm = getFsm()
+
         for agent in self.map.agents:
             for pos in agent.positions:
-                fsm = getFsm()
                 if agent.agent_type == "zombie":
                     new_agent = ZombieAgent(pos, self.model, fsm, self.get_place(pos))
                     fsm.set_initial_states(["ZombieWandering", "Idle"], new_agent)
@@ -99,6 +103,7 @@ class MapGen:
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)
 
+
     def spawn_agents_in_city(self, city_id, infected_chance, province):
         """Spawn agents like humans and zombies, defined by place densities.
 
@@ -108,25 +113,7 @@ class MapGen:
         spawns a ZombieAgent the rest will spawn as HumanAgents.
         """
 
-        fsm = Automaton()
-
-        # Zombie movement FSM
-        fsm.event(ZombieWandering(), ChasingHuman())
-        fsm.event(ChasingHuman(), ZombieWandering())
-
-        # Zombie human interaction FSM
-        fsm.event(Idle(), InteractionHuman())
-        fsm.event(InteractionHuman(), InfectHuman())
-        fsm.event(InteractionHuman(), RemoveZombie())
-        fsm.event(InfectHuman(), Idle())
-
-        # Human movement FSM
-        fsm.event(HumanWandering(), AvoidingZombie())
-        fsm.event(AvoidingZombie(), HumanWandering())
-
-        # Human health FSM
-        fsm.event(Susceptible(), Infected())
-        fsm.event(Infected(), Turned())
+        fsm = getFsm()
 
         for c_id, place in enumerate(self.map.places):
             p_coords = place.get_coords()
@@ -157,6 +144,7 @@ class MapGen:
 
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)
+
 
     def get_place(self, pos):
         """Return place of current position."""

@@ -105,7 +105,7 @@ canvas_height = 1000
 if is_verification():
     grid_height = 10
     grid_width = 10
-    map_id = 0
+    map_id = 3
     canvas_height = 400
 
 canvas_width = canvas_height

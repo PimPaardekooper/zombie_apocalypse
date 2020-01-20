@@ -6,6 +6,7 @@ class HumanAgent(Agent):
         self.setVision(4)
         self.type = "human"
         self.model.susceptible += 1
+        self.direction  = (0, 0)
 
     def running_direction(self, nearby_zombies):
         # Get the optimal escape route by checking all zombie positions and

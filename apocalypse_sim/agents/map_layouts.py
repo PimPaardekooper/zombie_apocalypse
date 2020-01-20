@@ -15,14 +15,15 @@ class Map:
     def __init__(self, map_id, model):
         self.model = model
 
-
         maps = [self.initial_map, self.second_map, self.third_map, self.fourth_map, self.fifth_map,
                 self.sixth_map, self.situation_map, self.nethelands_map]
 
         if is_verification():
             maps = [
-               self.convert_test, self.range_test, self.runaway_test, self.group_test, self.third_map, self.fourth_map, self.fifth_map,
-                self.sixth_map, self.situation_map            ]
+                self.convert_test, self.range_test, self.runaway_test,
+                self.group_test, self.third_map, self.fourth_map,
+                self.fifth_map, self.sixth_map, self.situation_map
+            ]
 
         self.places, self.roads, self.agents = maps[map_id]()
 
@@ -262,7 +263,7 @@ class Map:
         humans = Agents("human", [(0, 1), (1, 0)])
 
         return [city], [], [humans]
-    
+
     ### TEST MAPS ###
     def convert_test(self):
         humans = Agents("human", [(0, 1)])
@@ -276,6 +277,7 @@ class Map:
                 0)
 
         return [city], [], [humans, zombies]
+
 
     def range_test(self):
         """Square map no walls."""
@@ -306,7 +308,7 @@ class Map:
         zombies = Agents("zombie", [(0, 9)])
 
         return [city], [], [humans, zombies]
-    
+
 
     def group_test(self):
         """Square map no walls."""
@@ -321,6 +323,7 @@ class Map:
         humans = Agents("human", [(0, 0), (4, 0), (0, 4), (3, 3)])
 
         return [city], [], [humans]
+
 
 class Agents:
     def __init__(self, agent_type, positions, attr={}):
