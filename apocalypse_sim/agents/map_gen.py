@@ -10,11 +10,7 @@ from .map_layouts import Map
 from .automaton import Automaton
 from .states import *
 from math import floor, ceil
-<<<<<<< HEAD
-=======
 from mode import is_verification
-
->>>>>>> master
 
 from shapely.geometry import Polygon, Point
 
