@@ -303,6 +303,7 @@ class RemoveZombie(State):
         agent.remove_agent()
         
 
+
 """
 State that represents a zombie infecting a human.
 """
