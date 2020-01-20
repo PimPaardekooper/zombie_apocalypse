@@ -9,10 +9,8 @@ from .map_layouts import Map
 
 from .automaton import Automaton
 from .states import *
-import random
 from math import floor, ceil
 from mode import is_verification
-
 
 from shapely.geometry import Polygon, Point
 
@@ -130,16 +128,15 @@ class MapGen:
         fsm.event(Susceptible(), Infected())
         fsm.event(Infected(), Turned())
 
-
         for c_id, place in enumerate(self.map.places):
             p_coords = place.get_coords()
 
             infected_coords = []
-            agent_coords = random.sample(range(len(p_coords)),
+            agent_coords = self.model.random.sample(range(len(p_coords)),
                                          place.density_to_amount(place.population_density))
 
             if (province == "" and city_id == c_id) or (province == place.name):
-                infected_coords = random.sample(agent_coords,
+                infected_coords = self.model.random.sample(agent_coords,
                                                 ceil(len(agent_coords) * (infected_chance)))
 
             open('remove_add.txt', 'w').close()
