@@ -27,7 +27,6 @@ class Map:
         self.places, self.roads, self.agents = maps[map_id]()
 
     def nethelands_map(self):
-
         cities = []
 
 
@@ -56,19 +55,30 @@ class Map:
                 for m_poly in feature.geometry.coordinates:
                     for polygon in m_poly:
                         vert = self.stretch_to_grid(polygon, poly_data)
-                        province = Place(vert, 0, name=statnaam, color=color)
                         dens = df[df["statnaam"] == statnaam]["density_of_total"].values[0]
                         dens = self.stretch_density(dens, min_dens, max_dens) * self.model.density
                         province = Place(vert, dens, name=statnaam, color=color)
 
-                        cities.append(province)
-
+                        if province.poly.area > 10:
+                            cities.append(province)
+                    
+                
         road1 = Place([[88,156], [87,157], [104, 168], [104,166]], 0)
         road2 = Place([[101,139], [99,138], [110, 129], [111,129]], 0)
         road3 = Place([[25,42], [26,42], [26, 45], [24,45]], 0)
         road4 = Place([[28,74], [26,74], [25, 72], [26,71]], 0)
 
-        return cities, [road1, road2, road3, road4], []
+        road5 = Place([[71, 157], [72, 157], [72,160], [71, 160]], 0)
+        road6 = Place([[79, 176], [80, 175], [79, 173], [78, 174]], 0)
+
+        road7 = Place([[88, 183], [90,182], [94,187], [94,188]], 0)
+
+        road8 = Place([[112,192], [113, 191], [117,192], [117, 193]], 0)
+
+        road9 = Place([[133,194], [134, 193], [144,195], [144, 196]], 0)
+
+
+        return cities, [road1, road2, road3, road4, road5, road6, road7, road8, road9], []
 
     def stretch_density(self, dens, min_dens, max_dens):
         """Stretch dens between 0.1 and 1."""

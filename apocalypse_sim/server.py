@@ -97,10 +97,11 @@ def model_draw(agent):
 
 seed = random.randrange(sys.maxsize)
 
-map_id = 0
+map_id = 7
 grid_height = 200
 grid_width = 200
 canvas_height = 1000
+patient_zero = False
 
 if is_verification():
     grid_height = 10
@@ -125,7 +126,8 @@ model_params = {
     "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
     "map_id": UserSettableParameter("slider", "Map id (max 4)", value=map_id, min_value=0, max_value=7, step=1),
     "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
-    "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces)
+    "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces),
+    "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero)
 }
 
 chart = ChartModule([{"Label": "susceptible",
