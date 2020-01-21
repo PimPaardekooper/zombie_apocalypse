@@ -6,10 +6,20 @@ import os
 import sys
 import getopt
 
+help_text = "Choose your mode with --,\n\
+            --test: runs test maps,\n\
+            --netherland: run the holland map\
+            "
+
 if sys.argv[-1] == "--test":
-    os.environ["verification_mode"] = "1"
+    os.environ["mode"] = "1"
+elif sys.argv[-1] == "--netherland":
+    os.environ["mode"] = "2"
+elif sys.argv[-1] == "--help":
+    print(help_text)
+    exit(0)
 else:
-    os.environ["verification_mode"] = ""
+    os.environ["mode"] = "0"
 
 from server import server
 
