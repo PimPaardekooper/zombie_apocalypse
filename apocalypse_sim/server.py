@@ -19,6 +19,19 @@ import sys
 
 from model import Apocalypse
 
+
+class ReproductiveNumber(TextElement):
+    '''
+    Display a text count of how many happy agents there are.
+    '''
+
+    def __init__(self):
+        pass
+
+    def render(self, model):
+        return "Happy agents: " + str(model.reproductive_number)
+
+
 class ModularServerExtd(ModularServer):
     def __init__(self, model_cls, visualization_elements, name="Mesa Model",
                  model_params={}):
@@ -98,9 +111,9 @@ def model_draw(agent):
 seed = random.randrange(sys.maxsize)
 
 map_id = 0
-grid_height = 200
-grid_width = 200
-canvas_height = 1000
+grid_height = 100
+grid_width = 100
+canvas_height = 600
 
 if is_verification():
     grid_height = 10
@@ -131,11 +144,15 @@ model_params = {
 chart = ChartModule([{"Label": "susceptible",
                       "Color": "Green"},
                       {"Label": "infected",
-                      "Color": "Red"}],
+                      "Color": "Red"},
+                      {"Label": "recovered",
+                      "Color": "Black"}],
                     data_collector_name='datacollector')
 
+chart2 = ChartModule([{"Label": "reproductive_number", "Color": "Green"}], 
+                    data_collector_name='datacollector')
 custom_styling = CSSImportModule()
 
 server = ModularServerExtd(Apocalypse,
-                       [canvas_element, custom_styling, chart],
+                       [canvas_element, custom_styling, chart, chart2],
                        "Apocalypse", model_params)

@@ -300,6 +300,8 @@ class RemoveZombie(State):
 
 
     def on_enter(self, agent):
+        agent.model.recovered += 1
+        agent.model.reproductive_number = (agent.model.reproductive_number + (agent.has_infected))/agent.model.recovered
         agent.remove_agent()
         
 
@@ -326,6 +328,6 @@ class InfectHuman(State):
 
             for state in neighbour.states:
                 if state.name == "Susceptible":
+                    agent.has_infected += 1
                     neighbour.traits["infected"] = True
-
                     return

@@ -7,6 +7,7 @@ class ZombieAgent(Agent):
         self.type = "zombie"
         self.model.infected += 1
         self.target = None
+        self.has_infected = 0
 
     def nearest_brain(self, neighbours):
         nearby_humans = [agent for agent in neighbours if agent.type == "human" and "Infected" not in [state.name for state in agent.states]]

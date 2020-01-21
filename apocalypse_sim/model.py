@@ -21,9 +21,12 @@ class Apocalypse(Model):
         self.infected_chance = infected_chance
         self.infected = 0
         self.susceptible = 0
+        self.recovered = 0
         self.locked = []
         self.total_agents = total_agents
         self.total = 0
+        self.reproductive_number = 0
+        self.deceased_zombies = 0
 
         # NOTE: no idea what this does
         self.schedule = RandomActivation(self)
@@ -31,7 +34,9 @@ class Apocalypse(Model):
 
         self.datacollector = DataCollector(
             {"infected": "infected",
-             "susceptible": "susceptible"},  # Model-level count of zombie agents
+             "susceptible": "susceptible",
+             "recovered": "recovered",
+             "reproductive_number": "reproductive_number"},  # Model-level count of zombie agents
             # For testing purposes, agent's individual x and y
             {"x": lambda a: a.pos[0], "y": lambda a: a.pos[1]})
         # NOTE: end of weird stuff
@@ -44,5 +49,9 @@ class Apocalypse(Model):
         # NOTE: end of weird stuff
 
     def step(self):
+        print(self.susceptible, self.infected, self.recovered, 
+            self.susceptible + self.infected + self.recovered)
         self.schedule.step()
         self.datacollector.collect(self)
+
+
