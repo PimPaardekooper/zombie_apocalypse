@@ -159,10 +159,15 @@ class FormingHerd(State):
         cohesion = self.cohesion(agent, humans)
         separation = self.separation(agent, humans)
 
+        a = agent.model.random.randrange(-1, 2)
+        b = agent.model.random.randrange(-1, 2)
+
+        random = self._normalize([a, b])
+
         direction = []
 
-        direction.append(alignment[0] + cohesion[0] + separation[0])
-        direction.append(alignment[1] + cohesion[1] + separation[1])
+        direction.append(0.7 * (alignment[0] + cohesion[0] + separation[0]) + 0.3 * random[0])
+        direction.append(0.7 * (alignment[1] + cohesion[1] + separation[1]) + 0.3 * random[1])
 
         return self._normalize(direction)
 
@@ -407,11 +412,23 @@ class InteractionHuman(State):
         chance = agent.model.random.random()
 
         if "zombie_kills" in self.target.traits:
-            extra = min(self.target.traits["zombie_kills"] * 0.15, 0.3)
+            extra = min(self.target.traits["zombie_kills"] * 0.05, 0.3)
 
             chance = min(1, chance + extra)
         else:
             self.target.traits["zombie_kills"] = 0
+
+        # Make sure that we've not maxed out our chance yet.
+        if chance < 1:
+            neighbour_count = 0
+
+            for neighbour in self.target.neighbors():
+                if neighbour.type == "human":
+                    neighbour_count += 1
+
+            extra = min(neighbour_count * 0.075, 0.3)
+
+            chance = min(1, chance + extra)
 
         if chance > 0.6:
             agent.fsm.switch_to_state(agent, self.name, "RemoveZombie")
@@ -428,6 +445,8 @@ class RemoveZombie(State):
 
     def on_enter(self, agent):
         agent.remove_agent()
+
+        del agent
 
 
 """
