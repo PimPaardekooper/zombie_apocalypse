@@ -6,7 +6,8 @@ from .map_object import Place, Road
 import pygeoj
 import numpy as np
 import pandas as pd
-from mode import is_verification
+import os
+
 # TODO: delete
 from shapely.geometry import Point
 
@@ -15,20 +16,21 @@ class Map:
     def __init__(self, map_id, model):
         self.model = model
 
-
-        maps = [self.initial_map, self.second_map, self.third_map, self.fourth_map, self.fifth_map,
-                self.sixth_map, self.situation_map, self.nethelands_map]
-
-        if is_verification():
+        if os.environ["mode"] == "1":
             maps = [
-               self.convert_test, self.range_test, self.runaway_test, self.group_test, self.third_map, self.fourth_map, self.fifth_map,
-                self.sixth_map, self.situation_map            ]
+               self.convert_test, self.range_test, self.runaway_test, self.group_test]
+        elif os.environ["mode"] == "2":
+            maps = [self.nethelands_map]
+        elif os.environ["mode"] == "3":
+            maps = []
+        else:
+            maps = [self.initial_map, self.second_map, self.third_map, self.fourth_map, self.fifth_map,
+                    self.sixth_map, self.situation_map]
 
         self.places, self.roads, self.agents = maps[map_id]()
 
     def nethelands_map(self):
         cities = []
-
 
         poly_data = pygeoj.load(filepath="netherlands_data/provincie_2020.geojson")
         df = pd.read_csv("netherlands_data/provinces_densities.csv")

@@ -14,7 +14,7 @@ from agents.map_gen import MapGen
 
 class Apocalypse(Model):
     def __init__(self, height=100, width=100, density=0.1, infected_chance=0.05, 
-                        map_id=5, city_id=0, province="", total_agents=0, 
+                        map_id=5, city_id=0, province="", total_agents=0, human_kill_agent_chance=0.6,
                         seed=None, patient_zero=False):
         # variables to get from model_params in server.py
         self.height = height
@@ -23,10 +23,12 @@ class Apocalypse(Model):
         self.infected_chance = infected_chance
         self.infected = 0
         self.susceptible = 0
+        self.recovered = 0
         self.locked = []
         self.total_agents = total_agents
         self.total = 0
         self.patient_zero = patient_zero
+        self.human_kill_zombie_chance = human_kill_agent_chance
 
         # NOTE: no idea what this does
         self.schedule = RandomActivation(self)
@@ -34,7 +36,9 @@ class Apocalypse(Model):
 
         self.datacollector = DataCollector(
             {"infected": "infected",
-             "susceptible": "susceptible"},  # Model-level count of zombie agents
+             "susceptible": "susceptible",
+             "recovered": "recovered",
+             "reproductive_number": "reproductive_number"},  # Model-level count of zombie agents
             # For testing purposes, agent's individual x and y
             {"x": lambda a: a.pos[0], "y": lambda a: a.pos[1]})
         # NOTE: end of weird stuff
@@ -44,8 +48,13 @@ class Apocalypse(Model):
         # NOTE: no idea what this does
         self.running = True
         self.datacollector.collect(self)
+        
         # NOTE: end of weird stuff
 
     def step(self):
+        print(self.susceptible, self.infected, self.recovered, 
+            self.susceptible + self.infected + self.recovered)
         self.schedule.step()
         self.datacollector.collect(self)
+
+

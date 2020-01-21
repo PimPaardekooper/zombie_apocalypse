@@ -14,6 +14,8 @@ class Agent(MesaAgent):
         self.pos = pos
         self.time_alive = 0
 
+        self.agent_type = ""
+
         self.model = model
         self.model.total += 1
 
@@ -41,7 +43,7 @@ class Agent(MesaAgent):
                 panzerkampfwagen = False
 
                 for cell in grid[x][y]:
-                    if cell.type in no_overlap:
+                    if cell.agent_type in no_overlap:
                         panzerkampfwagen = True
 
                         break
@@ -65,13 +67,18 @@ class Agent(MesaAgent):
             if dist < smal_dist:
                 smal_dist = dist
                 new_cell = cell
-
+        
         return new_cell
 
 
     def remove_agent(self):
         self.model.grid.remove_agent(self)
         self.model.schedule.remove(self)
+
+        if self.agent_type == "zombie":
+            self.model.infected -= 1
+        elif self.agent_type == "human":
+            self.model.susceptible -= 1
 
         del self
 
