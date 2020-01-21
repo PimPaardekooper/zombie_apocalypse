@@ -117,6 +117,8 @@ class MapGen:
 
         fsm = getFsm()
 
+        one_patient = False
+
         for c_id, place in enumerate(self.map.places):
             p_coords = place.get_coords()
 
@@ -125,8 +127,14 @@ class MapGen:
                                          place.density_to_amount(place.population_density))
 
             if (province == "" and city_id == c_id) or (province == place.name):
-                infected_coords = self.model.random.sample(agent_coords,
-                                                ceil(len(agent_coords) * (infected_chance)))
+                if self.model.patient_zero:
+                    if not one_patient:
+                        infected_coords = self.model.random.sample(agent_coords, 1)
+                        print(infected_coords)
+                        one_patient = True
+                else:
+                    infected_coords = self.model.random.sample(agent_coords,
+                                                    ceil(len(agent_coords) * (infected_chance)))
 
             open('remove_add.txt', 'w').close()
 

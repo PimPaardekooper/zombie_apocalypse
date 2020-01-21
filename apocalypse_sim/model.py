@@ -13,7 +13,10 @@ from agents.map_object import MapObjectAgent
 from agents.map_gen import MapGen
 
 class Apocalypse(Model):
-    def __init__(self, height=100, width=100, density=0.1, infected_chance=0.05, map_id=5, city_id=0, province="", total_agents=0, seed=None):
+    def __init__(self, height=100, width=100, density=0.1, infected_chance=0.05,
+                        map_id=5, city_id=0, province="", total_agents=0,
+                        seed=0, patient_zero=False):
+
         self._seed = seed
 
         # variables to get from model_params in server.py
@@ -26,6 +29,7 @@ class Apocalypse(Model):
         self.locked = []
         self.total_agents = total_agents
         self.total = 0
+        self.patient_zero = patient_zero
 
         # NOTE: no idea what this does
         self.schedule = RandomActivation(self)

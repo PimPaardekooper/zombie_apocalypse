@@ -446,8 +446,6 @@ class RemoveZombie(State):
     def on_enter(self, agent):
         agent.remove_agent()
 
-        del agent
-
 
 """
 State that represents a zombie infecting a human.
