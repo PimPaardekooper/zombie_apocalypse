@@ -62,10 +62,10 @@ class FormingHerd(State):
         human_count = 0
 
         for neighbour in agent.neighbors(include_center=False, radius=agent.traits["vision"]):
-            if neighbour.type == "zombie":
+            if neighbour.agent_type == "zombie":
                 return False
 
-            if neighbour.type == "human":
+            if neighbour.agent_type == "human":
                 human_count += 1
 
         if human_count > 0:
@@ -153,7 +153,7 @@ class FormingHerd(State):
     """
     def direction(self, agent):
         neighbors = agent.neighbors(radius=agent.traits["vision"], include_center=False)
-        humans = [human for human in neighbors if human.type == "human"]
+        humans = [human for human in neighbors if human.agent_type == "human"]
 
         # No humans nearby, do not move.
         if not humans:
@@ -221,7 +221,7 @@ class HumanWandering(Wandering):
 
         # No humans or zombies nearby
         for neighbour in neighbors:
-            if neighbour.type == "zombie" or neighbour.type == "human":
+            if neighbour.agent_type == "zombie" or neighbour.agent_type == "human":
                 return False
 
 
@@ -428,7 +428,7 @@ class InteractionHuman(State):
             neighbour_count = 0
 
             for neighbour in self.target.neighbors():
-                if neighbour.type == "human":
+                if neighbour.agent_type == "human":
                     neighbour_count += 1
 
             extra = min(neighbour_count * 0.075, 0.3)
