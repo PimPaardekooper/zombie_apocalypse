@@ -68,7 +68,7 @@ class HumanAgent(Agent):
             return None
 
     def find_escape(self, neighbours):
-        algorithm = 1
+        algorithm = 2
         nearby_zombies = [agent for agent in neighbours if agent.type == "zombie"]
 
         if algorithm == 1:

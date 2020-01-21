@@ -59,9 +59,17 @@ class FormingHerd(State):
 
 
     def transition(self, agent):
+        human_count = 0
+
         for neighbour in agent.neighbors(radius=agent.traits["vision"]):
+            if neighbour.type == "zombie":
+                return False
+
             if neighbour.type == "human":
-                return True
+                human_count += 1
+
+        if human_count > 0:
+            return True
 
         return False
 
@@ -154,9 +162,9 @@ class FormingHerd(State):
         direction[0] += agent.pos[0]
         direction[1] += agent.pos[1]
 
-        agent.direction = direction
-
         new_cell = agent.best_cell(self._normalize(direction))
+
+        agent.direction = (new_cell[0] - agent.pos[0], new_cell[1] - agent.pos[1])
 
         agent.model.grid.move_agent(agent, new_cell)
         agent.model.grid.move_agent(agent, new_cell)
@@ -383,7 +391,7 @@ class InteractionHuman(State):
                     return True
 
         return False
- 
+
 
     def on_enter(self, agent):
         chance = agent.model.random.random()
@@ -401,19 +409,6 @@ class InteractionHuman(State):
             self.target.traits["zombie_kills"] += 1
         else:
             agent.fsm.switch_to_state(agent, self.name, "InfectHuman")
-
-
-class Herd(State):
-    def __init__(self):
-        self.name = "Herd"
-
-
-    def transition(self, agent):
-        return True
-
-
-    def on_enter(self, agent):
-        print('x')
 
 
 class RemoveZombie(State):

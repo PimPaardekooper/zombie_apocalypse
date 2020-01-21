@@ -31,6 +31,7 @@ def getFsm():
     fsm.event(HumanWandering(), AvoidingZombie())
     fsm.event(HumanWandering(), FormingHerd())
     fsm.event(AvoidingZombie(), HumanWandering())
+    fsm.event(AvoidingZombie(), FormingHerd())
     fsm.event(FormingHerd(), HumanWandering())
     fsm.event(FormingHerd(), AvoidingZombie())
 
