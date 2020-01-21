@@ -27,13 +27,14 @@ class Agent(MesaAgent):
 
         # Get all cells surrounding the current cell, including already
         # occupied cells
-        all_cells = grid.get_neighborhood(self.pos, False, False, 1)
+        all_cells = self.neighbors()
 
         # Always give the option to not move
         free_cells = [self.pos]
 
         # Get rid of cells that we may not move to
-        for x, y in all_cells:
+        for cell in all_cells:
+            x, y = cell.pos
 
             if grid.is_cell_empty((x, y)):
                 free_cells.append((x, y))
@@ -54,6 +55,9 @@ class Agent(MesaAgent):
 
     # Gets the nearest available cell of a coordinate
     def best_cell(self, coord):
+        if coord[0] == self.pos[0] and coord[1] == self.pos[1]:
+            return self.pos
+
         free_cells = self.get_moves()
         smal_dist = float("Inf")
 

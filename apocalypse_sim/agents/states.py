@@ -61,7 +61,7 @@ class FormingHerd(State):
     def transition(self, agent):
         human_count = 0
 
-        for neighbour in agent.neighbors(radius=agent.traits["vision"]):
+        for neighbour in agent.neighbors(include_center=False, radius=agent.traits["vision"]):
             if neighbour.type == "zombie":
                 return False
 
@@ -103,6 +103,9 @@ class FormingHerd(State):
             v[0] += neighbour.direction[0]
             v[1] += neighbour.direction[1]
 
+        v[0] /= l
+        v[1] /= l
+
         return self._normalize(v)
 
 
@@ -117,11 +120,11 @@ class FormingHerd(State):
             v[0] += neighbour.pos[0]
             v[1] += neighbour.pos[1]
 
-        v[0] = v[0] - agent.pos[0]
-        v[1] = v[1] - agent.pos[1]
-
         v[0] /= l
         v[1] /= l
+
+        v[0] -= agent.pos[0]
+        v[1] -= agent.pos[1]
 
         return self._normalize(v)
 
@@ -149,25 +152,21 @@ class FormingHerd(State):
     we can simulate flocking behaviour.
     """
     def direction(self, agent):
-        neighbors = agent.neighbors(radius=agent.traits["vision"])
+        neighbors = agent.neighbors(radius=agent.traits["vision"], include_center=False)
         humans = [human for human in neighbors if human.type == "human"]
 
+        # No humans nearby, do not move.
         if not humans:
-            return (0, 0)
+            return [0, 0]
 
         alignment = self.alignment(agent, humans)
         cohesion = self.cohesion(agent, humans)
         separation = self.separation(agent, humans)
 
-        a = agent.model.random.randrange(-1, 2)
-        b = agent.model.random.randrange(-1, 2)
-
-        random = self._normalize([a, b])
-
-        direction = []
-
-        direction.append(0.7 * (alignment[0] + cohesion[0] + separation[0]) + 0.3 * random[0])
-        direction.append(0.7 * (alignment[1] + cohesion[1] + separation[1]) + 0.3 * random[1])
+        direction = [
+            alignment[0] + cohesion[0] + separation[0],
+            alignment[1] + cohesion[1] + separation[1]
+        ]
 
         return self._normalize(direction)
 
@@ -175,10 +174,17 @@ class FormingHerd(State):
     def on_update(self, agent):
         direction = self.direction(agent)
 
+        # New cell to move to
         direction[0] += agent.pos[0]
         direction[1] += agent.pos[1]
 
-        new_cell = agent.best_cell(self._normalize(direction))
+        new_cell = agent.best_cell(direction)
+
+        if new_cell[0] == agent.pos[0] and new_cell[1] == agent.pos[1]:
+            a = agent.model.random.randrange(-1, 2)
+            b = agent.model.random.randrange(-1, 2)
+
+            new_cell = agent.best_cell((direction[0] + a, direction[1] + b))
 
         agent.direction = (new_cell[0] - agent.pos[0], new_cell[1] - agent.pos[1])
 
@@ -211,7 +217,7 @@ class HumanWandering(Wandering):
 
 
     def transition(self, agent):
-        neighbors = agent.neighbors(radius=agent.traits["vision"])
+        neighbors = agent.neighbors(include_center=False, radius=agent.traits["vision"])
 
         # No humans or zombies nearby
         for neighbour in neighbors:

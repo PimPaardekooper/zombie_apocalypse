@@ -84,6 +84,14 @@ def model_draw(agent):
         portrayal["stroke_color"] = "#000000"
 
         portrayal = {**portrayal, **agent_properties}
+    elif agent.type == "yeet":
+        agent_properties["Id"] = str(agent.id)
+
+        portrayal["Color"] = [agent.color]
+        portrayal["stroke_color"] = "#000000"
+
+        portrayal = {**portrayal, **agent_properties}
+
     elif agent.type == "city":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
 
