@@ -12,12 +12,24 @@ import os
 import webbrowser
 import tornado.ioloop
 import numpy as np
-from mode import is_verification
 
 import random
 import sys
 
 from model import Apocalypse
+
+
+# class ReproductiveNumber(TextElement):
+#     '''
+#     Display reproductive number
+#     '''
+
+#     def __init__(self):
+#         pass
+
+#     def render(self, model):
+#         return "Happy agents: " + str(model.reproductive_number)
+
 
 class ModularServerExtd(ModularServer):
     def __init__(self, model_cls, visualization_elements, name="Mesa Model",
@@ -62,9 +74,9 @@ def model_draw(agent):
         "Layer": 1
     }
 
-    if agent.type == "zombie":
+    if agent.agent_type == "zombie":
         agent_properties["Pos"] = "(x, y) =" + str(agent.pos)
-        agent_properties["Type"] = agent.type
+        agent_properties["Type"] = agent.agent_type
         agent_properties["States"] = str([x.name for x in agent.states])
         agent_properties["Identifier"] = str(agent.unique_id)
 
@@ -72,9 +84,9 @@ def model_draw(agent):
         portrayal["stroke_color"] = "#A41E1F"
 
         portrayal = {**portrayal, **agent_properties}
-    elif agent.type == "human":
+    elif agent.agent_type == "human":
         agent_properties["Pos"] = "(x, y) =" + str(agent.pos)
-        agent_properties["Type"] = agent.type
+        agent_properties["Type"] = agent.agent_type
         agent_properties["States"] = str([x.name for x in agent.states])
         agent_properties["Identifier"] = str(agent.unique_id)
         agent_properties["Kills"] = str(agent.traits["zombie_kills"]) if "zombie_kills" in agent.traits else "0"
@@ -84,22 +96,14 @@ def model_draw(agent):
         portrayal["stroke_color"] = "#000000"
 
         portrayal = {**portrayal, **agent_properties}
-    elif agent.type == "yeet":
-        agent_properties["Id"] = str(agent.id)
-
-        portrayal["Color"] = [agent.color]
-        portrayal["stroke_color"] = "#000000"
-
-        portrayal = {**portrayal, **agent_properties}
-
-    elif agent.type == "city":
+    elif agent.agent_type == "city":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
 
         if agent.color != "":
             portrayal["Color"] = agent.color + "40"
         else:
             portrayal["Color"] = ["#dd42f540"]
-    elif agent.type == "road":
+    elif agent.agent_type == "road":
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
         portrayal["Color"] = ["#f5e3427A"]
     else:
@@ -109,44 +113,83 @@ def model_draw(agent):
     return portrayal
 
 seed = random.randrange(sys.maxsize)
-
-map_id = 7
-grid_height = 200
-grid_width = 200
-canvas_height = 1000
 patient_zero = False
 
-if is_verification():
+provinces = ["Groningen", "Friesland", "Drenthe", "Overijssel", "Flevoland",
+            "Gelderland", "Utrecht", "Noord-Holland", "Zuid-Holland", "Zeeland",
+            "Noord-Brabant", "Limburg", "---"]
+
+if os.environ["mode"] == "1":
+    # Test modes
     grid_height = 10
     grid_width = 10
     map_id = 3
     canvas_height = 400
+    canvas_width = canvas_height
 
-canvas_width = canvas_height
+    model_params = {
+        "height": grid_height,
+        "width": grid_width,
+        "seed": UserSettableParameter("number", "seed", value=str(seed)),
+        # "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
+        # "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
+        "map_id": UserSettableParameter("slider", "Map id (max 4)", value=map_id, min_value=0, max_value=3, step=1),
+        # "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
+        # "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces),
+        # "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero)
+    }
 
-provinces = ["Groningen", "Friesland", "Drenthe", "Overijssel", "Flevoland",
-            "Gelderland", "Utrecht", "Noord-Holland", "Zuid-Holland", "Zeeland",
-            "Noord-Brabant", "Limburg", ""]
+elif os.environ["mode"] == "2":
+    # Netherlands
+    grid_height = 200
+    grid_width = 200
+    map_id = 0
+    canvas_height = 800
+    canvas_width = canvas_height
+    patient_zero = False
+
+    # NOTE: Add sliders here
+    model_params = {
+        "height": grid_height,
+        "width": grid_width,
+        "seed": UserSettableParameter("number", "seed", value=str(seed)),
+        "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
+        "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
+        "human_kill_agent_chance": UserSettableParameter("slider", "Human kill chance", value=0.6, min_value=0, max_value=1, step=0.01),
+        "map_id": map_id,
+        # "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
+        "province":  UserSettableParameter("choice", "Province outbreak", "Noord-Holland", choices=provinces),
+        "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero),
+    }
+else:
+    map_id = 0
+    grid_height = 100
+    grid_width = 100
+    canvas_height = 600
+    canvas_width = canvas_height
+
+
+    model_params = {
+        "height": grid_height,
+        "width": grid_width,
+        "seed": UserSettableParameter("number", "seed", value=str(seed)),
+        "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
+        "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
+        "human_kill_agent_chance": UserSettableParameter("slider", "Human kill chance", value=0.6, min_value=0, max_value=1, step=0.01),
+        "map_id": UserSettableParameter("slider", "Map id (max 4)", value=map_id, min_value=0, max_value=7, step=1),
+        "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
+        "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces),
+        "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero)
+    }
 
 canvas_element = CanvasGrid(model_draw, grid_height, grid_width, canvas_height, canvas_width)
-
-# NOTE: Add sliders here
-model_params = {
-    "height": grid_height,
-    "width": grid_width,
-    "seed": UserSettableParameter("number", "seed", value=str(seed)),
-    "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
-    "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
-    "map_id": UserSettableParameter("slider", "Map id (max 4)", value=map_id, min_value=0, max_value=7, step=1),
-    "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
-    "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces),
-    "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero)
-}
 
 chart = ChartModule([{"Label": "susceptible",
                       "Color": "Green"},
                       {"Label": "infected",
-                      "Color": "Red"}],
+                      "Color": "Red"},
+                      {"Label": "recovered",
+                      "Color": "Black"}],
                     data_collector_name='datacollector')
 
 custom_styling = CSSImportModule()

@@ -4,12 +4,13 @@ class ZombieAgent(Agent):
     def __init__(self, pos, model, fsm, place=None):
         super().__init__(pos, model, fsm, place)
         self.setVision(7)
-        self.type = "zombie"
+        self.agent_type = "zombie"
         self.model.infected += 1
         self.target = None
+        self.has_infected = 0
 
     def nearest_brain(self, neighbours):
-        nearby_humans = [agent for agent in neighbours if agent.type == "human" and "Infected" not in [state.name for state in agent.states]]
+        nearby_humans = [agent for agent in neighbours if agent.agent_type == "human" and "Infected" not in [state.name for state in agent.states]]
         if len(nearby_humans) > 0:
             nearest = None
             for human in nearby_humans:
@@ -46,7 +47,3 @@ class ZombieAgent(Agent):
 
     def setVision(self, visionRadius):
         self.traits["vision"] = min(9, visionRadius)
-
-
-    def __del__(self):
-        self.model.infected -= 1

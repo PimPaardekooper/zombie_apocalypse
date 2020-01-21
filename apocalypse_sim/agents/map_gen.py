@@ -51,9 +51,7 @@ class MapGen:
 
         self.spawn_map()
         self.spawn_agents()
-
-        if not is_verification():
-            self.spawn_agents_in_city(city_id, infected_chance, province)
+        self.spawn_agents_in_city(city_id, infected_chance, province)
 
 
     def spawn_map(self):
@@ -96,11 +94,9 @@ class MapGen:
                 if agent.agent_type == "zombie":
                     new_agent = ZombieAgent(pos, self.model, fsm, self.get_place(pos))
                     fsm.set_initial_states(["ZombieWandering", "Idle"], new_agent)
-                    self.model.infected += 1
                 else:
                     new_agent = HumanAgent(pos, self.model, fsm, self.get_place(pos))
                     fsm.set_initial_states(["HumanWandering", "Susceptible"], new_agent)
-                    self.model.susceptible += 1
 
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)
@@ -130,7 +126,6 @@ class MapGen:
                 if self.model.patient_zero:
                     if not one_patient:
                         infected_coords = self.model.random.sample(agent_coords, 1)
-                        print(infected_coords)
                         one_patient = True
                 else:
                     infected_coords = self.model.random.sample(agent_coords,

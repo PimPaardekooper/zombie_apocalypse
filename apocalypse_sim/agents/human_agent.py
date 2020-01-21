@@ -4,7 +4,7 @@ class HumanAgent(Agent):
     def __init__(self, pos, model, fsm, place=None):
         super().__init__(pos, model, fsm, place)
         self.setVision(4)
-        self.type = "human"
+        self.agent_type = "human"
         self.model.susceptible += 1
         self.direction  = (0, 0)
 
@@ -80,7 +80,7 @@ class HumanAgent(Agent):
             return None
 
     def find_escape(self, neighbours):
-        nearby_zombies = [agent for agent in neighbours if agent.type == "zombie"]
+        nearby_zombies = [agent for agent in neighbours if agent.agent_type == "zombie"]
 
         vector = self.running_direction(nearby_zombies)
         if vector:
@@ -95,7 +95,3 @@ class HumanAgent(Agent):
 
     def setVision(self, vision_radius):
         self.traits['vision'] = min(9, vision_radius)
-
-
-    def __del__(self):
-        self.model.susceptible -= 1

@@ -9,7 +9,7 @@ class Reproduce(State):
 
         # Continue only if a human neighbour is found
         for neighbour in neighbors:
-            if neighbour.type != "human":
+            if neighbour.agent_type != "human":
                 return False
 
             if self.name in agent.states:
@@ -293,7 +293,7 @@ class Idle(State):
         neighbors = agent.neighbors()
 
         for neighbour in neighbors:
-            if neighbour.type == "human":
+            if neighbour.agent_type == "human":
                 for state in neighbour.states:
                     if state.name == "Infected":
                         return False
@@ -330,7 +330,7 @@ class ChasingHuman(State):
         neighbors = agent.neighbors()
 
         for neighbour in neighbors:
-            if neighbour.type == "human":
+            if neighbour.agent_type == "human":
                 for state in neighbour.states:
                     if state.name == "Infected":
                         return False
@@ -388,7 +388,6 @@ class Turned(State):
 
     def on_enter(self, agent):
         self.add_zombie(agent)
-
         agent.remove_agent()
 
 
@@ -402,7 +401,7 @@ class InteractionHuman(State):
 
         # Find any human that is not yet been infected
         for neighbour in neighbors:
-            if not neighbour.type == "human":
+            if not neighbour.agent_type == "human":
                 continue
 
             for state in neighbour.states:
@@ -436,7 +435,7 @@ class InteractionHuman(State):
 
             chance = min(1, chance + extra)
 
-        if chance > 0.6:
+        if chance < agent.model.human_kill_zombie_chance:
             agent.fsm.switch_to_state(agent, self.name, "RemoveZombie")
 
             self.target.traits["zombie_kills"] += 1
@@ -450,7 +449,10 @@ class RemoveZombie(State):
 
 
     def on_enter(self, agent):
+        agent.model.recovered += 1
         agent.remove_agent()
+
+        del agent
 
 
 """
@@ -471,11 +473,10 @@ class InfectHuman(State):
         # Find any human that is susceptible to
         # being infected.
         for neighbour in neighbors:
-            if not neighbour.type == "human":
+            if not neighbour.agent_type == "human":
                 continue
 
             for state in neighbour.states:
                 if state.name == "Susceptible":
                     neighbour.traits["infected"] = True
-
                     return

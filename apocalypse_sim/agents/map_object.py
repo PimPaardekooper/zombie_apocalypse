@@ -17,7 +17,7 @@ class MapObjectAgent(MesaAgent):
     def __init__(self, pos, agent_type, model, color=""):
         super().__init__(pos, model)
 
-        self.type = agent_type
+        self.agent_type = agent_type
         self.color = color
 
 
