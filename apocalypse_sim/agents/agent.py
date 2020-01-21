@@ -78,7 +78,7 @@ class Agent(MesaAgent):
         if self.agent_type == "zombie":
             self.model.infected -= 1
         elif self.agent_type == "human":
-            self.model.susceptivle -= 1
+            self.model.susceptible -= 1
 
         del self
 

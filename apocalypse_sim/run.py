@@ -15,6 +15,8 @@ if sys.argv[-1] == "--test":
     os.environ["mode"] = "1"
 elif sys.argv[-1] == "--netherland":
     os.environ["mode"] = "2"
+elif sys.argv[-1] == "--experiments":
+    os.environ["mode"] = "3"
 elif sys.argv[-1] == "--help":
     print(help_text)
     exit(0)

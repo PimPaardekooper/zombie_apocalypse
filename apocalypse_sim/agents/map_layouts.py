@@ -21,6 +21,8 @@ class Map:
                self.convert_test, self.range_test, self.runaway_test, self.group_test]
         elif os.environ["mode"] == "2":
             maps = [self.nethelands_map]
+        elif os.environ["mode"] == "3":
+            maps = []
         else:
             maps = [self.initial_map, self.second_map, self.third_map, self.fourth_map, self.fifth_map,
                     self.sixth_map, self.situation_map]
