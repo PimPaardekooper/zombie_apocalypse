@@ -138,7 +138,8 @@ model_params = {
     "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
     "map_id": UserSettableParameter("slider", "Map id (max 4)", value=map_id, min_value=0, max_value=7, step=1),
     "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
-    "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces)
+    "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces),
+    "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero)
 }
 
 chart = ChartModule([{"Label": "susceptible",

@@ -125,13 +125,6 @@ class AvoidingZombie(State):
         return self.get_best_cell(agent)
 
 
-    def on_enter(self, agent):
-        best_cell = self.get_best_cell(agent)
-
-        if best_cell:
-            agent.model.grid.move_agent(agent, best_cell)
-
-
     """
     Make sure the agent is still on the grid
     """
@@ -303,7 +296,7 @@ class RemoveZombie(State):
         agent.model.recovered += 1
         agent.model.reproductive_number = (agent.model.reproductive_number + (agent.has_infected))/agent.model.recovered
         agent.remove_agent()
-        
+
 
 """
 State that represents a zombie infecting a human.
