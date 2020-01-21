@@ -92,6 +92,9 @@ class FormingHerd(State):
         return vector
 
 
+    """
+    Make all agents move in the same direction.
+    """
     def alignment(self, agent, neighbors):
         v = [0, 0]
         l = len(neighbors)
@@ -103,6 +106,9 @@ class FormingHerd(State):
         return self._normalize(v)
 
 
+    """
+    Make all agents move towards the center of a group.
+    """
     def cohesion(self, agent, neighbors):
         v = [0, 0]
         l = len(neighbors)
@@ -120,6 +126,9 @@ class FormingHerd(State):
         return self._normalize(v)
 
 
+    """
+    Make sure no agents interact with each other.
+    """
     def separation(self, agent, neighbors):
         v = [0, 0]
 
@@ -135,6 +144,10 @@ class FormingHerd(State):
 
         return self._normalize(v)
 
+    """
+    Get the direction vector for every agent so that
+    we can simulate flocking behaviour.
+    """
     def direction(self, agent):
         neighbors = agent.neighbors(radius=agent.traits["vision"])
         humans = [human for human in neighbors if human.type == "human"]
@@ -155,8 +168,6 @@ class FormingHerd(State):
 
 
     def on_update(self, agent):
-        print(agent.direction)
-
         direction = self.direction(agent)
 
         direction[0] += agent.pos[0]
@@ -166,7 +177,6 @@ class FormingHerd(State):
 
         agent.direction = (new_cell[0] - agent.pos[0], new_cell[1] - agent.pos[1])
 
-        agent.model.grid.move_agent(agent, new_cell)
         agent.model.grid.move_agent(agent, new_cell)
 
 
