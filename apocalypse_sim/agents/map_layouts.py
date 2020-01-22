@@ -23,11 +23,21 @@ class Map:
             maps = [self.nethelands_map]
         elif os.environ["mode"] == "3":
             maps = []
+        elif os.environ["mode"] == "4":
+            maps = [self.doorway_map]
         else:
             maps = [self.initial_map, self.second_map, self.third_map, self.fourth_map, self.fifth_map,
                     self.sixth_map, self.situation_map]
 
         self.places, self.roads, self.agents = maps[map_id]()
+
+
+    def doorway_map(self):
+        city = Place([[0,0], [0, 75], [100,75], [100, 0]], 0)
+        road = Road([[25, 75], [75,75], [75,100], [25, 100]], (0,0), 0)
+        city2 = Place([[25, 0], [25, 50], [75, 50], [75, 0]], 0.1)
+
+        return [city, city2], [road], []
 
     def nethelands_map(self):
         cities = []

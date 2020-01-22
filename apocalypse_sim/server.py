@@ -156,6 +156,28 @@ elif os.environ["mode"] == "2":
         "province":  UserSettableParameter("choice", "Province outbreak", "Noord-Holland", choices=provinces),
         "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero),
     }
+elif os.environ["mode"] == "4":
+    # Change doorway
+    grid_height = 100
+    grid_width = 100
+    map_id = 0
+    canvas_height = 500
+    canvas_width = canvas_height
+    patient_zero = False
+
+    # NOTE: Add sliders here
+    model_params = {
+        "height": grid_height,
+        "width": grid_width,
+        "seed": UserSettableParameter("number", "seed", value=str(seed)),
+        "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
+        # "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
+        # "human_kill_agent_chance": UserSettableParameter("slider", "Human kill chance", value=0.6, min_value=0, max_value=1, step=0.01),
+        "map_id": map_id,
+        # "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
+        # "province":  UserSettableParameter("choice", "Province outbreak", "Noord-Holland", choices=provinces),
+        # "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero),
+    }
 else:
     map_id = 0
     grid_height = 100
