@@ -419,12 +419,12 @@ class InteractionHuman(State):
         if "zombie_kills" in self.target.traits:
             extra = min(self.target.traits["zombie_kills"] * 0.05, 0.3)
 
-            chance = min(1, chance + extra)
+            chance -= extra
         else:
             self.target.traits["zombie_kills"] = 0
 
         # Make sure that we've not maxed out our chance yet.
-        if chance < 1:
+        if chance > 0:
             neighbour_count = 0
 
             for neighbour in self.target.neighbors():
@@ -433,9 +433,9 @@ class InteractionHuman(State):
 
             extra = min(neighbour_count * 0.075, 0.3)
 
-            chance = min(1, chance + extra)
+            chance -= extra
 
-        if chance < agent.model.human_kill_zombie_chance:
+        if chance <= agent.model.human_kill_zombie_chance:
             agent.fsm.switch_to_state(agent, self.name, "RemoveZombie")
 
             self.target.traits["zombie_kills"] += 1
