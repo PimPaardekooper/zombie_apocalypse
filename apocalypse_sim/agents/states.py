@@ -415,27 +415,23 @@ class InteractionHuman(State):
 
     def on_enter(self, agent):
         chance = agent.model.random.random()
+        buff = 0
 
         if "zombie_kills" in self.target.traits:
-            extra = min(self.target.traits["zombie_kills"] * 0.05, 0.3)
-
-            chance -= extra
+            buff += min(self.target.traits["zombie_kills"] * 0.05, 0.3)
         else:
             self.target.traits["zombie_kills"] = 0
 
-        # Make sure that we've not maxed out our chance yet.
-        if chance > 0:
-            neighbour_count = 0
 
-            for neighbour in self.target.neighbors():
-                if neighbour.agent_type == "human":
-                    neighbour_count += 1
+        neighbour_count = 0
 
-            extra = min(neighbour_count * 0.075, 0.3)
+        for neighbour in self.target.neighbors():
+            if neighbour.agent_type == "human":
+                neighbour_count += 1
 
-            chance -= extra
+        buff += min(neighbour_count * 0.075, 0.3)
 
-        if chance <= agent.model.human_kill_zombie_chance:
+        if chance <= agent.model.human_kill_zombie_chance + buff:
             agent.fsm.switch_to_state(agent, self.name, "RemoveZombie")
 
             self.target.traits["zombie_kills"] += 1
