@@ -63,8 +63,8 @@ class Map:
 
                         if province.poly.area > 10:
                             cities.append(province)
-                    
-                
+
+
         road1 = Place([[88,156], [87,157], [104, 168], [104,166]], 0)
         road2 = Place([[101,139], [99,138], [110, 129], [111,129]], 0)
         road3 = Place([[25,42], [26,42], [26, 45], [24,45]], 0)
@@ -274,7 +274,7 @@ class Map:
         humans = Agents("human", [(0, 1), (1, 0)])
 
         return [city], [], [humans]
-    
+
     ### TEST MAPS ###
     def convert_test(self):
         humans = Agents("human", [(0, 1)])
@@ -288,6 +288,7 @@ class Map:
                 0)
 
         return [city], [], [humans, zombies]
+
 
     def range_test(self):
         """Square map no walls."""
@@ -318,7 +319,7 @@ class Map:
         zombies = Agents("zombie", [(0, 9)])
 
         return [city], [], [humans, zombies]
-    
+
 
     def group_test(self):
         """Square map no walls."""
@@ -330,9 +331,11 @@ class Map:
                       [0, 0]],
                      0)
 
-        humans = Agents("human", [(0, 0), (4, 0), (0, 4), (3, 3)])
+        humans = Agents("human", [(9, 0), (9, 1), (8, 1), (8, 0)])
+        zombies = Agents("zombie", [(0, 9), (0, 8)])
 
-        return [city], [], [humans]
+        return [city], [], [humans, zombies]
+
 
 class Agents:
     def __init__(self, agent_type, positions, attr={}):

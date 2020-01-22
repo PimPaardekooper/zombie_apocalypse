@@ -34,6 +34,9 @@ from model import Apocalypse
 class ModularServerExtd(ModularServer):
     def __init__(self, model_cls, visualization_elements, name="Mesa Model",
                  model_params={}):
+
+        self.verbose = False
+
         super().__init__(model_cls, visualization_elements, name, model_params)
 
 
@@ -42,6 +45,7 @@ class ModularServerExtd(ModularServer):
         """ Run the app. """
         if port is not None:
             self.port = port
+
         url = 'http://127.0.0.1:{PORT}'.format(PORT=self.port)
         print('Interface starting at {url}'.format(url=url))
         self.listen(self.port)
@@ -86,6 +90,7 @@ def model_draw(agent):
         agent_properties["States"] = str([x.name for x in agent.states])
         agent_properties["Identifier"] = str(agent.unique_id)
         agent_properties["Kills"] = str(agent.traits["zombie_kills"]) if "zombie_kills" in agent.traits else "0"
+        agent_properties["Direction"] = str(agent.direction)
 
         portrayal["Color"] = ["#80C904", "#4D7902"] if "infected" in agent.traits else ["#0000FF", "#9999FF"]
         portrayal["stroke_color"] = "#000000"
@@ -118,7 +123,7 @@ if os.environ["mode"] == "1":
     # Test modes
     grid_height = 10
     grid_width = 10
-    map_id = 0
+    map_id = 3
     canvas_height = 400
     canvas_width = canvas_height
 
