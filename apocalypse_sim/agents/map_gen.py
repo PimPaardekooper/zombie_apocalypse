@@ -39,6 +39,9 @@ def getFsm():
     fsm.event(Susceptible(), Infected())
     fsm.event(Infected(), Turned())
 
+    # Through doorway
+    fsm.event(FindDoor(), Escaped())
+
     return fsm
 
 
@@ -140,12 +143,14 @@ class MapGen:
 
                 if i in infected_coords:
                     new_agent = ZombieAgent(pos, self.model, fsm, place)
-
                     fsm.set_initial_states(["ZombieWandering", "Idle"], new_agent)
                 else:
-                    new_agent = HumanAgent(pos, self.model, fsm, place)
-
-                    fsm.set_initial_states(["HumanWandering", "Susceptible"], new_agent)
+                    if self.model.door:
+                        new_agent = HumanAgent(pos, self.model, fsm, place)
+                        fsm.set_initial_states(["FindDoor", "Susceptible"], new_agent)
+                    else:
+                        new_agent = HumanAgent(pos, self.model, fsm, place)
+                        fsm.set_initial_states(["HumanWandering", "Susceptible"], new_agent)
 
                 self.model.grid.place_agent(new_agent, pos)
                 self.model.schedule.add(new_agent)

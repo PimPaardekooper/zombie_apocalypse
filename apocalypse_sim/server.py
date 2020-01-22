@@ -107,7 +107,7 @@ def model_draw(agent):
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
         portrayal["Color"] = ["#f5e3427A"]
     else:
-        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0, "Text": "pos:" + str(agent.pos)}
         portrayal["Color"] = ["#000000"]
 
     return portrayal
@@ -164,24 +164,27 @@ elif os.environ["mode"] == "2":
 elif os.environ["mode"] == "4":
     # Change doorway
     grid_height = 100
-    grid_width = 100
+    grid_width = 50
     map_id = 0
-    canvas_height = 500
-    canvas_width = canvas_height
+    canvas_height = 1000
+    canvas_width = 500
     patient_zero = False
+    density = 1
+    door_width = 5
 
     # NOTE: Add sliders here
     model_params = {
         "height": grid_height,
         "width": grid_width,
         "seed": UserSettableParameter("number", "seed", value=str(seed)),
-        "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
-        # "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
-        # "human_kill_agent_chance": UserSettableParameter("slider", "Human kill chance", value=0.6, min_value=0, max_value=1, step=0.01),
+        "density": UserSettableParameter("slider", "Agent density", value=density, min_value=0.01, max_value=1.0, step=0.01),
+        "infected_chance": 0,
+        "human_kill_agent_chance": 0,
         "map_id": map_id,
         # "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
         # "province":  UserSettableParameter("choice", "Province outbreak", "Noord-Holland", choices=provinces),
         # "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero),
+        "door_width": UserSettableParameter("slider", "Door width", value=door_width, min_value=1, max_value=grid_width)
     }
 else:
     map_id = 0
@@ -204,7 +207,7 @@ else:
         "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero)
     }
 
-canvas_element = CanvasGrid(model_draw, grid_height, grid_width, canvas_height, canvas_width)
+canvas_element = CanvasGrid(model_draw, grid_width, grid_height, canvas_width, canvas_height)
 
 chart = ChartModule([{"Label": "susceptible",
                       "Color": "Green"},

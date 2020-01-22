@@ -33,11 +33,31 @@ class Map:
 
 
     def doorway_map(self):
-        city = Place([[0,0], [0, 75], [100,75], [100, 0]], 0)
-        road = Road([[25, 75], [75,75], [75,100], [25, 100]], (0,0), 0)
-        city2 = Place([[25, 0], [25, 50], [75, 50], [75, 0]], 0.1)
+        city = Place([[0,0],
+                      [0, self.model.height*0.75],
+                      [self.model.width, self.model.height*0.75],
+                      [self.model.width, 0]],
+                      0)
 
-        return [city, city2], [road], []
+        city2 = Place([[self.model.width*0.25, self.model.height*0.25],
+                        [self.model.width*0.5, self.model.height*0.5],
+                        [self.model.width*0.75, self.model.height*0.25]],
+                        self.model.density)
+
+        offset = ((self.model.width-self.model.door_width)/self.model.width)/2
+
+        road = Road([[self.model.width*offset , self.model.height*0.75],
+                     [self.model.width*(1-offset), self.model.height*0.75],
+                     [self.model.width*(1-offset), self.model.height],
+                     [self.model.width*offset, self.model.height]], (0,0), 0)
+
+        self.model.door = [(int(self.model.width*offset), int(self.model.height)-1),
+                           (int(self.model.width*(1-offset)), int(self.model.height)-1)]
+
+
+        zombies = Agents("zombie", [(int(self.model.width*0.5), int(self.model.height*0.20))])
+
+        return [city, city2], [road], [zombies]
 
     def nethelands_map(self):
         cities = []

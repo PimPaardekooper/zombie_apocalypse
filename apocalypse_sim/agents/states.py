@@ -211,6 +211,53 @@ class Wandering(State):
         self.random_move(agent)
 
 
+class FindDoor(State):
+    def __init__(self):
+        self.name = "FindDoor"
+
+    def get_best_cell(self, agent, target):
+        return agent.best_cell([target[0], target[1]])
+
+    def on_enter(self, agent):
+        best_cell = self.get_best_cell(agent)
+
+        if best_cell:
+            agent.direction = (best_cell[0] - agent.pos[0], best_cell[1] - agent.pos[1])
+
+            agent.model.grid.move_agent(agent, best_cell)
+        else:
+            agent.direction = (0, 0)
+
+    def on_update(self, agent):
+        if agent.pos in agent.model.door_coords:
+            agent.fsm.switch_to_state(agent, self.name, "Escaped")
+        else:
+            best_cells = []
+
+            for x in agent.model.door_coords:
+                best_cells.append(self.get_best_cell(agent, x))
+
+            best_cell = max(set(best_cells), key=best_cells.count)
+
+            if best_cell:
+                agent.direction = (best_cell[0] - agent.pos[0], best_cell[1] - agent.pos[1])
+
+                agent.model.grid.move_agent(agent, best_cell)
+            else:
+                agent.direction = (0, 0)
+
+
+
+class Escaped(State):
+    def __init__(self):
+        self.name = "Escaped"
+
+    def on_enter(self, agent):
+        agent.remove_agent()
+
+        del agent
+
+
 class HumanWandering(Wandering):
     def __init__(self):
         self.name = "HumanWandering"
