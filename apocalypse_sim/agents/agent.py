@@ -71,7 +71,7 @@ class Agent(MesaAgent):
             if dist < smal_dist:
                 smal_dist = dist
                 new_cell = cell
-        
+
         return new_cell
 
 

@@ -27,10 +27,10 @@ class Automaton():
             agent.states.append(state)
 
 
-    def switch_to_state(self, agent, old_state_name, new_state_name):
-        if new_state_name in self.states[old_state_name]["transitions"]:
-            old_state_obj = self.states[old_state_name]["object"]
-            new_state_obj = self.states[new_state_name]["object"]
+    def switch_to_state(self, agent, old, new):
+        if new in self.states[old]["transitions"]:
+            old_state_obj = self.states[old]["object"]
+            new_state_obj = self.states[new]["object"]
 
             agent.states.remove(old_state_obj)
             old_state_obj.on_leave(agent)

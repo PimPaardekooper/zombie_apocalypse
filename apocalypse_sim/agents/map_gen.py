@@ -131,8 +131,6 @@ class MapGen:
                     infected_coords = self.model.random.sample(agent_coords,
                                                     ceil(len(agent_coords) * (infected_chance)))
 
-            open('remove_add.txt', 'w').close()
-
             for i in agent_coords:
                 pos = p_coords[int(i)]
                 properties = {}
