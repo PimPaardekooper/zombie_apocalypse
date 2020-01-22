@@ -30,6 +30,7 @@ class ZombieAgent(Agent):
             return self.target.pos
         return None
 
+
     def move(self):
         neighbours = self.model.grid.get_neighbors(self.pos, True, True, self.traits["vision"])
         nearest_human = self.nearest_brain(neighbours)

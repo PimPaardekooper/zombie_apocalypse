@@ -13,9 +13,11 @@ from agents.map_object import MapObjectAgent
 from agents.map_gen import MapGen
 
 class Apocalypse(Model):
-    def __init__(self, height=100, width=100, density=0.1, infected_chance=0.05, 
-                        map_id=5, city_id=0, province="", total_agents=0, human_kill_agent_chance=0.6,
-                        seed=None, patient_zero=False):
+    def __init__(self, height=100, width=100, density=0.1, infected_chance=0.05,
+                        map_id=5, city_id=0, province="", total_agents=0,
+                        human_kill_agent_chance=0.6, seed=0, patient_zero=False):
+        self._seed = seed
+
         # variables to get from model_params in server.py
         self.height = height
         self.width = width
@@ -48,13 +50,11 @@ class Apocalypse(Model):
         # NOTE: no idea what this does
         self.running = True
         self.datacollector.collect(self)
-        
+
         # NOTE: end of weird stuff
 
     def step(self):
-        print(self.susceptible, self.infected, self.recovered, 
+        print(self.susceptible, self.infected, self.recovered,
             self.susceptible + self.infected + self.recovered)
         self.schedule.step()
         self.datacollector.collect(self)
-
-
