@@ -9,6 +9,7 @@ import getopt
 help_text = "Choose your mode with --,\n\
             --test: runs test maps,\n\
             --netherland: run the holland map\
+            --doorway: doorway tests\
             "
 
 if sys.argv[-1] == "--test":

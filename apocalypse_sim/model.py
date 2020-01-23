@@ -17,6 +17,7 @@ class Apocalypse(Model):
                         map_id=5, city_id=0, province="", total_agents=0,
                         human_kill_agent_chance=0.6, seed=0, patient_zero=False,
                         door_width=5):
+                        
         self._seed = seed
 
         # variables to get from model_params in server.py
