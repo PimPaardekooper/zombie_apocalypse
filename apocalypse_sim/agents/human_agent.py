@@ -9,8 +9,8 @@ class HumanAgent(Agent):
         model (:obj:): The corresponding model of the agent.
         fsm (:obj:): Finite state machine for the behaviour of the agent.
     """
-    def __init__(self, pos, model, fsm, place=None):
-        super().__init__(pos, model, fsm, place)
+    def __init__(self, pos, model, fsm):
+        super().__init__(pos, model, fsm)
         self.setVision(4)
         self.agent_type = "human"
         self.model.susceptible += 1
@@ -131,7 +131,7 @@ class HumanAgent(Agent):
 
         if vector:
             # If the vector doesnt find an escape route(agent stands still),
-            # try the bruteforce algorithm.
+            # try the slower bruteforce algorithm.
             new_x = self.pos[0] + vector[0]
             new_y = self.pos[1] + vector[1]
             new_cell = self.best_cell([new_x, new_y])
