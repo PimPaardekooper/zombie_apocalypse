@@ -96,6 +96,9 @@ class MapGen:
                     fsm.set_initial_states(["ZombieWandering", "Idle"], new_agent)
                 else:
                     new_agent = HumanAgent(pos, self.model, fsm, self.get_place(pos))
+
+                    new_agent.traits["incubation_time"] = self.model.incubation_time
+
                     fsm.set_initial_states(["HumanWandering", "Susceptible"], new_agent)
 
                 self.model.grid.place_agent(new_agent, pos)
@@ -142,6 +145,8 @@ class MapGen:
                     fsm.set_initial_states(["ZombieWandering", "Idle"], new_agent)
                 else:
                     new_agent = HumanAgent(pos, self.model, fsm, place)
+
+                    new_agent.traits["incubation_time"] = self.model.incubation_time
 
                     fsm.set_initial_states(["HumanWandering", "Susceptible"], new_agent)
 
