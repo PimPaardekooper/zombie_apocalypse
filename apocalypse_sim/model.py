@@ -15,6 +15,9 @@ from grid_map.map_gen import MapGen
 import random
 import sys
 
+import random
+import sys
+
 class Apocalypse(Model):
     def __init__(self, height=50, width=50, density=0.1, infected_chance=0.05,
                         map_id=5, city_id=0, province="", total_agents=0,

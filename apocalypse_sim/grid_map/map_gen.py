@@ -59,7 +59,8 @@ class MapGen:
 
 
     def spawn_map(self):
-        """Spawns map agents
+        """
+        Spawns map agents
 
         Loops through the grid and checks first if it is a place then a road and otherwise it spawns a wall.
         """
@@ -96,10 +97,13 @@ class MapGen:
         for agent in self.map.agents:
             for pos in agent.positions:
                 if agent.agent_type == "zombie":
-                    new_agent = ZombieAgent(pos, self.model, fsm, self.get_place(pos))
+                    new_agent = ZombieAgent(pos, self.model, fsm)
                     fsm.set_initial_states(["ZombieWandering", "Idle"], new_agent)
                 else:
-                    new_agent = HumanAgent(pos, self.model, fsm, self.get_place(pos))
+                    new_agent = HumanAgent(pos, self.model, fsm)
+
+                    new_agent.traits["incubation_time"] = self.model.incubation_time
+
                     fsm.set_initial_states(["HumanWandering", "Susceptible"], new_agent)
 
                 self.model.grid.place_agent(new_agent, pos)
@@ -107,12 +111,13 @@ class MapGen:
 
 
     def spawn_agents_in_city(self, city_id, infected_chance, province):
-        """Spawn agents like humans and zombies, defined by place densities.
+        """
+        Spawn agents like humans and zombies, defined by place densities.
 
         For each place it will calculate how much agents need to spawn given
-        the place area and agent density. Then it will pick so much random coordinates
-        from that place. From those coordinates a percentage will randomly be infected and
-        spawns a ZombieAgent the rest will spawn as HumanAgents.
+        the place area and agent density. Then it will pick so much random
+        coordinates from that place. From those coordinates a percentage will
+        randomly be infected and spawns a ZombieAgent the rest will spawn as HumanAgents.
         """
 
         fsm = getFsm()
@@ -141,11 +146,13 @@ class MapGen:
                 properties["place"] = self.get_place(pos)
 
                 if i in infected_coords:
-                    new_agent = ZombieAgent(pos, self.model, fsm, place)
+                    new_agent = ZombieAgent(pos, self.model, fsm)
 
                     fsm.set_initial_states(["ZombieWandering", "Idle"], new_agent)
                 else:
-                    new_agent = HumanAgent(pos, self.model, fsm, place)
+                    new_agent = HumanAgent(pos, self.model, fsm)
+
+                    new_agent.traits["incubation_time"] = self.model.incubation_time
 
                     fsm.set_initial_states(["HumanWandering", "Susceptible"], new_agent)
 

@@ -369,6 +369,8 @@ class Infected(State):
 
 
     def on_enter(self, agent):
+        agent.model.carrier += 1
+
         agent.traits["time_at_infection"] = agent.time_alive
 
 
@@ -378,7 +380,7 @@ class Turned(State):
 
 
     def add_zombie(self, target):
-        zombie = ZombieAgent(target.pos, target.model, target.fsm, {})
+        zombie = ZombieAgent(target.pos, target.model, target.fsm)
 
         target.model.grid.place_agent(zombie, target.pos)
         target.model.schedule.add(zombie)
@@ -387,12 +389,14 @@ class Turned(State):
 
 
     def transition(self, agent):
-        return agent.time_alive - agent.traits["time_at_infection"] > 2
+        return agent.time_alive - agent.traits["time_at_infection"] >= agent.traits["incubation_time"]
 
 
     def on_enter(self, agent):
         self.add_zombie(agent)
         agent.remove_agent()
+
+        agent.model.carrier -= 1
 
 
 class InteractionHuman(State):
@@ -433,9 +437,11 @@ class InteractionHuman(State):
             if neighbour.agent_type == "human":
                 neighbour_count += 1
 
-        buff += min(neighbour_count * 0.075, 0.3)
+        buff += min(neighbour_count * 0.05, 0.2)
 
-        if chance <= agent.model.human_kill_zombie_chance + buff:
+        total = min(0.8, agent.model.human_kill_zombie_chance + buff)
+
+        if chance <= total:
             agent.fsm.switch_to_state(agent, self.name, "RemoveZombie")
 
             self.target.traits["zombie_kills"] += 1
