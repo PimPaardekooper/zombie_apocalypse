@@ -132,22 +132,28 @@ elif os.environ["mode"] == "2":
     grid_height = 200
     grid_width = 200
     map_id = 0
-    canvas_height = 800
+    canvas_height = 1000
     canvas_width = canvas_height
     patient_zero = False
+    kill_chance = 0
+    grouping = False
+    density = 0.5
 
     # NOTE: Add sliders here
     model_params = {
         "height": grid_height,
         "width": grid_width,
         "seed": UserSettableParameter("number", "seed", value=str(seed)),
-        "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
+        "density": UserSettableParameter("slider", "Agent density", value=density, min_value=0.01, max_value=1.0, step=0.01),
         "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
-        "human_kill_agent_chance": UserSettableParameter("slider", "Human kill chance", value=0.6, min_value=0, max_value=1, step=0.01),
+        "human_kill_agent_chance": UserSettableParameter("slider", "Human kill chance", value=kill_chance, min_value=0, max_value=1, step=0.01),
         "map_id": map_id,
         # "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
         "province":  UserSettableParameter("choice", "Province outbreak", "Noord-Holland", choices=provinces),
         "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero),
+        "grouping": UserSettableParameter("checkbox", "Grouping", value=grouping),
+        "human_vision": UserSettableParameter("slider", "Human vision", value=4, min_value=1, max_value=8, step=1),
+        "zombie_vision": UserSettableParameter("slider", "Zombie vision", value=7, min_value=1, max_value=8, step=1),
     }
 else:
     map_id = 0
