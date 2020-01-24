@@ -12,12 +12,6 @@ class Agent(MesaAgent):
         model (:obj:): The corresponding model of the agent.
         fsm (:obj:): Finite state machine for the behaviour of the agent.
 
-    Note:
-        place:(needs to be removed).
-        on_road:(needs to be removed).
-        direction (tuple): Direction where the agent is currently heading
-                           (needs to be moved to human_agent.py).
-
     Attributes:
         states (list): Keep track of the current states for the finite state
                        machine used to program agent behaviour.
@@ -29,26 +23,18 @@ class Agent(MesaAgent):
         agent_type (string): String specifying the type of the agent.
         model (:obj:): The model an agent is spawned in.
     """
-    def __init__(self, pos, model, fsm, place):
+    def __init__(self, pos, model, fsm):
         super().__init__(model.total, model)
 
         self.states = []
         self.traits = {}
         self.fsm = fsm
-
         self.pos = pos
         self.time_alive = 0
         self.agent_type = ""
-
         self.model = model
+        # Add one to the counter of total agents in the model
         self.model.total += 1
-
-        # NOTE: place and on_road have to be deleted, we are not using it anywhere
-        self.place = place
-        self.on_road = False
-
-        # NOTE: move this variable to human_agent.py
-        self.direction = (0, 0)
 
 
 
@@ -61,28 +47,28 @@ class Agent(MesaAgent):
             (list): List containing all free cells an agent can move to.
         """
         grid = self.model.grid
+        # List of agents we can't overlap with
         no_overlap = ["wall", "human", "zombie"]
-
 
         # Always give the option to stay on your current location(stand still)
         all_cells = self.neighbors()
         free_cells = [self.pos]
 
         # Get rid of cells that we may not move to by iterating through all
-        # cells next to the agent, and removing the cells that are occupied
-        # NOTE: this can probably be written in one for loop
+        # cells next to the agent, and only adding non-occupied cells
         for cell in all_cells:
+            cell_occupied = False
             x, y = cell.pos
-            if grid.is_cell_empty((x, y)):
-                free_cells.append((x, y))
-            else:
-                panzerkampfwagen = False
-                for cell in grid[x][y]:
-                    if cell.agent_type in no_overlap:
-                        panzerkampfwagen = True
+            # If there are agents in the current cell, and we are not allowed
+            # to overlap with any of those agents, the cell is occupied.
+            # Only add cells which are not occupied.
+            if not grid.is_cell_empty((x, y)):
+                for agent in grid[x][y]:
+                    if agent.agent_type in no_overlap:
+                        cell_occupied = True
                         break
-                if not panzerkampfwagen:
-                    free_cells.append((x, y))
+            if not cell_occupied:
+                free_cells.append((x, y))
 
         return free_cells
 
