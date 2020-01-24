@@ -111,22 +111,20 @@ if os.environ["mode"] == "1":
     # Test modes
     grid_height = 10
     grid_width = 10
-    map_id = 3
-    canvas_height = 400
+    map_id = 4
+    canvas_height = 1000
     canvas_width = canvas_height
+    kill_chance = 0
 
     model_params = {
         "height": grid_height,
         "width": grid_width,
         "seed": UserSettableParameter("number", "seed", value=str(seed)),
-        # "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
-        # "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
-        "map_id": UserSettableParameter("slider", "Map id (max 4)", value=map_id, min_value=0, max_value=3, step=1),
-        # "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
-        # "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces),
-        # "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero)
+        "map_id": UserSettableParameter("slider", "Map id (max 4)", value=map_id, min_value=0, max_value=4, step=1),
+        "human_kill_agent_chance": UserSettableParameter("slider", "Human kill chance", value=kill_chance, min_value=0, max_value=1, step=0.01),
+        "grouping": UserSettableParameter("checkbox", "Grouping", value=True),
+        "human_vision": UserSettableParameter("slider", "Human vision", value=4, min_value=1, max_value=8, step=1),
     }
-
 elif os.environ["mode"] == "2":
     # Netherlands
     grid_height = 200
@@ -159,7 +157,7 @@ else:
     map_id = 0
     grid_height = 50
     grid_width = 50
-    canvas_height = 600
+    canvas_height = 1000
     canvas_width = canvas_height
 
 

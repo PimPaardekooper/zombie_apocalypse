@@ -18,7 +18,7 @@ class Map:
 
         if os.environ["mode"] == "1":
             maps = [
-               self.convert_test, self.range_test, self.runaway_test, self.group_test]
+               self.convert_test, self.range_test, self.runaway_test, self.group_test, self.group_test2]
         elif os.environ["mode"] == "2":
             maps = [self.nethelands_map]
         elif os.environ["mode"] == "3":
@@ -336,6 +336,20 @@ class Map:
 
         return [city], [], [humans, zombies]
 
+    def group_test2(self):
+        """Square map no walls."""
+        city = Place([[0, 0],
+                      [0, self.model.grid.height],
+                      [self.model.grid.width,
+                       self.model.grid.height],
+                      [self.model.grid.width, 0],
+                      [0, 0]],
+                     0)
+
+        humans = Agents("human", [(4, 1), (5, 4), (9, 4)])
+        zombies = Agents("zombie", [(0, 9)])
+
+        return [city], [], [humans]
 
 class Agents:
     def __init__(self, agent_type, positions, attr={}):
