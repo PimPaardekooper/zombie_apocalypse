@@ -15,7 +15,8 @@ from agents.map_gen import MapGen
 class Apocalypse(Model):
     def __init__(self, height=100, width=100, density=0.1, infected_chance=0.05,
                         map_id=5, city_id=0, province="", total_agents=0,
-                        human_kill_agent_chance=0.6, seed=0, patient_zero=False):
+                        human_kill_agent_chance=0.6, seed=0, patient_zero=False,
+                        grouping=True, zombie_vision=7, human_vision=4):
         self._seed = seed
 
         # variables to get from model_params in server.py
@@ -31,6 +32,9 @@ class Apocalypse(Model):
         self.total = 0
         self.patient_zero = patient_zero
         self.human_kill_zombie_chance = human_kill_agent_chance
+        self.grouping = grouping
+        self.zombie_vision = zombie_vision
+        self.human_vision = human_vision
 
         # NOTE: no idea what this does
         self.schedule = RandomActivation(self)
@@ -54,7 +58,5 @@ class Apocalypse(Model):
         # NOTE: end of weird stuff
 
     def step(self):
-        print(self.susceptible, self.infected, self.recovered,
-            self.susceptible + self.infected + self.recovered)
         self.schedule.step()
         self.datacollector.collect(self)

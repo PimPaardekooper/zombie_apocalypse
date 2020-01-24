@@ -3,7 +3,7 @@ from .agent import Agent
 class HumanAgent(Agent):
     def __init__(self, pos, model, fsm, place=None):
         super().__init__(pos, model, fsm, place)
-        self.setVision(4)
+        self.setVision(model.human_vision)
         self.agent_type = "human"
         self.model.susceptible += 1
         self.direction  = (0, 0)

@@ -19,18 +19,6 @@ import sys
 from model import Apocalypse
 
 
-# class ReproductiveNumber(TextElement):
-#     '''
-#     Display reproductive number
-#     '''
-
-#     def __init__(self):
-#         pass
-
-#     def render(self, model):
-#         return "Happy agents: " + str(model.reproductive_number)
-
-
 class ModularServerExtd(ModularServer):
     def __init__(self, model_cls, visualization_elements, name="Mesa Model",
                  model_params={}):
@@ -163,8 +151,8 @@ elif os.environ["mode"] == "2":
     }
 else:
     map_id = 0
-    grid_height = 100
-    grid_width = 100
+    grid_height = 50
+    grid_width = 50
     canvas_height = 600
     canvas_width = canvas_height
 
@@ -175,11 +163,14 @@ else:
         "seed": UserSettableParameter("number", "seed", value=str(seed)),
         "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
         "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
-        "human_kill_agent_chance": UserSettableParameter("slider", "Human kill chance", value=0.6, min_value=0, max_value=1, step=0.01),
+        "human_kill_agent_chance": UserSettableParameter("slider", "Human kill chance", value=0.3, min_value=0, max_value=1, step=0.01),
         "map_id": UserSettableParameter("slider", "Map id (max 4)", value=map_id, min_value=0, max_value=7, step=1),
         "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
         "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces),
-        "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero)
+        "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero),
+        "grouping": UserSettableParameter("checkbox", "Grouping", value=True),
+        "human_vision": UserSettableParameter("slider", "Human vision", value=4, min_value=1, max_value=8, step=1),
+        "zombie_vision": UserSettableParameter("slider", "Zombie vision", value=7, min_value=1, max_value=8, step=1),
     }
 
 canvas_element = CanvasGrid(model_draw, grid_height, grid_width, canvas_height, canvas_width)

@@ -59,6 +59,9 @@ class FormingHerd(State):
 
 
     def transition(self, agent):
+        if not agent.model.grouping:
+            return False 
+            
         human_count = 0
 
         for neighbour in agent.neighbors(include_center=False, radius=agent.traits["vision"]):

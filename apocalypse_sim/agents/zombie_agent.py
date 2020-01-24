@@ -3,7 +3,7 @@ from .agent import Agent
 class ZombieAgent(Agent):
     def __init__(self, pos, model, fsm, place=None):
         super().__init__(pos, model, fsm, place)
-        self.setVision(7)
+        self.setVision(model.zombie_vision)
         self.agent_type = "zombie"
         self.model.infected += 1
         self.target = None
