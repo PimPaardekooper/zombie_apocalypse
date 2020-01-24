@@ -4,6 +4,9 @@ from .zombie_agent import ZombieAgent
 
 
 class Reproduce(State):
+    """
+    Reproduction state
+    """
     def reproduce(self, agent):
         neighbors = agent.neighbors()
 
@@ -19,7 +22,6 @@ class Reproduce(State):
                     birth_cells = neighbour.get_moves()
 
                 new_cell = agent.random.choice(birth_cells)
-
                 new_agent = HumanAgent(new_cell, agent.model, agent.fsm, {})
 
                 agent.model.grid.place_agent(new_agent, new_cell)
@@ -34,21 +36,30 @@ class Reproduce(State):
         self.name = "Reproduce"
 
 
-    """
-    An agent may transition into the current state if it has
-    been alive for at least 3 steps, or the time since the
-    last reproduction is greater than 3 steps.
-    """
     def transition(self, agent):
+        """
+        An agent can transition into the current state if it has been alive for
+        at least 3 steps, or if the time since the last reproduction is greater
+        than 3 steps.
+
+        Args:
+            agent (:obj:): The agent in the state
+        """
         if "time_at_reproduction" in agent.traits:
             most_recent = agent.traits["time_at_reproduction"]
-
             return agent.time_alive - most_recent > 3
-
         return agent.time_alive > 3
 
 
     def on_update(self, agent):
+        """
+        Let an agent reproduce. Set its time_alive as time it has last
+        reproduced. (An agents time of last reproduction is relative to its
+        time_alive)
+
+        Args:
+            agent (:obj:): The agent in the state
+        """
         if self.reproduce(agent):
             agent.traits["time_at_reproduction"] = agent.time_alive
 

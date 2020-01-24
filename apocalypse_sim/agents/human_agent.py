@@ -8,13 +8,19 @@ class HumanAgent(Agent):
         pos (tuple): Position of the agent.
         model (:obj:): The corresponding model of the agent.
         fsm (:obj:): Finite state machine for the behaviour of the agent.
+
+    Attributes:
+        agent_type (string): String specifying the type of the agent.
+        direction (tuple): The current direction where the HumanAgent is going.
     """
     def __init__(self, pos, model, fsm):
         super().__init__(pos, model, fsm)
-        self.setVision(4)
         self.agent_type = "human"
-        self.model.susceptible += 1
         self.direction  = (0, 0)
+        # Add one to the counter of total susceptible humans in the model
+        self.model.susceptible += 1
+        # Set vision range to 4
+        self.setVision(4)
 
 
 
@@ -28,7 +34,7 @@ class HumanAgent(Agent):
 
         Returns:
             (tuple): Tuple containing the x and y coordinate of the direction
-                     for the human.
+                     for the human, if a direction is found.
             None: If no direction was found.
         """
         direction = [0, 0]
@@ -75,10 +81,7 @@ class HumanAgent(Agent):
                      for the human.
             None: If no direction was found.
         """
-        # all available cells
         free_cells = self.get_moves()
-        # list with priority of the highest priority cells, and the
-        # corresponding cells
         best_cells = None
 
         # Iterate through all available cells and get the best one by checking

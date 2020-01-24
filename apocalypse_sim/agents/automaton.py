@@ -1,14 +1,25 @@
 class Automaton():
+    """
+    Our own automaton class. This is used to program finite state machines
+    """
     def __init__(self):
         self.states = {}
 
 
+
     def add_state(self, state):
+        """
+        Adds a state to the Automaton.
+
+        Args:
+            state (:obj:): the state to be added to the automaton.
+        """
         if state.name not in self.states:
             self.states[state.name] = {
                 "object": state,
                 "transitions": []
             }
+
 
 
     def event(self, a, b):
