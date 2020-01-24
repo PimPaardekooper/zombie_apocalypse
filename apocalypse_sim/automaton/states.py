@@ -1,6 +1,10 @@
+import sys
+
+sys.path.append("..")
+
 from .state import State
-from .human_agent import HumanAgent
-from .zombie_agent import ZombieAgent
+from agents.human_agent import HumanAgent
+from agents.zombie_agent import ZombieAgent
 
 
 class Reproduce(State):

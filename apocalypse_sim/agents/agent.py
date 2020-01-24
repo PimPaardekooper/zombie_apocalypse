@@ -1,6 +1,10 @@
+import sys, os
+
+sys.path.append(".")
+
 from mesa import Model
 from mesa import Agent as MesaAgent
-from .map_object import Road
+from grid_map.map_object import Road
 from shapely.geometry import Point
 
 

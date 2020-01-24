@@ -2,15 +2,19 @@
 
 Spawns all map object and agents and schedules them.
 """
-from .human_agent import HumanAgent
-from .zombie_agent import ZombieAgent
+
+import sys
+
+sys.path.append("..")
+
+from agents.human_agent import HumanAgent
+from agents.zombie_agent import ZombieAgent
 from .map_object import Place, Road, MapObjectAgent
 from .map_layouts import Map
 
-from .automaton import Automaton
-from .states import *
+from automaton.automaton import Automaton
+from automaton.states import *
 from math import floor, ceil
-from mode import is_verification
 
 from shapely.geometry import Polygon, Point
 
