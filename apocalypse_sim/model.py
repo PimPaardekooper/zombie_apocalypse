@@ -19,7 +19,7 @@ class Apocalypse(Model):
     def __init__(self, height=50, width=50, density=0.1, infected_chance=0.05,
                         map_id=5, city_id=0, province="", total_agents=0,
                         human_kill_agent_chance=0.6, seed=None, patient_zero=False,
-                        incubation_time=3, server=None):
+                        incubation_time=3, server=None, iteration=0):
 
         # variables to get from model_params in server.py
         self.server = server
