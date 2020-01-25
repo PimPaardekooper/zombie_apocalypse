@@ -84,24 +84,24 @@ def run_simulation(params):
             return params
 
 models = []
-for density in densities:
-    for density in densities:
-        for incubation_time in inc_times:
-                for iteration in simulations:
-                    # Fix simulations iterator after updating
-                    # the unfinished experiment
-                    if first:
-                        simulations = np.arange(
-                            0, simulation_end, simulation_stepsize
-                        )
-                    model = get_model_params()
-                    model["density"] = density
-                    model["incubation_time"] = incubation_time
-                    model["seed"] = str(random.randrange(sys.maxsize))
-                    model["iteration"] = iteration
-                    models.append(model)
 
-with open('models.csv', 'w', newline="") as csv_file:  
+for density in densities:
+    for incubation_time in inc_times:
+        for iteration in simulations:
+            # Fix simulations iterator after updating
+            # the unfinished experiment
+            if first:
+                simulations = np.arange(
+                    0, simulation_end, simulation_stepsize
+                )
+            model = get_model_params()
+            model["density"] = density
+            model["incubation_time"] = incubation_time
+            model["seed"] = str(random.randrange(sys.maxsize))
+            model["iteration"] = iteration
+            models.append(model)
+
+with open('models.csv', 'w', newline="") as csv_file:
     writer = csv.writer(csv_file)
     for model in models:
        writer.writerow(model.values())
