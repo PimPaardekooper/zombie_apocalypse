@@ -9,7 +9,6 @@ import multiprocessing as mp
 import csv
 from p_tqdm import p_umap
 
-filename = "output-mund.csv"
 print("1")
 def read_last_line(filename):
     return subprocess.check_output(['tail', '-1', filename])[0:-1].decode('utf-8')
@@ -109,16 +108,16 @@ with open('models.csv', 'w', newline="") as csv_file:
 
 results = p_umap(run_simulation, models)
 print("time for writing the results")
-
-with open("out.csv", "a") as file:
+with open('out.csv', "a") as file:
     for result in results:
         file.write('{:.2f},{:d},{:d},{:},{:},{:d}\n'.format(
-            result.density, int(result.incubation_time), int(result.iteration),
-            result.seed, result.winner, result.steps
+            result["density"], int(result["incubation_time"]), int(result["iteration"]),
+            result["seed"], result["winner"], result["steps"]
         ))
 
 
 
+# with open(filename, "a") as file:
 #     model_params = get_model_params()
 
 #     # Loop through iterators
