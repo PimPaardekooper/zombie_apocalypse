@@ -109,15 +109,16 @@ with open('models.csv', 'w', newline="") as csv_file:
 
 results = p_umap(run_simulation, models)
 print("time for writing the results")
-for result in results:
-    file.write('{:.2f},{:d},{:d},{:},{:},{:d}\n'.format(
-        result.density, int(result.incubation_time), int(result.iteration),
-        result.seed, result.winner, result.steps
-    ))
+
+with open("out.csv", "a") as file:
+    for result in results:
+        file.write('{:.2f},{:d},{:d},{:},{:},{:d}\n'.format(
+            result.density, int(result.incubation_time), int(result.iteration),
+            result.seed, result.winner, result.steps
+        ))
 
 
 
-# with open(filename, "a") as file:
 #     model_params = get_model_params()
 
 #     # Loop through iterators
