@@ -376,7 +376,7 @@ class Turned(State):
 
 
     def add_zombie(self, target):
-        zombie = ZombieAgent(target.pos, target.model, target.fsm, {})
+        zombie = ZombieAgent(target.pos, target.model, target.fsm)
 
         target.model.grid.place_agent(zombie, target.pos)
         target.model.schedule.add(zombie)
