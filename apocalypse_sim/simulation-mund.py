@@ -6,7 +6,7 @@ import os
 import subprocess
 import time
 
-filename = "output.csv"
+filename = "output-mund.csv"
 
 def read_last_line(filename):
     return subprocess.check_output(['tail', '-1', filename])[0:-1].decode('utf-8')
@@ -30,12 +30,12 @@ density_stepsize = 0.10
 inc_time_stepsize = 2
 simulation_stepsize = 1
 
-density_start = 0.05
+density_start = 0.55
 inc_time_start = 0
 simulation_start = 0
 
 # Ends (exclusive)
-density_end = 0.95
+density_end = 0.75
 inc_time_end = 22
 simulation_end = 50
 
@@ -107,4 +107,4 @@ with open(filename, "a") as file:
                     seed, winner, steps
                 ))
 
-                time.sleep(3)
+                # print('x')

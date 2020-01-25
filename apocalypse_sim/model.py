@@ -37,7 +37,7 @@ class Apocalypse(Model):
         self.human_kill_zombie_chance = human_kill_agent_chance
         self.incubation_time = incubation_time
 
-        print(self.density, self.incubation_time, self.incubation_time, self.human_kill_zombie_chance, self._seed)
+        # print(self.density, self.incubation_time, self.incubation_time, self.human_kill_zombie_chance, self._seed)
 
         # NOTE: no idea what this does
         self.schedule = RandomActivation(self)
@@ -60,7 +60,7 @@ class Apocalypse(Model):
 
     def step(self):
         if (self.infected == 0 and self.carrier == 0) or (self.susceptible == 0):
-            print(self.schedule.steps)
+            # print(self.schedule.steps)
 #
             # print(self.schedule.steps)
             #

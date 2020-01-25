@@ -172,7 +172,7 @@ elif os.environ["mode"] == "3":
     grid_width = 50
     canvas_height = 600
     canvas_width = canvas_height
-    seed = 2950362223758595538
+    seed = str(5497396557737056592)
 
     model_params = {
         "seed": seed,
