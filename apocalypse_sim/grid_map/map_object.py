@@ -1,9 +1,8 @@
-"""map_object.py
+"""map_object.py.
 
 Map object represent the shape of places and roads and can give attributes
 to these places which can then change the agents attributes.
 """
-
 from matplotlib.path import Path
 from copy import deepcopy
 from mesa import Agent as MesaAgent
@@ -14,7 +13,15 @@ from shapely.geometry import Polygon, Point
 
 class MapObjectAgent(MesaAgent):
     """Hold all immovable agents as a Mesa Agent."""
+
     def __init__(self, pos, agent_type, model, color=""):
+        """MapObjectAgent.
+
+        pos: spawn location agent.
+        agent_type: human or zombie.
+        model: Apocalypse object holds all needed information.
+        color: display color agent.
+        """
         super().__init__(pos, model)
 
         self.agent_type = agent_type
@@ -22,12 +29,23 @@ class MapObjectAgent(MesaAgent):
 
 
 class MapObject:
-    """Hold the map object that is represented by a polygon."""
+    """Hold the map object that is represented by a polygon.
+
+    Subclasses can be a Road with speed and direction or Place with a
+    certain population density.
+    """
+
     def __init__(self, vertices, color=""):
+        """MapObject.
+
+        vertices: vertices that make up the polygon.
+        color: display color.
+        """
         self.poly = Polygon(vertices)
         self.color = color
 
     def __str__(self):
+        """Represent object as string."""
         return "None"
 
     def get_coords(self):
@@ -37,36 +55,54 @@ class MapObject:
         xs = [x for x in range(floor(min_x), ceil(max_x))]
         ys = [y for y in range(floor(min_y), ceil(max_y))]
 
-        return [(x,y) for y in ys for x in xs if self.poly.intersects(Point(x,y))]
+        return [(x, y) for y in ys for x in xs
+                if self.poly.intersects(Point(x, y))]
+
 
 class Place(MapObject):
     """A map object that can change attributes of the agent within it."""
-    def __init__(self, vertices, population_density, name="", color="",
-                 human_speed=2, zombie_speed=1):
+
+    def __init__(self, vertices, population_density, name="", color=""):
+        """Subclass MapObject, Place.
+
+        vertices: vertices that make up the polygon.
+        population_density: percentage of map has agents.
+        name: string id (province name).
+        color: display color.
+        """
         super().__init__(vertices, color=color)
         self.population_density = population_density
         self.name = name
-        self.human_speed = human_speed
-        self.zombie_speed = zombie_speed
 
     def __str__(self):
+        """Represent object as string."""
         return "Place"
 
     def density_to_amount(self, density):
+        """Convert the density to a value given the place area."""
         return ceil(len(self.get_coords()) * density)
+
 
 class Road(MapObject):
     """Move all agents within in a certain direction with a certain speed."""
 
     def __init__(self, vertices, direction, speed):
+        """Subclass MapObject, Road.
+
+        vertices: vertices that make up the polygon.
+        direction: direction agents need to walk when on the road.
+        speed: how many cells in one step the agent takes.
+        """
         super().__init__(vertices)
         self.direction = direction
         self.speed = speed
 
     def flip(self, pos):
-        """Check if a agent start the road from the left or right up or under,
-        by seeing if it is close to the maximum or minimum x and y value of the road.
-        And flips the sign for the direction accordingly.
+        """Flip direction given start position.
+
+        Check if a agent start the road from the left or right up or under,
+        by seeing if it is close to the maximum or minimum x and y value of
+        the road and flips the sign for the direction accordingly.
         """
         x, y = pos
 
@@ -84,4 +120,5 @@ class Road(MapObject):
         return tuple(new_dir)
 
     def __str__(self):
+        """Represent object as string."""
         return "Road"

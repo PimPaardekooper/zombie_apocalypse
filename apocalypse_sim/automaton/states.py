@@ -1,6 +1,9 @@
+import sys
+sys.path.append("..")
+
 from .state import State
-from .human_agent import HumanAgent
-from .zombie_agent import ZombieAgent
+from agents.human_agent import HumanAgent
+from agents.zombie_agent import ZombieAgent
 
 
 class Reproduce(State):
@@ -214,6 +217,43 @@ class Wandering(State):
         self.random_move(agent)
 
 
+class FindDoor(State):
+    def __init__(self):
+        self.name = "FindDoor"
+
+    def get_best_cell(self, agent, target):
+        return agent.best_cell([target[0], target[1]])
+
+    def on_update(self, agent):
+        if agent.pos in agent.model.door_coords:
+            agent.fsm.switch_to_state(agent, self.name, "Escaped")
+        else:
+            best_cells = []
+
+            for x in agent.model.door_coords:
+                best_cells.append(self.get_best_cell(agent, x))
+
+            best_cell = max(set(best_cells), key=best_cells.count)
+
+            if best_cell:
+                agent.direction = (best_cell[0] - agent.pos[0], best_cell[1] - agent.pos[1])
+
+                agent.model.grid.move_agent(agent, best_cell)
+            else:
+                agent.direction = (0, 0)
+
+
+
+class Escaped(State):
+    def __init__(self):
+        self.name = "Escaped"
+
+    def on_enter(self, agent):
+        agent.remove_agent()
+
+        del agent
+
+
 class HumanWandering(Wandering):
     def __init__(self):
         self.name = "HumanWandering"
@@ -368,6 +408,8 @@ class Infected(State):
 
 
     def on_enter(self, agent):
+        agent.model.carrier += 1
+
         agent.traits["time_at_infection"] = agent.time_alive
 
 
@@ -377,7 +419,7 @@ class Turned(State):
 
 
     def add_zombie(self, target):
-        zombie = ZombieAgent(target.pos, target.model, target.fsm, {})
+        zombie = ZombieAgent(target.pos, target.model, target.fsm)
 
         target.model.grid.place_agent(zombie, target.pos)
         target.model.schedule.add(zombie)
@@ -386,12 +428,14 @@ class Turned(State):
 
 
     def transition(self, agent):
-        return agent.time_alive - agent.traits["time_at_infection"] > 2
+        return agent.time_alive - agent.traits["time_at_infection"] >= agent.traits["incubation_time"]
 
 
     def on_enter(self, agent):
         self.add_zombie(agent)
         agent.remove_agent()
+
+        agent.model.carrier -= 1
 
 
 class InteractionHuman(State):
@@ -432,9 +476,11 @@ class InteractionHuman(State):
             if neighbour.agent_type == "human":
                 neighbour_count += 1
 
-        buff += min(neighbour_count * 0.075, 0.3)
+        buff += min(neighbour_count * 0.05, 0.2)
 
-        if chance <= agent.model.human_kill_zombie_chance + buff:
+        total = min(0.8, agent.model.human_kill_zombie_chance + buff)
+
+        if chance <= total:
             agent.fsm.switch_to_state(agent, self.name, "RemoveZombie")
 
             self.target.traits["zombie_kills"] += 1
