@@ -22,7 +22,7 @@ class Map:
         elif os.environ["mode"] == "2":
             maps = [self.nethelands_map]
         elif os.environ["mode"] == "3":
-            maps = []
+            maps = [self.simple_incubation]
         elif os.environ["mode"] == "4":
             maps = [self.doorway_map]
         else:
@@ -365,6 +365,21 @@ class Map:
         zombies = Agents("zombie", [(0, 9), (0, 8)])
 
         return [city], [], [humans, zombies]
+
+    def simple_incubation(self):
+        """Square map no walls."""
+        city = Place([[0, 0],
+                      [0, self.model.grid.height],
+                      [self.model.grid.width,
+                       self.model.grid.height],
+                      [self.model.grid.width, 0],
+                      [0, 0]],
+                     self.model.density)
+
+        # humans = Agents("human", [(9, 0), (9, 1), (8, 1), (8, 0)])
+        # zombies = Agents("zombie", [(0, 9), (0, 8)])
+
+        return [city], [], []
 
 
 class Agents:

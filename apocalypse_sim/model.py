@@ -12,29 +12,36 @@ from agents.map_object import MapObjectAgent
 
 from agents.map_gen import MapGen
 
+import random
+import sys
+
 class Apocalypse(Model):
-    def __init__(self, height=100, width=100, density=0.1, infected_chance=0.05,
+    def __init__(self, height=50, width=50, density=0.1, infected_chance=0.05,
                         map_id=5, city_id=0, province="", total_agents=0,
-                        human_kill_agent_chance=0.6, seed=0, patient_zero=False,
-                        door_width=5):
-                        
+                        human_kill_agent_chance=0.6, patient_zero=False,
+                        door_width=5, seed=None, incubation_time=3, server=None):
+
         self._seed = seed
 
         # variables to get from model_params in server.py
+        self.server = server
         self.height = height
         self.width = width
         self.density = density
         self.infected_chance = infected_chance
+        self.carrier = 0
         self.infected = 0
         self.susceptible = 0
         self.recovered = 0
-        self.locked = []
         self.total_agents = total_agents
         self.total = 0
         self.patient_zero = patient_zero
         self.human_kill_zombie_chance = human_kill_agent_chance
         self.door = None
         self.door_width = door_width
+        self.incubation_time = incubation_time
+
+        print(self.density, self.incubation_time, self.incubation_time, self.human_kill_zombie_chance, self._seed)
 
         # NOTE: no idea what this does
         self.schedule = RandomActivation(self)
@@ -54,13 +61,36 @@ class Apocalypse(Model):
         if self.door:
             self.get_door_coords()
 
-        # NOTE: no idea what this does
         self.running = True
         self.datacollector.collect(self)
 
-        # NOTE: end of weird stuff
 
     def step(self):
+        if (self.infected == 0 and self.carrier == 0) or (self.susceptible == 0):
+            print(self.schedule.steps)
+#
+            # print(self.schedule.steps)
+            #
+            self.running = False
+            self.server.model.running = False
+
+            # print(experiments)
+            #
+            # if self.server:
+            #     self.server.reset_model()
+            #
+            #     len_z = len(experiments['zombie'])
+            #     len_h = len(experiments['human'])
+            #
+            #     # 100 iterations were run
+            #     if len_z + len_h == 100:
+            #         # f = open("results.txt", "a")
+            #         #
+            #         # f.write(str(experiment) + "\n")
+            #         #
+            #
+            #
+
         self.schedule.step()
         self.datacollector.collect(self)
 

@@ -35,12 +35,17 @@ class ModularServerExtd(ModularServer):
     def __init__(self, model_cls, visualization_elements, name="Mesa Model",
                  model_params={}):
 
+        model_params['server'] = self
         self.verbose = False
 
         super().__init__(model_cls, visualization_elements, name, model_params)
 
 
     def launch(self, port=None):
+        self.experiments = {}
+
+        self.experiments['human'] = []
+        self.experiments['zombie'] = []
 
         """ Run the app. """
         if port is not None:
@@ -155,11 +160,31 @@ elif os.environ["mode"] == "2":
         "seed": UserSettableParameter("number", "seed", value=str(seed)),
         "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
         "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
-        "human_kill_agent_chance": UserSettableParameter("slider", "Human kill chance", value=0.6, min_value=0, max_value=1, step=0.01),
+        "human_kill_agent_chance": UserSettableParameter("slider", "Human survive chance", value=0.35, min_value=0, max_value=1, step=0.01),
         "map_id": map_id,
         # "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
         "province":  UserSettableParameter("choice", "Province outbreak", "Noord-Holland", choices=provinces),
         "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero),
+    }
+elif os.environ["mode"] == "3":
+    map_id = 0
+    grid_height = 50
+    grid_width = 50
+    canvas_height = 600
+    canvas_width = canvas_height
+    seed = 2950362223758595538
+
+    model_params = {
+        "seed": seed,
+        "map_id": map_id,
+        "height": grid_height,
+        "width": grid_width,
+        "density": UserSettableParameter("slider", "Agent density", value=0.05, min_value=0.01, max_value=1.0, step=0.01),
+        "incubation_time": UserSettableParameter("slider", "Virus incubation time", value=0, min_value=0, max_value=20, step=1),
+        "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.05, min_value=0.01, max_value=1.0, step=0.01),
+        "human_kill_agent_chance": UserSettableParameter("slider", "Human survive chance", value=0.35, min_value=0, max_value=1, step=0.01),
+        # "map_id": UserSettableParameter("slider", "Map id", value=map_id, min_value=0, max_value=7, step=1),
+        # "patient_zero": UserSettableParameter("checkbox", "Patient zero", value=patient_zero)
     }
 elif os.environ["mode"] == "4":
     # Change doorway
@@ -200,7 +225,7 @@ else:
         "seed": UserSettableParameter("number", "seed", value=str(seed)),
         "density": UserSettableParameter("slider", "Agent density", value=0.2, min_value=0.01, max_value=1.0, step=0.01),
         "infected_chance": UserSettableParameter("slider", "Change getting infected", value=0.1, min_value=0.01, max_value=1.0, step=0.01),
-        "human_kill_agent_chance": UserSettableParameter("slider", "Human kill chance", value=0.6, min_value=0, max_value=1, step=0.01),
+        "human_kill_agent_chance": UserSettableParameter("slider", "Human survive chance", value=0.35, min_value=0, max_value=1, step=0.01),
         "map_id": UserSettableParameter("slider", "Map id (max 4)", value=map_id, min_value=0, max_value=7, step=1),
         "city_id":  UserSettableParameter("slider", "City id (max 4)", value=0, min_value=0, max_value=8, step=1),
         "province":  UserSettableParameter("choice", "Province outbreak", "", choices=provinces),

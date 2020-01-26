@@ -1,8 +1,8 @@
 from .agent import Agent
 
 class ZombieAgent(Agent):
-    def __init__(self, pos, model, fsm, place=None):
-        super().__init__(pos, model, fsm, place)
+    def __init__(self, pos, model, fsm):
+        super().__init__(pos, model, fsm)
         self.setVision(7)
         self.agent_type = "zombie"
         self.model.infected += 1
