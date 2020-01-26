@@ -8,9 +8,8 @@ from mesa.datacollection import DataCollector
 from matplotlib.path import Path
 from agents.human_agent import HumanAgent
 from agents.zombie_agent import ZombieAgent
-from agents.map_object import MapObjectAgent
-
-from agents.map_gen import MapGen
+from grid_map.map_object import MapObjectAgent
+from grid_map.map_gen import MapGen
 
 import random
 import sys
@@ -37,7 +36,8 @@ class Apocalypse(Model):
         self.total = 0
         self.patient_zero = patient_zero
         self.human_kill_zombie_chance = human_kill_agent_chance
-        self.door = None
+        self.door = [(-1,-1)]
+        self.door_coords = []
         self.door_width = door_width
         self.incubation_time = incubation_time
 
@@ -58,7 +58,7 @@ class Apocalypse(Model):
 
         self.map = MapGen(map_id, city_id, infected_chance, province, self)
 
-        if self.door:
+        if self.door[0] != (-1,-1):
             self.get_door_coords()
 
         self.running = True
@@ -68,8 +68,6 @@ class Apocalypse(Model):
     def step(self):
         if (self.infected == 0 and self.carrier == 0) or (self.susceptible == 0):
             print(self.schedule.steps)
-#
-            # print(self.schedule.steps)
             #
             self.running = False
             self.server.model.running = False

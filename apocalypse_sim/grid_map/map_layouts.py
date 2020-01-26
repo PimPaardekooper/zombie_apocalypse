@@ -62,8 +62,8 @@ class Map:
     def nethelands_map(self):
         cities = []
 
-        poly_data = pygeoj.load(filepath="netherlands_data/provincie_2020.geojson")
-        df = pd.read_csv("netherlands_data/provinces_densities.csv")
+        poly_data = pygeoj.load(filepath="grid_map/data/provincie_2020.geojson")
+        df = pd.read_csv("grid_map/data/provinces_densities.csv")
 
         min_dens = df["density_of_total"].min()
         max_dens = df["density_of_total"].max()

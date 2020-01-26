@@ -2,13 +2,16 @@
 
 Spawns all map object and agents and schedules them.
 """
-from .human_agent import HumanAgent
-from .zombie_agent import ZombieAgent
-from .map_object import Place, Road, MapObjectAgent
-from .map_layouts import Map
+import sys
+sys.path.append("..")
 
-from .automaton import Automaton
-from .states import *
+from agents.human_agent import HumanAgent
+from agents.zombie_agent import ZombieAgent
+from grid_map.map_object import Place, Road, MapObjectAgent
+from grid_map.map_layouts import Map
+
+from automaton.automaton import Automaton
+from automaton.states import *
 from math import floor, ceil
 from mode import is_verification
 
@@ -151,7 +154,7 @@ class MapGen:
                     new_agent = HumanAgent(pos, self.model, fsm)
                     new_agent.traits["incubation_time"] = self.model.incubation_time
 
-                    if self.model.door:
+                    if self.model.door[0] != (-1, -1):
                         fsm.set_initial_states(["FindDoor", "Susceptible"], new_agent)
                     else:
                         fsm.set_initial_states(["HumanWandering", "Susceptible"], new_agent)

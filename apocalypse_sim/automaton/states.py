@@ -1,6 +1,9 @@
+import sys
+sys.path.append("..")
+
 from .state import State
-from .human_agent import HumanAgent
-from .zombie_agent import ZombieAgent
+from agents.human_agent import HumanAgent
+from agents.zombie_agent import ZombieAgent
 
 
 class Reproduce(State):
@@ -217,16 +220,6 @@ class FindDoor(State):
 
     def get_best_cell(self, agent, target):
         return agent.best_cell([target[0], target[1]])
-
-    def on_enter(self, agent):
-        best_cell = self.get_best_cell(agent)
-
-        if best_cell:
-            agent.direction = (best_cell[0] - agent.pos[0], best_cell[1] - agent.pos[1])
-
-            agent.model.grid.move_agent(agent, best_cell)
-        else:
-            agent.direction = (0, 0)
 
     def on_update(self, agent):
         if agent.pos in agent.model.door_coords:
