@@ -1,6 +1,8 @@
-"""run.py
+"""run.py.
 
 Starts server to run computational model using "Mesa".
+You can start modes which changes which sliders are shown and which maps are
+available.
 """
 import os
 import sys
