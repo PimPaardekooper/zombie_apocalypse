@@ -22,6 +22,8 @@ def get_model_params():
 
 output_file = "group_output2.csv"
 
+# TODO::Check if exist add number
+
 columns = [
     "density", "group", "iteration",
     "seed", "winner", "steps"
@@ -29,11 +31,11 @@ columns = [
 
 density_stepsize = 0.1
 density_start = 0.05
-density_end = 0.06
+density_end = 0.5
 densities = np.arange(density_start, density_end, density_stepsize)
 
 simulation_start = 0
-simulation_end = 1
+simulation_end = 10
 simulation_stepsize = 1
 simulations = np.arange(simulation_start, simulation_end, simulation_stepsize)
 
@@ -77,7 +79,7 @@ with open('models.csv', 'w', newline="") as csv_file:
 
 results = p_umap(run_simulation, models)
 print("time for writing the results")
-with open('out.csv', "a") as file:
+with open(output_file, "a") as file:
     for result in results:
         file.write('{:.2f},{:d},{:d},{:},{:},{:d}\n'.format(
             result["density"], int(result["grouping"]), int(result["iteration"]),

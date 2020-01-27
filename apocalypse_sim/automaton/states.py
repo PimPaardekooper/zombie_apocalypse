@@ -61,10 +61,7 @@ class FormingHerd(State):
         self.name = "FormingHerd"
 
 
-    def transition(self, agent):
-        if not agent.model.grouping:
-            return False 
-            
+    def transition(self, agent):            
         human_count = 0
 
         for neighbour in agent.neighbors(include_center=False, radius=agent.traits["vision"]):
@@ -264,7 +261,7 @@ class HumanWandering(Wandering):
 
         # No humans or zombies nearby
         for neighbour in neighbors:
-            if neighbour.agent_type == "zombie" or neighbour.agent_type == "human":
+            if neighbour.agent_type == "zombie" or (neighbour.agent_type == "human" and agent.model.grouping):
                 return False
 
 

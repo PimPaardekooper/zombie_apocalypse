@@ -28,7 +28,7 @@ class Apocalypse(Model):
                  map_id=5, city_id=0, province="", total_agents=0,
                  human_kill_agent_chance=0.6, patient_zero=False,
                  door_width=5, seed=None, incubation_time=3,
-                 server=None, grouping=True):
+                 server=None, grouping=True, iteration=0):
         """Apocalypse object.
 
         Initializes the apocalypse object, makes the grid and put agents on
@@ -70,10 +70,10 @@ class Apocalypse(Model):
         self.door_coords = []
         self.door_width = door_width
         self.incubation_time = incubation_time
-        self.fsm = Automaton()
+        self.fsm = Automaton(self)
 
-        print(self.density, self.incubation_time, self.incubation_time,
-              self.human_kill_zombie_chance, self._seed)
+        # print(self.density, self.incubation_time, self.incubation_time,
+        #       self.human_kill_zombie_chance, self._seed)
 
         # Set agents step function in a schedule to be called in random order.
         self.schedule = RandomActivation(self)
@@ -127,7 +127,7 @@ class Apocalypse(Model):
             #         #
             #
             #
-
+        
         self.schedule.step()
         self.datacollector.collect(self)
 

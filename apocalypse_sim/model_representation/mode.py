@@ -140,6 +140,9 @@ def experiment_mode():
             "slider", "Human survive chance", value=0.35, min_value=0,
             max_value=1, step=0.01
         ),
+        "grouping": UserSettableParameter(
+            "checkbox", "Grouping", value=False
+        )
     }
 
     return model_params, canvas_height, canvas_width, grid_height, grid_width
