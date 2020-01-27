@@ -5,35 +5,46 @@ from .zombie_agent import ZombieAgent
 
 class Reproduce(State):
     """
-    Reproduction state
-    """
-    def reproduce(self, agent):
-        neighbors = agent.neighbors()
+    Reproduction state.
+    In this state 2 humans will try to reproduce by creating a new human.
 
-        # Continue only if a human neighbour is found
-        for neighbour in neighbors:
-            if neighbour.agent_type != "human":
+    Attributes:
+        name (string): a string containing the name of the state.
+    """
+    def __init__(self):
+        self.name = "Reproduce"
+
+
+
+    def reproduce(self, agent):
+        """
+        Args:
+            agent (:obj:): The agent in the state
+
+        Returns:
+            (:obj:): If the agent has succesfully reproduced, return the
+                     neighbour agent he has reproduced with.
+            bool: Returns false if there is a zombie nearby, or if no viable
+                  mating partner has been found, or if there was no place to
+                  spawn a new human.
+        """
+        neighbours = agent.neighbors()
+        for neighbour in neighbours:
+            if neighbour.agent_type == "zombie":
                 return False
 
-            if self.name in agent.states:
-                birth_cells = agent.get_moves()
-
-                if not birth_cells:
-                    birth_cells = neighbour.get_moves()
-
+        for neighbour in neighbours:
+            birth_cells = agent.get_moves()[1:] + neighbour.get_moves()[1:]
+            birth_cells = list(dict.fromkeys(birth_cells))
+            if birth_cells:
                 new_cell = agent.random.choice(birth_cells)
-                new_agent = HumanAgent(new_cell, agent.model, agent.fsm, {})
-
+                new_agent = HumanAgent(new_cell, agent.model, agent.fsm)
                 agent.model.grid.place_agent(new_agent, new_cell)
                 agent.model.schedule.add(new_agent)
-
                 return neighbour
 
         return False
 
-
-    def __init__(self):
-        self.name = "Reproduce"
 
 
     def transition(self, agent):
@@ -44,6 +55,10 @@ class Reproduce(State):
 
         Args:
             agent (:obj:): The agent in the state
+
+        Returns:
+            (bool): True if the agent can transition into the current state,
+                    false otherwise.
         """
         if "time_at_reproduction" in agent.traits:
             most_recent = agent.traits["time_at_reproduction"]
@@ -65,11 +80,29 @@ class Reproduce(State):
 
 
 class FormingHerd(State):
+    """
+    FormingHerd state.
+    In this state humans will move towards other humans to form groups
+
+    Attributes:
+        name (string): A string containing the name of the state.
+    """
     def __init__(self):
         self.name = "FormingHerd"
 
 
     def transition(self, agent):
+        """
+        An agent can transition into the current state if there is no zombie
+        nearby, and there are 1 or more human(s) nearby.
+
+        Args:
+            agent (:obj:): The agent in the state
+
+        Returns:
+            (bool): True if the agent can transition into the current state,
+                    false otherwise.
+        """
         human_count = 0
 
         for neighbour in agent.neighbors(include_center=False, radius=agent.traits["vision"]):
