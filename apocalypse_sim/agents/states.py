@@ -422,7 +422,7 @@ class AvoidingZombie(State):
                     false otherwise.
 
         """
-        return self.get_best_cell(agent) is None
+        return self.get_best_cell(agent)
 
     def halt(self, agent):
         """Check if an agent is ready to leave the current state.
@@ -437,7 +437,7 @@ class AvoidingZombie(State):
                     false otherwise.
 
         """
-        return self.get_best_cell(agent) is None
+        return self.get_best_cell(agent)
 
     def on_update(self, agent):
         """Let an agent in this state execute one step.
