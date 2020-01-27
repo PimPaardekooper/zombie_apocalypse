@@ -1,6 +1,6 @@
 """map_gen.py.
 
-Spawns all map object and agents and schedules them.
+Spawns all map objects and agents and schedules them.
 """
 import sys
 from agents.human_agent import HumanAgent
@@ -16,7 +16,7 @@ sys.path.append("..")
 
 
 class MapGen:
-    """Hold a generated map and agents spawned within it."""
+    """Generates a map and spawns the needed agents in the map."""
 
     def __init__(self, map_id, city_id, infected_chance, province, model):
         """Construct a map.
@@ -37,8 +37,9 @@ class MapGen:
     def spawn_map(self):
         """Spawn map agents.
 
-        Loops through the grid and checks first if it is a place then a road
-        and otherwise it spawns a wall.
+        Loops through the coordinates in the grid and spawns a place, road,
+        or a wall on the cell.
+
         """
         for cell in self.model.grid.coord_iter():
             x = cell[1]
@@ -67,7 +68,7 @@ class MapGen:
                 self.model.grid.place_agent(new_agent, (x, y))
 
     def spawn_agents(self):
-        """Spawn hard coded agents, good for situations."""
+        """Spawn hard coded agents, good for unit testing."""
         for agent in self.map.agents:
             for pos in agent.positions:
                 if agent.agent_type == "zombie":
@@ -86,14 +87,12 @@ class MapGen:
                 self.model.schedule.add(new_agent)
 
     def spawn_agents_in_city(self, city_id, infected_chance, province):
-        """
-        Spawn agents like humans and zombies, defined by place densities.
+        """Spawn agents, like humans and zombies, in cities.
 
-        For each place it will calculate how much agents need to spawn given
-        the place area and agent density. Then it will pick so much random
-        coordinates from that place. From those coordinates a percentage will
-        randomly be infected and spawns a ZombieAgent the rest will spawn as
-        HumanAgents.
+        For each place, calculate how many agents need to be spawned given
+        the place area and agent density. Get random coordinates from the place
+        based on the agent density, and spawn zombies and humans on those
+        coordinates based on the infection density.
         """
         one_patient = False
 

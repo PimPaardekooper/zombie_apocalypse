@@ -1,10 +1,10 @@
 from automaton.states import *
 
 class Automaton():
-    """
-    Our own automaton class. This is used to program finite state machines
-    """
+    """Our automaton class. This is used to program finite state machines."""
+
     def __init__(self):
+        """Initialize the finite state machine and program the FSM."""
         self.states = {}
 
         # Zombie movement
@@ -32,13 +32,12 @@ class Automaton():
         # Through doorway
         self.event(FindDoor(), Escaped())
 
-
     def add_state(self, state):
-        """
-        Adds a state to the Automaton.
+        """Adds a state to the Automaton.
 
         Args:
             state (:obj:): the state to be added to the automaton.
+
         """
         if state.name not in self.states:
             self.states[state.name] = {

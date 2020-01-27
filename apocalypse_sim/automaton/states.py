@@ -329,12 +329,12 @@ class FindDoor(State):
             best_cell = max(set(best_cells), key=best_cells.count)
 
             if best_cell:
-                agent.direction = (best_cell[0] - agent.pos[0], best_cell[1] - agent.pos[1])
+                agent.direction = (best_cell[0] - agent.pos[0],
+                                   best_cell[1] - agent.pos[1])
 
                 agent.model.grid.move_agent(agent, best_cell)
             else:
                 agent.direction = (0, 0)
-
 
 
 class Escaped(State):
@@ -413,9 +413,7 @@ class ZombieWandering(Wandering):
 
 
 class AvoidingZombie(State):
-    """AvoidingZombie state.
-
-    In this state humans will actively try to avoid zombies.
+    """AvoidingZombie state. In this state humans try to avoid zombies.
 
     Attributes:
         name (string): A string containing the name of the state.
@@ -498,9 +496,7 @@ class AvoidingZombie(State):
 
 
 class Idle(State):
-    """Idle state.
-
-    In this state zombies are not seeing any humans.
+    """Idle state. In this state zombies are not seeing any humans.
 
     Attributes:
         name (string): A string containing the name of the state.
@@ -535,9 +531,7 @@ class Idle(State):
 
 
 class ChasingHuman(State):
-    """ChasingHuman state.
-
-    In this state zombies are actively chasing a human.
+    """ChasingHuman state. In this state zombies are actively chasing a human.
 
     Attributes:
         name (string): A string containing the name of the state.
@@ -549,6 +543,19 @@ class ChasingHuman(State):
         self.name = "ChasingHuman"
 
     def get_best_cell(self, agent):
+        """Get the best cell to chase a human.
+
+        Gets the best cell to go by checking what human is the nearest, and
+        then picking the nearest available cell to the human.
+
+        Args:
+            agent (:obj:): The zombie in the current state.
+
+        Returns:
+            (list): List containing the best possible cell.
+            None: Returns none if no cell was found.
+
+        """
         neighbors = agent.neighbors(radius=agent.traits["vision"])
         nearest_human = agent.nearest_brain(neighbors)
         if nearest_human:
@@ -556,6 +563,18 @@ class ChasingHuman(State):
         return None
 
     def transition(self, agent):
+        """Check if an agent can transition into this state.
+
+        Only transition into this state if there are humans within vision.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        Returns:
+            (bool): True if the agent can transition into the current state,
+                    false otherwise.
+
+        """
         human = self.get_best_cell(agent)
         if human is None:
             return False
@@ -569,59 +588,143 @@ class ChasingHuman(State):
         return True
 
     def on_update(self, agent):
+        """Let an agent in this state execute a step and move towards a human.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        """
         best_cell = self.get_best_cell(agent)
         if best_cell:
             agent.model.grid.move_agent(agent, best_cell)
 
 
 class Susceptible(State):
+    """Susceptible state. In this state humans are uninfected.
+
+    Attributes:
+        name (string): A string containing the name of the state.
+
+    """
+
     def __init__(self):
+        """Initialize the Susceptible state."""
         self.name = "Susceptible"
 
 
 class Infected(State):
-    def __init__(self):
-        self.name = "Infected"
+    """Susceptible state. In this state humans are infected.
+
+    Attributes:
+        name (string): A string containing the name of the state.
 
     """
-    A human may transition into the Infected state if
-    it's infected trait has been set in the Infect state.
-    """
+
+    def __init__(self):
+        """Initialize the Infected state."""
+        self.name = "Infected"
+
     def transition(self, agent):
+        """Check if an agent can transition into this state.
+
+        Only transition into this state if its infected trait has been set in
+        the Infect state.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        Returns:
+            (bool): True if the agent can transition into the current state,
+                    false otherwise.
+
+        """
         return "infected" in agent.traits
 
     def on_enter(self, agent):
+        """Update the counter and set infection time on entering this state."""
         agent.model.carrier += 1
         agent.traits["time_at_infection"] = agent.time_alive
 
 
 class Turned(State):
+    """Turned state.
+
+    In this state humans are turned into a zombie.
+
+    Attributes:
+        name (string): A string containing the name of the state.
+
+    """
+
     def __init__(self):
+        """Initialize the Turned state."""
         self.name = "Turned"
 
     def add_zombie(self, target):
+        """Add a zombie to the simulation, and removes a human.
+
+        Args:
+            target (:obj:): agent to be removed
+
+        """
         zombie = ZombieAgent(target.pos, target.model, target.fsm)
         target.model.grid.place_agent(zombie, target.pos)
         target.model.schedule.add(zombie)
         target.fsm.set_initial_states(["ZombieWandering", "Idle"], zombie)
 
     def transition(self, agent):
+        """Check if an agent can transition into this state.
+
+        Only transition into this state if a human has been infected for a
+        certain amount of time.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        Returns:
+            (bool): True if the agent can transition into the current state,
+                    false otherwise.
+
+        """
         return (agent.time_alive - agent.traits["time_at_infection"] >=
                 agent.traits["incubation_time"])
 
     def on_enter(self, agent):
+        """On entering this state, add a zombie and update counter."""
         self.add_zombie(agent)
         agent.remove_agent()
         agent.model.carrier -= 1
 
 
 class InteractionHuman(State):
+    """InteractionHuman state.
+
+    In this state humans are being attacked by zombies.
+
+    Attributes:
+        name (string): A string containing the name of the state.
+
+    """
+
     def __init__(self):
+        """Initialize the InteractionHuman state."""
         self.name = "InteractionHuman"
 
     def transition(self, agent):
-        neighbors = agent.neighbors()
+        """Check if an agent can transition into this state.
 
+        Only transition into this state if there are no zombies nearby, and
+        there is another non-infected human in a neighbouring cell.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        Returns:
+            (bool): True if the agent can transition into the current state,
+                    false otherwise.
+
+        """
+        neighbors = agent.neighbors()
         # Find any human that is not yet been infected
         for neighbour in neighbors:
             if not neighbour.agent_type == "human":
@@ -634,6 +737,17 @@ class InteractionHuman(State):
         return False
 
     def on_enter(self, agent):
+        """Interact with nearby zombies when entering this state.
+
+        When entering this state, the human gets a buff to the chance of
+        defeating a zombie, based on how many other humans are near him. The
+        human also gets a buff based on his total zombie kills. After the buff
+        has been applied, the human can get infected.
+
+        Args:
+            agent (:obj:): The human in the current state.
+
+        """
         chance = agent.model.random.random()
         buff = 0
 
@@ -658,29 +772,44 @@ class InteractionHuman(State):
 
 
 class RemoveZombie(State):
+    """RemoveZombie state. In this state zombies are dead and will get removed.
+
+    Attributes:
+        name (string): A string containing the name of the state.
+
+    """
+
     def __init__(self):
+        """Initialize the RemoveZombie state."""
         self.name = "RemoveZombie"
 
     def on_enter(self, agent):
+        """When entering the state, update counter and remove the zombie."""
         agent.model.recovered += 1
         agent.remove_agent()
         del agent
 
 
 class InfectHuman(State):
+    """InfectHuman state. In this state zombies are trying to infect a human.
+
+    Attributes:
+        name (string): A string containing the name of the state.
+
     """
-    State that represents a zombie infecting a human.
-    """
+
     def __init__(self):
+        """Initialize the InfectHuman state."""
         self.name = "InfectHuman"
 
-    """
-    A zombie has spotted a nearby human and will 'infect' it by
-    setting it's infected trait.
-    """
     def on_enter(self, agent):
-        neighbors = agent.neighbors()
+        """When entering the state, try to infect a human.
 
+        Args:
+            agent (:obj:): The zombie in the state.
+
+        """
+        neighbors = agent.neighbors()
         # Find any human that is susceptible to
         # being infected.
         for neighbour in neighbors:
