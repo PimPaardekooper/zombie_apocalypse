@@ -1,9 +1,37 @@
+from automaton.states import *
+
 class Automaton():
     """
     Our own automaton class. This is used to program finite state machines
     """
     def __init__(self):
         self.states = {}
+
+        # Zombie movement
+        self.event(ZombieWandering(), ChasingHuman())
+        self.event(ChasingHuman(), ZombieWandering())
+
+        # Zombie human interaction
+        self.event(Idle(), InteractionHuman())
+        self.event(InteractionHuman(), InfectHuman())
+        self.event(InteractionHuman(), RemoveZombie())
+        self.event(InfectHuman(), Idle())
+
+        # Human movement
+        self.event(HumanWandering(), AvoidingZombie())
+        self.event(HumanWandering(), FormingHerd())
+        self.event(AvoidingZombie(), HumanWandering())
+        self.event(AvoidingZombie(), FormingHerd())
+        self.event(FormingHerd(), HumanWandering())
+        self.event(FormingHerd(), AvoidingZombie())
+
+        # Human health
+        self.event(Susceptible(), Infected())
+        self.event(Infected(), Turned())
+
+        # Through doorway
+        self.event(FindDoor(), Escaped())
+
 
     def add_state(self, state):
         """

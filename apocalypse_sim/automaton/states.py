@@ -1,8 +1,11 @@
-"""Contains the different states for the finite state machine."""
+"""State class for the states in a finite state machine."""
+
+import sys
+sys.path.append("..")
 
 from .state import State
-from .human_agent import HumanAgent
-from .zombie_agent import ZombieAgent
+from agents.human_agent import HumanAgent
+from agents.zombie_agent import ZombieAgent
 
 
 class Reproduce(State):
@@ -305,6 +308,43 @@ class Wandering(State):
     def on_update(self, agent):
         """Execute random_move when on_update is called."""
         self.random_move(agent)
+
+
+class FindDoor(State):
+    def __init__(self):
+        self.name = "FindDoor"
+
+    def get_best_cell(self, agent, target):
+        return agent.best_cell([target[0], target[1]])
+
+    def on_update(self, agent):
+        if agent.pos in agent.model.door_coords:
+            agent.fsm.switch_to_state(agent, self.name, "Escaped")
+        else:
+            best_cells = []
+
+            for x in agent.model.door_coords:
+                best_cells.append(self.get_best_cell(agent, x))
+
+            best_cell = max(set(best_cells), key=best_cells.count)
+
+            if best_cell:
+                agent.direction = (best_cell[0] - agent.pos[0], best_cell[1] - agent.pos[1])
+
+                agent.model.grid.move_agent(agent, best_cell)
+            else:
+                agent.direction = (0, 0)
+
+
+
+class Escaped(State):
+    def __init__(self):
+        self.name = "Escaped"
+
+    def on_enter(self, agent):
+        agent.remove_agent()
+
+        del agent
 
 
 class HumanWandering(Wandering):
