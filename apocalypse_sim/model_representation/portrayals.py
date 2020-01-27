@@ -94,8 +94,7 @@ def road_portrayal(agent, portrayal):
 def city_portrayal(agent, portrayal):
     """Portrayal city agent."""
     portrayal = {"Shape": "rect", "w": 1,
-                 "h": 1, "Filled": "true", "Layer": 1,
-                 "Text": "pos:" + str(agent.pos)}
+                 "h": 1, "Filled": "true", "Layer": 0}
 
     if agent.color != "":
         portrayal["Color"] = agent.color + "40"
