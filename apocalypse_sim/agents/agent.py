@@ -1,11 +1,18 @@
+"""This file contains our Agent class.
+
+The agent class has all core needs for any agents in the simulation. These
+agents should all be extensions of this class.
+
+"""
+
 from mesa import Model
 from mesa import Agent as MesaAgent
 from .map_object import Road
 from shapely.geometry import Point
 
+
 class Agent(MesaAgent):
-    """
-    Our own Agent class, this extends the agent class from the mesa framework.
+    """Our own Agent class, extends the agent class from the mesa framework.
 
     Args:
         pos (tuple): Position of the agent.
@@ -22,8 +29,16 @@ class Agent(MesaAgent):
         time_alive (int): The amount of steps an agent has been alive for.
         agent_type (string): String specifying the type of the agent.
         model (:obj:): The model an agent is spawned in.
+
     """
+
     def __init__(self, pos, model, fsm):
+        """Initialize the agent.
+
+        Initializes the agent with its starting values for a given model,
+        position, and finite state machine.
+
+        """
         super().__init__(model.total, model)
 
         self.states = []
@@ -36,15 +51,15 @@ class Agent(MesaAgent):
         # Add one to the counter of total agents in the model
         self.model.total += 1
 
-
-
     def get_moves(self):
-        """
-        Check the cells that an agent is able to move to. Gets all non-occupied
-        cells 1 space around the agent.
+        """Find all cells an agent can move to.
+
+        Gets all non-occupied cells 1 space around the agent, and finds all
+        cells without any overlap.
 
         Returns:
             (list): List containing all free cells an agent can move to.
+
         """
         grid = self.model.grid
         # List of agents we can't overlap with
@@ -69,13 +84,11 @@ class Agent(MesaAgent):
                         break
             if not cell_occupied:
                 free_cells.append((x, y))
-
         return free_cells
 
-
-
     def best_cell(self, coord):
-        """
+        """Find the nearest cell to a given coordinate.
+
         Gets the nearest available cell of a coordinate by iterating through
         all available cells, and getting the cell where the euclidian distance
         to the given coordinate is the smallest.
@@ -85,6 +98,7 @@ class Agent(MesaAgent):
 
         Returns:
             (tuple): Tuple containing the nearest available cell to coord.
+
         """
         if coord[0] == self.pos[0] and coord[1] == self.pos[1]:
             return self.pos
@@ -103,12 +117,8 @@ class Agent(MesaAgent):
 
         return new_cell
 
-
-
     def remove_agent(self):
-        """
-        Removes an agent of the grid.
-        """
+        """Remove an agent of the grid."""
         self.model.grid.remove_agent(self)
         self.model.schedule.remove(self)
 
@@ -116,14 +126,13 @@ class Agent(MesaAgent):
             self.model.infected -= 1
         elif self.agent_type == "human":
             self.model.susceptible -= 1
-
         del self
 
-
-
     def neighbors(self, moore=True, include_center=True, radius=1):
-        """
-        Get the direct neighbours of an agent.
+        """Get the direct neighbours of an agent.
+
+        Gets the neighbours with distance 1 of an agent by using the
+        get_neighbours function from the mesa framework.
 
         Args:
             moore=True (bool): If true, get diagonal neighbours as well.
@@ -132,17 +141,14 @@ class Agent(MesaAgent):
 
         Returns:
             (list): List of direct neighbours.
+
         """
-        return self.model.grid.get_neighbors(self.pos, moore, include_center, radius)
-
-
+        return self.model.grid.get_neighbors(self.pos, moore, include_center,
+                                             radius)
 
     def step(self):
-        """
-        Executes one step for an agent
-        """
+        """Execute one step for an agent."""
         self.time_alive += 1
-
         self.fsm.update(self)
 
         for state in self.states:

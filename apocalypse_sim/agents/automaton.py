@@ -5,8 +5,6 @@ class Automaton():
     def __init__(self):
         self.states = {}
 
-
-
     def add_state(self, state):
         """
         Adds a state to the Automaton.
@@ -20,23 +18,17 @@ class Automaton():
                 "transitions": []
             }
 
-
-
     def event(self, a, b):
         self.add_state(a)
         self.add_state(b)
-
         self.states[a.name]['transitions'].append(b.name)
-
 
     def set_initial_states(self, state_names, agent):
         agent.states = []
 
         for state_name in state_names:
             state = self.states[state_name]['object']
-
             agent.states.append(state)
-
 
     def switch_to_state(self, agent, old, new):
         if new in self.states[old]["transitions"]:
@@ -48,7 +40,6 @@ class Automaton():
 
             agent.states.append(new_state_obj)
             new_state_obj.on_enter(agent)
-
 
     def update(self, agent):
         for state in agent.states.copy():

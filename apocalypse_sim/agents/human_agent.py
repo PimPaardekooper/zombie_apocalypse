@@ -1,8 +1,10 @@
+"""The human agent class for simulating humans."""
+
 from .agent import Agent
 
+
 class HumanAgent(Agent):
-    """
-    Our own HumanAgent class, extends our own Agent class.
+    """Our own HumanAgent class, extends our own Agent class.
 
     Args:
         pos (tuple): Position of the agent.
@@ -12,20 +14,22 @@ class HumanAgent(Agent):
     Attributes:
         agent_type (string): String specifying the type of the agent.
         direction (tuple): The current direction where the HumanAgent is going.
+
     """
+
     def __init__(self, pos, model, fsm):
+        """Initialize the human agent."""
         super().__init__(pos, model, fsm)
         self.agent_type = "human"
-        self.direction  = (0, 0)
+        self.direction = (0, 0)
         # Add one to the counter of total susceptible humans in the model
         self.model.susceptible += 1
         # Set vision range to 4
         self.setVision(4)
 
-
-
     def running_direction(self, nearby_zombies):
-        """
+        """Own algorithm for finding the direction a humans wants to run to.
+
         Get the direction for a zombie by creating a vector away from each
         zombie, this vector is scaled by the distance to the zombie.
 
@@ -36,6 +40,7 @@ class HumanAgent(Agent):
             (tuple): Tuple containing the x and y coordinate of the direction
                      for the human, if a direction is found.
             None: If no direction was found.
+
         """
         direction = [0, 0]
         if len(nearby_zombies) > 0:
@@ -64,10 +69,9 @@ class HumanAgent(Agent):
             direction[1] /= d
         return (direction[0], direction[1])
 
-
-
     def bruteforce(self, nearby_zombies):
-        """
+        """Bruteforce algorithm for getting the best cell to move to.
+
         For every free cell, calculates the priority for moving to the cell,
         and returns the cell with the highest priority.
         The priority is determined by adding the squared distances between the
@@ -80,6 +84,7 @@ class HumanAgent(Agent):
             (tuple): Tuple containing the x and y coordinate of the direction
                      for the human.
             None: If no direction was found.
+
         """
         free_cells = self.get_moves()
         best_cells = None
@@ -91,7 +96,7 @@ class HumanAgent(Agent):
                 priority = 0
                 for zombie in nearby_zombies:
                     dist_x = abs(cell[0] - zombie.pos[0])
-                    dist_y =  abs(cell[1] - zombie.pos[1])
+                    dist_y = abs(cell[1] - zombie.pos[1])
                     distance = (dist_x**2 + dist_y**2)**0.5
                     priority += distance**0.5
                 if not best_cells:
@@ -113,10 +118,9 @@ class HumanAgent(Agent):
         else:
             return None
 
-
-
     def find_escape(self, neighbours):
-        """
+        """Find the best possible cell a human can go to.
+
         Finds the best possible cell to go for a human agent. Do this by first
         trying the running_direction method. If the human is stuck, this method
         doesn't work and the bruteforce method is used.
@@ -128,8 +132,10 @@ class HumanAgent(Agent):
             (tuple): Tuple containing the x and y coordinate of the direction
                      for the human.
             None: If no direction was found.
+
         """
-        nearby_zombies = [agent for agent in neighbours if agent.agent_type == "zombie"]
+        nearby_zombies = [agent for agent in neighbours if
+                          agent.agent_type == "zombie"]
         vector = self.running_direction(nearby_zombies)
 
         if vector:
@@ -143,13 +149,11 @@ class HumanAgent(Agent):
             return vector
         return None
 
-
-
     def setVision(self, vision_radius):
-        """
-        Set the vision radius for a human agent.
+        """Set the vision radius for a human agent.
 
         Args:
             vision_radius (int): Radius how far a human can see.
+
         """
         self.traits['vision'] = min(9, vision_radius)
