@@ -7,8 +7,13 @@ class Automaton():
 
     """
 
-    def __init__(self):
-        """Initialize the FSM and program it."""
+    def __init__(self, model):
+        """Initialize the FSM and program it.
+
+        Args:
+            (:obj:) model: Model object the FSM belongs to.
+
+        """
         self.states = {}
 
         # Zombie movement
@@ -30,8 +35,6 @@ class Automaton():
             self.event(AvoidingZombie(), FormingHerd())
             self.event(FormingHerd(), HumanWandering())
             self.event(FormingHerd(), AvoidingZombie())
-
-
 
         # Human health
         self.event(Susceptible(), Infected())
@@ -105,19 +108,16 @@ class Automaton():
 
         Args:
             agent (:obj:): Agent whomst'd've states can be updated.
+
         """
         for state in agent.states.copy():
             if not agent.pos:
                 continue
 
-            # Make sure an agent is actually allowed
-            # to leave a state.
             if state.halt(agent):
                 continue
 
-            # Get the string representation to use to easily
-            # get corresponding transitions (our states
-            # dictionary only uses strings for keys).
+            # Use string representation for easy state lookup.
             state_name = state.name
             transitions = self.states[state_name]['transitions']
 
@@ -134,14 +134,10 @@ class Automaton():
                 if state_object.transition(agent):
                     new_states.append(state_object)
 
-            # Only if new states to transition to were
-            # found we will leave our current state
             if new_states:
                 state.on_leave(agent)
                 agent.states.remove(state)
 
-            # We add the list of new states to our
-            # active states list.
             for new_state in new_states:
                 agent.states.append(new_state)
                 new_state.on_enter(agent)

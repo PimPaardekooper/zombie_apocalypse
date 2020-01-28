@@ -34,24 +34,31 @@ class Apocalypse(Model):
         Initializes the apocalypse object, makes the grid and put agents on
         that grid.
 
-        height: grid height.
-        width: grid_width
-        density: percentage of the amount of agents in an area.
-        infected_chance: change of agents in an area to be infected.
-        map_id: index to choose from a list of maps in maps_layout.py.
-        city_id: index of the city where the outbreak happens.
-        province: in the holland map the province where the outbreak starts.
-        total_agents: ??????????????????????????????????????????????????????????????????
-        human_kill_agent_chance: chance for a human to kill a zombie.
-        patient_zero: boolean if only on person should be infected.
-        door_width: width of the door way.
-        seed: seed that decides all randomness in the model, so you can repeat
-            the exact same experiments.
-        incubation_time: time it takes for a infected human to turn.
-        grouping: let humans form groups.
-        server: ??????????????????????????????????????????????????????????????????????
+        Args:
+            height (int): Grid height.
+            width (int): Grid width.
+            density (float): Percentage of the amount of agents in an area.
+            infected_chance (float): Percentage of agents in an area to be
+                                     infected.
+            map_id (int): Index to choose from a list of maps in
+                          maps_layout.py.
+            city_id (int): Index of the city where the outbreak happens.
+            province (string): On the Netherlands map, this is the province
+                               where the outbreak starts.
+            total_agents (int): The total number of agents ever spawned.
+            human_kill_agent_chance (float): Chance for a human to kill a
+                                             zombie.
+            patient_zero (bool): If only one person should be infected.
+            door_width (int): Width of the door way.
+            seed (string): Seed that decides all randomness in the model, so
+                           you can repeat the exact same experiments.
+            incubation_time (int): Number of steps it takes for an infected
+                                   human to turn into a zombie.
+            grouping (bool): Allow humans to form groups.
+            server (:obj:): Server instance, used to pause the server.
+
         """
-        # variables to get from model_params in server.py
+
         self._seed = seed
         self.server = server
         self.height = height
@@ -72,9 +79,6 @@ class Apocalypse(Model):
         self.door_width = door_width
         self.incubation_time = incubation_time
         self.fsm = Automaton(self)
-
-        # print(self.density, self.incubation_time, self.incubation_time,
-        #       self.human_kill_zombie_chance, self._seed)
 
         # Set agents step function in a schedule to be called in random order.
         self.schedule = RandomActivation(self)
@@ -105,30 +109,12 @@ class Apocalypse(Model):
         Call all agents and collect data, stop if there are no more zombies
         or no more humans.
         """
-        if (self.infected == 0 and self.carrier == 0) or \
-                (self.susceptible == 0):
-            print(self.schedule.steps)
-            #
+        if ((self.susceptible == 0) or
+            (self.infected == 0 and self.carrier == 0)):
+
             self.running = False
             self.server.model.running = False
 
-            # print(experiments)
-            #
-            # if self.server:
-            #     self.server.reset_model()
-            #
-            #     len_z = len(experiments['zombie'])
-            #     len_h = len(experiments['human'])
-            #
-            #     # 100 iterations were run
-            #     if len_z + len_h == 100:
-            #         # f = open("results.txt", "a")
-            #         #
-            #         # f.write(str(experiment) + "\n")
-            #         #
-            #
-            #
-        
         self.schedule.step()
         self.datacollector.collect(self)
 
