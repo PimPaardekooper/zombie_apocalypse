@@ -24,6 +24,9 @@ def get_mode():
     elif os.environ["mode"] == "4":
         model_params, canvas_height, canvas_width, grid_height, grid_width = \
             doorway_mode()
+    elif os.environ["mode"] == "5":
+        model_params, canvas_height, canvas_width, grid_height, grid_width = \
+            situation_mode()
     else:
         model_params, canvas_height, canvas_width, grid_height, grid_width = \
             standard_mode()
@@ -140,6 +143,9 @@ def experiment_mode():
             "slider", "Human survive chance", value=0.35, min_value=0,
             max_value=1, step=0.01
         ),
+        "grouping": UserSettableParameter(
+            "checkbox", "Grouping", value=False
+        )
     }
 
     return model_params, canvas_height, canvas_width, grid_height, grid_width
@@ -226,6 +232,28 @@ def standard_mode():
         "patient_zero": UserSettableParameter(
             "checkbox", "Patient zero", value=patient_zero
         )
+    }
+
+    return model_params, canvas_height, canvas_width, grid_height, grid_width
+
+def situation_mode():
+    """Situation mode for plots on poster."""
+    seed = random.randrange(sys.maxsize)
+
+    patient_zero = False
+    map_id = 0
+    grid_height = 9
+    grid_width = 9
+    canvas_height = 600
+    canvas_width = canvas_height
+
+    model_params = {
+        "height": grid_height,
+        "width": grid_width,
+        "map_id": UserSettableParameter(
+            "slider", "Map id (max 4)", value=map_id, min_value=0,
+            max_value=3, step=1
+        ),
     }
 
     return model_params, canvas_height, canvas_width, grid_height, grid_width

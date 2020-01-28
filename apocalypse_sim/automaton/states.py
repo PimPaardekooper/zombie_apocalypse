@@ -11,7 +11,7 @@ from agents.zombie_agent import ZombieAgent
 class Reproduce(State):
     """Reproduction state.
 
-    In this state 2 humans will try to reproduce by creating a new human.
+    In this state two humans will try to reproduce to create a new human.
 
     Attributes:
         name (string): a string containing the name of the state.
@@ -37,6 +37,7 @@ class Reproduce(State):
 
         """
         neighbours = agent.neighbors()
+
         for neighbour in neighbours:
             if neighbour.agent_type == "zombie":
                 return False
@@ -44,11 +45,14 @@ class Reproduce(State):
         for neighbour in neighbours:
             birth_cells = agent.get_moves()[1:] + neighbour.get_moves()[1:]
             birth_cells = list(dict.fromkeys(birth_cells))
+
             if birth_cells:
                 new_cell = agent.random.choice(birth_cells)
                 new_agent = HumanAgent(new_cell, agent.model, agent.fsm)
+
                 agent.model.grid.place_agent(new_agent, new_cell)
                 agent.model.schedule.add(new_agent)
+
                 return neighbour
 
         return False
@@ -70,7 +74,9 @@ class Reproduce(State):
         """
         if "time_at_reproduction" in agent.traits:
             most_recent = agent.traits["time_at_reproduction"]
+
             return agent.time_alive - most_recent > 3
+
         return agent.time_alive > 3
 
     def on_update(self, agent):
@@ -128,6 +134,7 @@ class FormingHerd(State):
 
         if human_count > 0:
             return True
+
         return False
 
     def _normalize(self, vector):
@@ -151,6 +158,7 @@ class FormingHerd(State):
 
         vector[0] /= u
         vector[1] /= u
+
         return vector
 
     def alignment(self, agent, neighbors):
@@ -166,12 +174,14 @@ class FormingHerd(State):
 
         """
         v = [0, 0]
+
         for neighbour in neighbors:
             v[0] += neighbour.direction[0]
             v[1] += neighbour.direction[1]
 
         v[0] /= len(neighbors)
         v[1] /= len(neighbors)
+
         return self._normalize(v)
 
     def cohesion(self, agent, neighbors):
@@ -187,6 +197,7 @@ class FormingHerd(State):
 
         """
         v = [0, 0]
+
         for neighbour in neighbors:
             v[0] += neighbour.pos[0]
             v[1] += neighbour.pos[1]
@@ -195,6 +206,7 @@ class FormingHerd(State):
         v[1] /= len(neighbors)
         v[0] -= agent.pos[0]
         v[1] -= agent.pos[1]
+
         return self._normalize(v)
 
     def separation(self, agent, neighbors):
@@ -210,6 +222,7 @@ class FormingHerd(State):
 
         """
         v = [0, 0]
+
         # Negatate length to move away
         neigh_l = len(neighbors) * -1
 
@@ -219,6 +232,7 @@ class FormingHerd(State):
 
         v[0] /= neigh_l
         v[1] /= neigh_l
+
         return self._normalize(v)
 
     def direction(self, agent):
@@ -228,11 +242,11 @@ class FormingHerd(State):
         area. This is used to simulate flocking behaviour.
 
         Args:
-        agent (:obj:): Agent we want to know the direction for.
+            agent (:obj:): Agent we want to know the direction for.
 
         Returns:
-        (list): List containing a normalized vector with the direction for
-                of an agent.
+            (list): List containing a normalized vector with the direction for
+                    of an agent.
 
         """
         neighbors = agent.neighbors(radius=agent.traits["vision"],
@@ -295,25 +309,48 @@ class Wandering(State):
         """Initialize the Wandering state."""
         self.name = "Wandering"
 
-
-
     def random_move(self, agent):
-        """Move the agent to a randomly unoccupied cell around him."""
+        """Move the agent to a randomly unoccupied cell around him.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        """
         free_cells = agent.get_moves()
         new_cell = agent.random.choice(free_cells)
+
         agent.model.grid.move_agent(agent, new_cell)
 
     def on_enter(self, agent):
-        """Execute random_move when entering this state."""
+        """Execute random_move when entering this state.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        """
         self.random_move(agent)
 
     def on_update(self, agent):
-        """Execute random_move when on_update is called."""
+        """Execute random_move when on_update is called.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        """
         self.random_move(agent)
 
 
 class FindDoor(State):
+    """FindDoor state.
+
+    In this state agents will attempt to find a door.
+
+    Attributes:
+        name (string): A string containing the name of the state.
+
+    """
     def __init__(self):
+        """Initialize the FindDoor state."""
         self.name = "FindDoor"
 
     def get_best_cell(self, agent, target):
@@ -340,7 +377,16 @@ class FindDoor(State):
 
 
 class Escaped(State):
+    """Escaped state.
+
+    In this state agents have escaped.
+
+    Attributes:
+        name (string): A string containing the name of the state.
+
+    """
     def __init__(self):
+        """Initialize the Escaped state."""
         self.name = "Escaped"
 
     def on_enter(self, agent):
@@ -377,11 +423,14 @@ class HumanWandering(Wandering):
         neighbors = agent.neighbors(include_center=False,
                                     radius=agent.traits["vision"])
 
-        # No humans or zombies nearby
+        # No humans (in grouping mode) or zombies nearby
         for neighbour in neighbors:
-            if (neighbour.agent_type == "zombie" or
-                    neighbour.agent_type == "human"):
+            if neighbour.agent_type == "zombie":
                 return False
+
+            if neighbour.agent_type == "human" and agent.model.grouping:
+                return False
+
         return True
 
 
@@ -411,6 +460,7 @@ class ZombieWandering(Wandering):
 
         """
         neighbors = agent.neighbors(radius=agent.traits["vision"])
+
         return agent.nearest_brain(neighbors) is None
 
 
@@ -427,14 +477,15 @@ class AvoidingZombie(State):
         self.name = "AvoidingZombie"
 
     def get_best_cell(self, agent):
-        """Get the best possible cell for an agent to move to.
+        """Find the best possible cell for an agent to move to, based
+        on it's current neighbors.
 
         Args:
             agent (:obj:): The agent in the state.
 
         Returns:
             (list): List containing the best possible cell.
-            None: Returns none if no cell was found.
+            None: Returns None if no cell was found.
 
         """
         if not agent.pos:
@@ -442,11 +493,13 @@ class AvoidingZombie(State):
 
         neighbors = agent.neighbors(radius=agent.traits["vision"])
         direction = agent.find_escape(neighbors)
+
         if direction:
-            # Calculate the coordinate the agent wants to move to
             new_x = agent.pos[0] + direction[0]
             new_y = agent.pos[1] + direction[1]
+
             return agent.best_cell([new_x, new_y])
+
         return None
 
     def transition(self, agent):
@@ -489,9 +542,11 @@ class AvoidingZombie(State):
 
         """
         best_cell = self.get_best_cell(agent)
+
         if best_cell:
             agent.direction = (best_cell[0] - agent.pos[0],
                                best_cell[1] - agent.pos[1])
+
             agent.model.grid.move_agent(agent, best_cell)
         else:
             agent.direction = (0, 0)
@@ -524,11 +579,13 @@ class Idle(State):
 
         """
         neighbors = agent.neighbors()
+
         for neighbour in neighbors:
             if neighbour.agent_type == "human":
                 for state in neighbour.states:
                     if state.name == "Infected":
                         return False
+
         return True
 
 
@@ -560,8 +617,10 @@ class ChasingHuman(State):
         """
         neighbors = agent.neighbors(radius=agent.traits["vision"])
         nearest_human = agent.nearest_brain(neighbors)
+
         if nearest_human:
             return agent.best_cell([nearest_human[0], nearest_human[1]])
+
         return None
 
     def transition(self, agent):
@@ -578,15 +637,18 @@ class ChasingHuman(State):
 
         """
         human = self.get_best_cell(agent)
+
         if human is None:
             return False
 
         neighbors = agent.neighbors()
+
         for neighbour in neighbors:
             if neighbour.agent_type == "human":
                 for state in neighbour.states:
                     if state.name == "Infected":
                         return False
+
         return True
 
     def on_update(self, agent):
@@ -597,6 +659,7 @@ class ChasingHuman(State):
 
         """
         best_cell = self.get_best_cell(agent)
+
         if best_cell:
             agent.model.grid.move_agent(agent, best_cell)
 
@@ -643,7 +706,12 @@ class Infected(State):
         return "infected" in agent.traits
 
     def on_enter(self, agent):
-        """Update the counter and set infection time on entering this state."""
+        """Update the counter and set infection time on entering this state.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        """
         agent.model.carrier += 1
         agent.traits["time_at_infection"] = agent.time_alive
 
@@ -670,6 +738,7 @@ class Turned(State):
 
         """
         zombie = ZombieAgent(target.pos, target.model, target.fsm)
+
         target.model.grid.place_agent(zombie, target.pos)
         target.model.schedule.add(zombie)
         target.fsm.set_initial_states(["ZombieWandering", "Idle"], zombie)
@@ -692,9 +761,15 @@ class Turned(State):
                 agent.traits["incubation_time"])
 
     def on_enter(self, agent):
-        """On entering this state, add a zombie and update counter."""
+        """On entering this state, add a zombie and update counter.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        """
         self.add_zombie(agent)
         agent.remove_agent()
+
         agent.model.carrier -= 1
 
 
@@ -727,7 +802,7 @@ class InteractionHuman(State):
 
         """
         neighbors = agent.neighbors()
-        # Find any human that is not yet been infected
+
         for neighbour in neighbors:
             if not neighbour.agent_type == "human":
                 continue
@@ -735,7 +810,9 @@ class InteractionHuman(State):
             for state in neighbour.states:
                 if state.name == "Susceptible":
                     self.target = neighbour
+
                     return True
+
         return False
 
     def on_enter(self, agent):
@@ -744,7 +821,8 @@ class InteractionHuman(State):
         When entering this state, the human gets a buff to the chance of
         defeating a zombie, based on how many other humans are near him. The
         human also gets a buff based on his total zombie kills. After the buff
-        has been applied, the human can get infected.
+        has been applied, the human can get infected. The buff can be at most
+        50% when maxing out both nearby humans and kills.
 
         Args:
             agent (:obj:): The human in the current state.
@@ -759,6 +837,7 @@ class InteractionHuman(State):
             self.target.traits["zombie_kills"] = 0
 
         neighbour_count = 0
+
         for neighbour in self.target.neighbors():
             if neighbour.agent_type == "human":
                 neighbour_count += 1
@@ -768,6 +847,7 @@ class InteractionHuman(State):
 
         if chance <= total:
             agent.fsm.switch_to_state(agent, self.name, "RemoveZombie")
+
             self.target.traits["zombie_kills"] += 1
         else:
             agent.fsm.switch_to_state(agent, self.name, "InfectHuman")
@@ -786,9 +866,16 @@ class RemoveZombie(State):
         self.name = "RemoveZombie"
 
     def on_enter(self, agent):
-        """When entering the state, update counter and remove the zombie."""
+        """When entering the state, update counter and remove the zombie.
+
+        Args:
+            agent (:obj:): The human in the current state.
+
+        """
         agent.model.recovered += 1
+
         agent.remove_agent()
+
         del agent
 
 
@@ -805,15 +892,16 @@ class InfectHuman(State):
         self.name = "InfectHuman"
 
     def on_enter(self, agent):
-        """When entering the state, try to infect a human.
+        """Attempt to find only susceptible humans, i.e. humans who do not
+        already carry the virus. When entering the state, try to infect a
+        human.
 
         Args:
             agent (:obj:): The zombie in the state.
 
         """
         neighbors = agent.neighbors()
-        # Find any human that is susceptible to
-        # being infected.
+
         for neighbour in neighbors:
             if not neighbour.agent_type == "human":
                 continue
@@ -821,4 +909,5 @@ class InfectHuman(State):
             for state in neighbour.states:
                 if state.name == "Susceptible":
                     neighbour.traits["infected"] = True
+
                     return
