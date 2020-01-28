@@ -1,10 +1,14 @@
 from automaton.states import *
 
+
 class Automaton():
-    """Our automaton class. This is used to program finite state machines."""
+    """Our automaton class. This is used to program finite state machines
+    (FSM).
+
+    """
 
     def __init__(self):
-        """Initialize the finite state machine and program the FSM."""
+        """Initialize the FSM and program it."""
         self.states = {}
 
         # Zombie movement
@@ -46,11 +50,23 @@ class Automaton():
             }
 
     def event(self, a, b):
+        """Add a transition from state a to state b to the automaton.
+
+        Args:
+            a (:obj:): the state to transition from.
+            b (:obj:): the state to transition to.
+        """
         self.add_state(a)
         self.add_state(b)
         self.states[a.name]['transitions'].append(b.name)
 
     def set_initial_states(self, state_names, agent):
+        """Set the states an agent has to be initialized with.
+
+        Args:
+            state_names (string): The string names referring to state objects.
+            agent (:obj:): Agent whomst'd've initial states have to be set.
+        """
         agent.states = []
 
         for state_name in state_names:
@@ -58,6 +74,17 @@ class Automaton():
             agent.states.append(state)
 
     def switch_to_state(self, agent, old, new):
+        """Force a state-switch before the Automaton's update function
+        is called. This is riskier than using the Automaton's own update
+        function since no verification is made to ensure proper transitions.
+
+        Args:
+            agent (:obj:): Agent whomst'd've state has to be switched.
+            old (string): String referring to the state we want to
+                          transition from.
+            new (string): String referring to the state we want to
+                          transition to.
+        """
         if new in self.states[old]["transitions"]:
             old_state_obj = self.states[old]["object"]
             new_state_obj = self.states[new]["object"]
@@ -69,6 +96,12 @@ class Automaton():
             new_state_obj.on_enter(agent)
 
     def update(self, agent):
+        """Allow agent to possibly transition from current state to a
+        registered and verified new state.
+
+        Args:
+            agent (:obj:): Agent whomst'd've states can be updated.
+        """
         for state in agent.states.copy():
             if not agent.pos:
                 continue
