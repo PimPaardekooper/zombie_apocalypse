@@ -36,6 +36,8 @@ class Map:
             maps = [self.simple_incubation]
         elif os.environ["mode"] == "4":
             maps = [self.doorway_map]
+        elif os.environ["mode"] == "5":
+            maps = [self.road_map]
         else:
             maps = [
                 self.initial_map, self.second_map, self.third_map,
@@ -347,6 +349,27 @@ class Map:
                  road10, road11, road12, road13, road14, road15, road16]
 
         return cities, roads, []
+
+    def road_map(self):
+        """$ cities vertical and horizontal connected."""
+        city1 = Place([[0, 0], [0, 9], [9, 9], [0, 9]],
+                      self.model.density)
+
+        city2 = Place([[20, 9], [20, 0], [29, 0], [29, 9]],
+                      self.model.density)
+
+        city3 = Place([[20, 20], [29, 20], [29, 29], [20, 29]],
+                      self.model.density)
+
+        city4 = Place([[9, 20], [0, 20], [0, 29], [9, 29]],
+                      self.model.density)
+
+        road1 = Road([[2, 19], [2, 10], [7, 10], [7, 19]], (0, 1), 2)
+        road2 = Road([[10, 7], [10, 2], [19, 2], [19, 7]], (1, 0), 2)
+        road3 = Road([[22, 10], [27, 10], [27, 19], [22, 19]], (0, 1), 2)
+        road4 = Road([[10, 27], [19, 27], [19, 22], [10, 22]], (1, 0), 2)
+
+        return [city1, city2, city3, city4], [road1, road2, road3, road4], []
 
     def situation_map(self):
         """Square map no walls."""

@@ -24,6 +24,9 @@ def get_mode():
     elif os.environ["mode"] == "4":
         model_params, canvas_height, canvas_width, grid_height, grid_width = \
             doorway_mode()
+    elif os.environ["mode"] == "5":
+        model_params, canvas_height, canvas_width, grid_height, grid_width = \
+            roads_mode()
     else:
         model_params, canvas_height, canvas_width, grid_height, grid_width = \
             standard_mode()
@@ -226,6 +229,36 @@ def standard_mode():
         "patient_zero": UserSettableParameter(
             "checkbox", "Patient zero", value=patient_zero
         )
+    }
+
+    return model_params, canvas_height, canvas_width, grid_height, grid_width
+
+
+def roads_mode():
+    """All sliders."""
+    seed = random.randrange(sys.maxsize)
+    map_id = 0
+    grid_height = 30
+    grid_width = 30
+    canvas_height = 600
+    canvas_width = canvas_height
+    infected_chance = 0.05
+    human_kill_agent_chance = 0.35
+
+    model_params = {
+        "height": grid_height,
+        "width": grid_width,
+        "seed": UserSettableParameter("number", "seed", value=str(seed)),
+        "density": UserSettableParameter(
+            "slider", "Agent density", value=0.2, min_value=0.01,
+            max_value=1.0, step=0.01
+        ),
+        "infected_chance": infected_chance,
+        "human_kill_agent_chance": human_kill_agent_chance,
+        "map_id": UserSettableParameter(
+            "slider", "Map id (max 4)", value=map_id, min_value=0,
+            max_value=7, step=1
+        ),
     }
 
     return model_params, canvas_height, canvas_width, grid_height, grid_width

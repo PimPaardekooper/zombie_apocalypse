@@ -1,4 +1,5 @@
 from automaton.states import *
+import os
 
 class Automaton():
     def __init__(self):
@@ -27,8 +28,18 @@ class Automaton():
         self.event(Infected(), Turned())
 
         # Through doorway
-        self.event(FindDoor(), Escaped())
+        if os.environ["mode"] == "3":
+            self.event(FindDoor(), Escaped())
+        elif os.environ["mode"] == "5":
+            self.event(HumanWandering(), OnRoad())
+            self.event(FormingHerd(), OnRoad())
+            self.event(AvoidingZombie(), OnRoad())
+            self.event(ZombieWandering(), OnRoad())
 
+            self.event(OnRoad(), HumanWandering())
+            self.event(OnRoad(), FormingHerd())
+            self.event(OnRoad(), AvoidingZombie())
+            self.event(OnRoad(), ZombieWandering())
 
     def add_state(self, state):
         if state.name not in self.states:

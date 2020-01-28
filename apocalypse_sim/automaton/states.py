@@ -1,9 +1,9 @@
+from grid_map.map_object import Road
+from agents.zombie_agent import ZombieAgent
+from agents.human_agent import HumanAgent
+from .state import State
 import sys
 sys.path.append("..")
-
-from .state import State
-from agents.human_agent import HumanAgent
-from agents.zombie_agent import ZombieAgent
 
 
 class Reproduce(State):
@@ -32,16 +32,15 @@ class Reproduce(State):
 
         return False
 
-
     def __init__(self):
         self.name = "Reproduce"
-
 
     """
     An agent may transition into the current state if it has
     been alive for at least 3 steps, or the time since the
     last reproduction is greater than 3 steps.
     """
+
     def transition(self, agent):
         if "time_at_reproduction" in agent.traits:
             most_recent = agent.traits["time_at_reproduction"]
@@ -49,7 +48,6 @@ class Reproduce(State):
             return agent.time_alive - most_recent > 3
 
         return agent.time_alive > 3
-
 
     def on_update(self, agent):
         if self.reproduce(agent):
@@ -59,7 +57,6 @@ class Reproduce(State):
 class FormingHerd(State):
     def __init__(self):
         self.name = "FormingHerd"
-
 
     def transition(self, agent):
         human_count = 0
@@ -76,13 +73,13 @@ class FormingHerd(State):
 
         return False
 
-
     """
     Normalize a 2D list.
     Returns list.
     Note: Possibly make a helper function file containing helpers
     such as 'normalize'.
     """
+
     def _normalize(self, vector):
         u = (vector[0] ** 2 + vector[1] ** 2) ** 0.5
 
@@ -94,10 +91,10 @@ class FormingHerd(State):
 
         return vector
 
-
     """
     Make all agents move in the same direction.
     """
+
     def alignment(self, agent, neighbors):
         v = [0, 0]
         l = len(neighbors)
@@ -111,10 +108,10 @@ class FormingHerd(State):
 
         return self._normalize(v)
 
-
     """
     Make all agents move towards the center of a group.
     """
+
     def cohesion(self, agent, neighbors):
         v = [0, 0]
         l = len(neighbors)
@@ -131,10 +128,10 @@ class FormingHerd(State):
 
         return self._normalize(v)
 
-
     """
     Make sure no agents interact with each other.
     """
+
     def separation(self, agent, neighbors):
         v = [0, 0]
 
@@ -154,8 +151,10 @@ class FormingHerd(State):
     Get the direction vector for every agent so that
     we can simulate flocking behaviour.
     """
+
     def direction(self, agent):
-        neighbors = agent.neighbors(radius=agent.traits["vision"], include_center=False)
+        neighbors = agent.neighbors(
+            radius=agent.traits["vision"], include_center=False)
         humans = [human for human in neighbors if human.agent_type == "human"]
 
         # No humans nearby, do not move.
@@ -173,7 +172,6 @@ class FormingHerd(State):
 
         return self._normalize(direction)
 
-
     def on_update(self, agent):
         direction = self.direction(agent)
 
@@ -189,7 +187,8 @@ class FormingHerd(State):
 
             new_cell = agent.best_cell((direction[0] + a, direction[1] + b))
 
-        agent.direction = (new_cell[0] - agent.pos[0], new_cell[1] - agent.pos[1])
+        agent.direction = (new_cell[0] - agent.pos[0],
+                           new_cell[1] - agent.pos[1])
 
         agent.model.grid.move_agent(agent, new_cell)
 
@@ -198,17 +197,14 @@ class Wandering(State):
     def __init__(self):
         self.name = "Wandering"
 
-
     def random_move(self, agent):
         free_cells = agent.get_moves()
         new_cell = agent.random.choice(free_cells)
 
         agent.model.grid.move_agent(agent, new_cell)
 
-
     def on_enter(self, agent):
         self.random_move(agent)
-
 
     def on_update(self, agent):
         self.random_move(agent)
@@ -233,12 +229,12 @@ class FindDoor(State):
             best_cell = max(set(best_cells), key=best_cells.count)
 
             if best_cell:
-                agent.direction = (best_cell[0] - agent.pos[0], best_cell[1] - agent.pos[1])
+                agent.direction = (
+                    best_cell[0] - agent.pos[0], best_cell[1] - agent.pos[1])
 
                 agent.model.grid.move_agent(agent, best_cell)
             else:
                 agent.direction = (0, 0)
-
 
 
 class Escaped(State):
@@ -255,15 +251,14 @@ class HumanWandering(Wandering):
     def __init__(self):
         self.name = "HumanWandering"
 
-
     def transition(self, agent):
-        neighbors = agent.neighbors(include_center=False, radius=agent.traits["vision"])
+        neighbors = agent.neighbors(
+            include_center=False, radius=agent.traits["vision"])
 
         # No humans or zombies nearby
         for neighbour in neighbors:
             if neighbour.agent_type == "zombie" or neighbour.agent_type == "human":
                 return False
-
 
         return True
 
@@ -271,7 +266,6 @@ class HumanWandering(Wandering):
 class ZombieWandering(Wandering):
     def __init__(self):
         self.name = "ZombieWandering"
-
 
     def transition(self, agent):
         neighbors = agent.neighbors(radius=agent.traits["vision"])
@@ -282,7 +276,6 @@ class ZombieWandering(Wandering):
 class AvoidingZombie(State):
     def __init__(self):
         self.name = "AvoidingZombie"
-
 
     def get_best_cell(self, agent):
         if not agent.pos:
@@ -300,20 +293,18 @@ class AvoidingZombie(State):
 
         return None
 
-
     def transition(self, agent):
         return self.get_best_cell(agent)
 
-
     def halt(self, agent):
         return self.get_best_cell(agent)
-
 
     def on_update(self, agent):
         best_cell = self.get_best_cell(agent)
 
         if best_cell:
-            agent.direction = (best_cell[0] - agent.pos[0], best_cell[1] - agent.pos[1])
+            agent.direction = (
+                best_cell[0] - agent.pos[0], best_cell[1] - agent.pos[1])
 
             agent.model.grid.move_agent(agent, best_cell)
         else:
@@ -324,11 +315,11 @@ class Idle(State):
     def __init__(self):
         self.name = "Idle"
 
-
     """
     Only transition into current state if not surrounded by
     any susceptible humans.
     """
+
     def transition(self, agent):
         neighbors = agent.neighbors()
 
@@ -345,7 +336,6 @@ class ChasingHuman(State):
     def __init__(self):
         self.name = "ChasingHuman"
 
-
     def get_best_cell(self, agent):
         neighbors = agent.neighbors(radius=agent.traits["vision"])
         nearest_human = agent.nearest_brain(neighbors)
@@ -354,7 +344,6 @@ class ChasingHuman(State):
             return agent.best_cell([nearest_human[0], nearest_human[1]])
 
         return None
-
 
     def transition(self, agent):
         human = self.get_best_cell(agent)
@@ -378,7 +367,6 @@ class ChasingHuman(State):
         # You are ready to chase someone
         return True
 
-
     def on_update(self, agent):
         best_cell = self.get_best_cell(agent)
 
@@ -395,14 +383,13 @@ class Infected(State):
     def __init__(self):
         self.name = "Infected"
 
-
     """
     A human may transition into the Infected state if
     it's infected trait has been set in the Infect state.
     """
+
     def transition(self, agent):
         return "infected" in agent.traits
-
 
     def on_enter(self, agent):
         agent.model.carrier += 1
@@ -414,7 +401,6 @@ class Turned(State):
     def __init__(self):
         self.name = "Turned"
 
-
     def add_zombie(self, target):
         zombie = ZombieAgent(target.pos, target.model, target.fsm)
 
@@ -423,10 +409,8 @@ class Turned(State):
 
         target.fsm.set_initial_states(["ZombieWandering", "Idle"], zombie)
 
-
     def transition(self, agent):
         return agent.time_alive - agent.traits["time_at_infection"] >= agent.traits["incubation_time"]
-
 
     def on_enter(self, agent):
         self.add_zombie(agent)
@@ -438,7 +422,6 @@ class Turned(State):
 class InteractionHuman(State):
     def __init__(self):
         self.name = "InteractionHuman"
-
 
     def transition(self, agent):
         neighbors = agent.neighbors()
@@ -456,7 +439,6 @@ class InteractionHuman(State):
 
         return False
 
-
     def on_enter(self, agent):
         chance = agent.model.random.random()
         buff = 0
@@ -465,7 +447,6 @@ class InteractionHuman(State):
             buff += min(self.target.traits["zombie_kills"] * 0.05, 0.3)
         else:
             self.target.traits["zombie_kills"] = 0
-
 
         neighbour_count = 0
 
@@ -489,7 +470,6 @@ class RemoveZombie(State):
     def __init__(self):
         self.name = "RemoveZombie"
 
-
     def on_enter(self, agent):
         agent.model.recovered += 1
         agent.remove_agent()
@@ -500,15 +480,17 @@ class RemoveZombie(State):
 """
 State that represents a zombie infecting a human.
 """
+
+
 class InfectHuman(State):
     def __init__(self):
         self.name = "InfectHuman"
-
 
     """
     A zombie has spotted a nearby human and will 'infect' it by
     setting it's infected trait.
     """
+
     def on_enter(self, agent):
         neighbors = agent.neighbors()
 
@@ -522,3 +504,47 @@ class InfectHuman(State):
                 if state.name == "Susceptible":
                     neighbour.traits["infected"] = True
                     return
+
+
+class OnRoad(State):
+    def __init__(self):
+        self.name = "OnRoad"
+
+    def transition(self, agent):
+        road = self.on_road(agent)
+
+        if road:
+            agent.traits["speed"] = road.place.speed
+            agent.traits["dir"] = road.place.flip(agent.pos)
+
+            return True
+
+        return False
+
+    def halt(self, agent):
+        return True
+
+    def on_update(self, agent):
+        if not self.on_road(agent):
+            print(agent.agent_type)
+            if agent.agent_type == "human":
+                agent.model.fsm.switch_to_state(agent, "OnRoad",
+                                                "HumanWandering")
+            elif agent.agent_type == "zombie":
+                agent.model.fsm.switch_to_state(agent, "OnRoad",
+                                                "ZombieWandering")
+
+        x = int(agent.pos[0] + agent.traits["dir"][0] * agent.traits["speed"])
+        y = int(agent.pos[1] + agent.traits["dir"][1] * agent.traits["speed"])
+        print(agent.pos, x,y)
+        agent.model.grid.move_agent(agent, (x, y))
+
+    def on_road(self, agent):
+        if agent.agent_type == "human" or \
+                (agent.agent_type == "zombie" and "OnRoad" in agent.states):
+            for obj in agent.model.grid[agent.pos[0]][agent.pos[1]]:
+                if obj.agent_type == "road":
+                    print(agent.pos)
+                    return obj
+
+        return False

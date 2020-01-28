@@ -14,11 +14,11 @@ from shapely.geometry import Polygon, Point
 class MapObjectAgent(MesaAgent):
     """Hold all immovable agents as a Mesa Agent."""
 
-    def __init__(self, pos, agent_type, model, color=""):
+    def __init__(self, pos, agent_type, model, place=None, color=""):
         """MapObjectAgent.
 
         pos: spawn location agent.
-        agent_type: human or zombie.
+        agent_type: city or road.
         model: Apocalypse object holds all needed information.
         color: display color agent.
         """
@@ -26,6 +26,7 @@ class MapObjectAgent(MesaAgent):
 
         self.agent_type = agent_type
         self.color = color
+        self.place = place
 
 
 class MapObject:

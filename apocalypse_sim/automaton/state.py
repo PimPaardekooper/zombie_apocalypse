@@ -16,7 +16,7 @@ class State():
 
     def halt(self, agent):
         """
-        Allows a state to not allow an agent to transtion to a new state.
+        Allows a state to not allow an agent to transition to a new state.
 
         Args:
             agent (:obj:): The agent in the state.
