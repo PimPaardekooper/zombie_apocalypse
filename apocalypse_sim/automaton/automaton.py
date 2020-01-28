@@ -64,7 +64,7 @@ class Automaton():
         """Set the states an agent has to be initialized with.
 
         Args:
-            state_names (str): The string names referring to state objects.
+            state_names (string): The string names referring to state objects.
             agent (:obj:): Agent whomst'd've initial states have to be set.
         """
         agent.states = []
@@ -80,9 +80,9 @@ class Automaton():
 
         Args:
             agent (:obj:): Agent whomst'd've state has to be switched.
-            old (str): String referring to the state we want to
+            old (string): String referring to the state we want to
                           transition from.
-            new (str): String referring to the state we want to
+            new (string): String referring to the state we want to
                           transition to.
         """
         if new in self.states[old]["transitions"]:
