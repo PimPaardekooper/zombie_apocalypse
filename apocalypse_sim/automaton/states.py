@@ -295,6 +295,8 @@ class Wandering(State):
         """Initialize the Wandering state."""
         self.name = "Wandering"
 
+
+
     def random_move(self, agent):
         """Move the agent to a randomly unoccupied cell around him."""
         free_cells = agent.get_moves()
