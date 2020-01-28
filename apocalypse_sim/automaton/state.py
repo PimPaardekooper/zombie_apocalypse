@@ -3,6 +3,9 @@ class State():
     Our own state class, used by the Finite State Machine.
     """
 
+    def __init__(self):
+        self.name = ""
+
     def transition(self, agent):
         """
         Determine whether a given agent may enter the current state, e.g. by
@@ -59,3 +62,7 @@ class State():
         When trying to print a state, print its name.
         """
         return self.name
+
+    def __eq__(self, other):
+        """Object is equal if string is the same."""
+        return self.name == other

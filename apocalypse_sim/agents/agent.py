@@ -50,6 +50,10 @@ class Agent(MesaAgent):
         # List of agents we can't overlap with
         no_overlap = ["wall", "human", "zombie"]
 
+        if self.agent_type == "zombie" or "AvoidingZombie" not in self.states:
+            no_overlap.append("road")
+
+
         # Always give the option to stay on your current location(stand still)
         all_cells = self.neighbors()
         free_cells = [self.pos]
@@ -150,3 +154,8 @@ class Agent(MesaAgent):
                 continue
 
             state.on_update(self)
+
+    def on_road(self):
+        for obj in self.model.grid[self.pos[0]][self.pos[1]]:
+            if obj.agent_type == "road":
+                return obj

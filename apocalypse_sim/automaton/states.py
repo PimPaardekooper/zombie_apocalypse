@@ -297,7 +297,7 @@ class AvoidingZombie(State):
         return self.get_best_cell(agent)
 
     def halt(self, agent):
-        return self.get_best_cell(agent)
+        return self.get_best_cell(agent) and "OnRoad" in agent.states
 
     def on_update(self, agent):
         best_cell = self.get_best_cell(agent)
@@ -407,7 +407,13 @@ class Turned(State):
         target.model.grid.place_agent(zombie, target.pos)
         target.model.schedule.add(zombie)
 
-        target.fsm.set_initial_states(["ZombieWandering", "Idle"], zombie)
+        if "OnRoad" in target.states:
+            target.fsm.set_initial_states(["OnRoad"], zombie)
+            zombie.traits["dir"] = target.traits["dir"]
+            zombie.traits["speed"] = target.traits["speed"]
+        else:
+            target.fsm.set_initial_states(["ZombieWandering", "Idle"], zombie)
+
 
     def transition(self, agent):
         return agent.time_alive - agent.traits["time_at_infection"] >= agent.traits["incubation_time"]
@@ -513,7 +519,7 @@ class OnRoad(State):
     def transition(self, agent):
         road = self.on_road(agent)
 
-        if road:
+        if road and "AvoidingZombie" in agent.states:
             agent.traits["speed"] = road.place.speed
             agent.traits["dir"] = road.place.flip(agent.pos)
 
@@ -526,7 +532,6 @@ class OnRoad(State):
 
     def on_update(self, agent):
         if not self.on_road(agent):
-            print(agent.agent_type)
             if agent.agent_type == "human":
                 agent.model.fsm.switch_to_state(agent, "OnRoad",
                                                 "HumanWandering")
@@ -534,17 +539,19 @@ class OnRoad(State):
                 agent.model.fsm.switch_to_state(agent, "OnRoad",
                                                 "ZombieWandering")
 
+                new_state_obj = agent.model.fsm.states["Idle"]["object"]
+                agent.states.append(new_state_obj)
+                new_state_obj.on_enter(agent)
+
+
         x = int(agent.pos[0] + agent.traits["dir"][0] * agent.traits["speed"])
         y = int(agent.pos[1] + agent.traits["dir"][1] * agent.traits["speed"])
-        print(agent.pos, x,y)
         agent.model.grid.move_agent(agent, (x, y))
 
     def on_road(self, agent):
         if agent.agent_type == "human" or \
                 (agent.agent_type == "zombie" and "OnRoad" in agent.states):
-            for obj in agent.model.grid[agent.pos[0]][agent.pos[1]]:
-                if obj.agent_type == "road":
-                    print(agent.pos)
-                    return obj
+
+            return agent.on_road()
 
         return False

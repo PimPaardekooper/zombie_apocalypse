@@ -114,6 +114,12 @@ class Automaton():
 
             # We add the list of new states to our
             # active states list.
-            for new_state in new_states:
-                agent.states.append(new_state)
-                new_state.on_enter(agent)
+            if OnRoad() in new_states:
+                for new_state in new_states:
+                    if new_state == "OnRoad":
+                        agent.states.append(new_state)
+                        new_state.on_enter(agent)
+            else:
+                for new_state in new_states:
+                    agent.states.append(new_state)
+                    new_state.on_enter(agent)

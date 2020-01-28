@@ -71,8 +71,8 @@ class Apocalypse(Model):
         self.incubation_time = incubation_time
         self.fsm = Automaton()
 
-        print(self.density, self.incubation_time, self.incubation_time,
-              self.human_kill_zombie_chance, self._seed)
+        # print(self.density, self.incubation_time, self.incubation_time,
+        #       self.human_kill_zombie_chance, self._seed)
 
         # Set agents step function in a schedule to be called in random order.
         self.schedule = RandomActivation(self)
