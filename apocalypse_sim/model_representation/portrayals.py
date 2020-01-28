@@ -73,10 +73,6 @@ def human_portrayal(agent, portrayal):
         portrayal["Color"] = ["#80C904", "#4D7902"]
     else:
         portrayal["Color"] = ["#0000FF", "#9999FF"]
-    
-    if os.environ["mode"] == "5" and agent.pos == (4,4):
-        # Set color green in situations.
-        portrayal["Color"] = ["#03fc77", "#9999FF"]
 
     portrayal["stroke_color"] = "#000000"
 

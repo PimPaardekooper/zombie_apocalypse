@@ -524,6 +524,7 @@ class Agents:
 
         agent_type: zombie or human.
         positions: spawn locations of agent.
+        color: representation color.
         """
         self.agent_type = agent_type
         self.positions = positions
