@@ -35,9 +35,9 @@ with open('series2.json') as json_file:
                 d[density][incubation].append([i, p, float(density), int(incubation)])
 
 
-f, axes = plt.subplots(3, 1 , figsize=(7, 7), sharex=True)
+f, axes = plt.subplots(1, 1 , figsize=(7, 7), sharex=True)
 
-plt.legend(fontsize='10')
+plt.legend(fontsize='1')
 
 counter = 0
 for i, dens in enumerate(d):
@@ -49,7 +49,7 @@ for i, dens in enumerate(d):
 
     serie = pd.concat(series)
 
-    if i == 0 or i == 4:
+    if i == 0 or i == 4 or i == 3 or i == 2:
         print(i)
         continue
     print(i)
@@ -60,11 +60,12 @@ for i, dens in enumerate(d):
     # print(serie)
     # print("\n\n")
     print(i, dens)
-    axes[counter].set_title("density {}".format(dens))
+    axes.set_title("density {}".format(dens))
     plot = sns.lineplot(x="step", y="percentage_infected",
                     hue="incubation_time",
-                    markers=True, dashes=False, data=serie, legend="full",
-                    ax=axes[counter])
+                    markers=True, dashes=False, data=serie, legend="brief",
+                    ax=axes)
     counter += 1
 
+plot.legend(fontsize='10', loc="upper left")
 plot.get_figure().savefig("outputs/output3.pdf")
