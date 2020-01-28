@@ -1,7 +1,7 @@
 from automaton.states import *
 
 class Automaton():
-    def __init__(self):
+    def __init__(self, model):
         self.states = {}
 
         # Zombie movement
@@ -16,11 +16,15 @@ class Automaton():
 
         # Human movement
         self.event(HumanWandering(), AvoidingZombie())
-        self.event(HumanWandering(), FormingHerd())
         self.event(AvoidingZombie(), HumanWandering())
-        self.event(AvoidingZombie(), FormingHerd())
-        self.event(FormingHerd(), HumanWandering())
-        self.event(FormingHerd(), AvoidingZombie())
+
+        if model.grouping:
+            self.event(HumanWandering(), FormingHerd())
+            self.event(AvoidingZombie(), FormingHerd())
+            self.event(FormingHerd(), HumanWandering())
+            self.event(FormingHerd(), AvoidingZombie())
+            
+
 
         # Human health
         self.event(Susceptible(), Infected())
