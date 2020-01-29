@@ -63,5 +63,10 @@ class State():
         return self.name
 
     def __eq__(self, other):
-        """Object is equal if string is the same."""
+        """Object is equal if string is the same.
+
+        Args:
+            other (:obj:): The agent in the state.
+
+        """
         return self.name == other
