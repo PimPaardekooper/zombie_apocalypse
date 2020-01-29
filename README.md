@@ -12,10 +12,10 @@ https://docs.docker.com/get-docker/
 You will see a file called output.pdf containing the resulting figure.
 
 # Verification of agent behavior
-To verify the behavior of our agent we have made verification environments which we can visually inspect. To run the
-interface for the model verification, you need to install the dependencies with:
-```pip install --no-cache-dir -r requirements.txt```
-And then run:
-```python3 apocalypse_sim/run.py --test```
-Then click the link to view the interactive console. With the map slider we can select a map, and then press reset to
-change the map to the selected one.
+We have made verification environments, which we can visually inspect, to verify the behavior of our agents. To open the
+graphical user interface (GUI) for model verification, the following steps must be followed:
+1. Install project dependencies: ```pip install --no-cache-dir -r requirements.txt```
+2. Run the server: ```python3 apocalypse_sim/run.py --test```
+3. Click the link in your terminal to view the GUI.
+
+With the map slider, one can select a map and then press ```reset``` to see the changes to the GUI and model.
