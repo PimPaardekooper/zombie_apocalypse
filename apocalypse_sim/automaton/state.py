@@ -5,6 +5,7 @@ class State():
     """Our own state class, used by the Finite State Machine."""
 
     def __init__(self):
+        """Initialize a state."""
         self.name = ""
 
     def transition(self, agent):
