@@ -34,7 +34,7 @@ class Map:
                 self.group_test
             ]
         elif os.environ["mode"] == "2":
-            maps = [self.nethelands_map]
+            maps = [self.netherlands_map]
         elif os.environ["mode"] == "3":
             maps = [self.simple_incubation]
         elif os.environ["mode"] == "4":
@@ -90,7 +90,7 @@ class Map:
 
         return [city, city2], [road], [zombies]
 
-    def nethelands_map(self):
+    def netherlands_map(self):
         """Map of holland.
 
         Gets the polygons for each province out of a geojson file and the

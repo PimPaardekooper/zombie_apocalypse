@@ -16,7 +16,7 @@ sys.path.append("..")
 
 
 class MapGen:
-    """Generates a map and spawns the needed agents in the map."""
+    """Generate a map and spawns the needed agents in the map."""
 
     def __init__(self, map_id, city_id, infected_chance, province, model):
         """Construct a map.
@@ -40,7 +40,7 @@ class MapGen:
         self.spawn_agents_in_city(city_id, infected_chance, province)
 
     def spawn_map(self):
-        """Spawn map agents.
+        """Spawn walls, roads, and places on the map.
 
         Loops through the coordinates in the grid and spawns a place, road,
         or a wall on the cell.
@@ -78,7 +78,7 @@ class MapGen:
                 self.model.grid.place_agent(new_agent, (x, y))
 
     def spawn_agents(self):
-        """Spawn hard coded agents, good for unit testing."""
+        """Spawn hard coded agents, useful for unit testing."""
         for agent in self.map.agents:
             for pos in agent.positions:
                 if agent.agent_type == "zombie":

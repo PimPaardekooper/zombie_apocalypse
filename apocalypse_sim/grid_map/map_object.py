@@ -31,11 +31,7 @@ class MapObjectAgent(MesaAgent):
 
 
 class MapObject:
-    """Hold the map object that is represented by a polygon.
-
-    Subclasses can be a Road with speed and direction or Place with a
-    certain population density.
-    """
+    """Map object represented by a polygon and a color."""
 
     def __init__(self, vertices, color=""):
         """MapObject.
@@ -47,15 +43,6 @@ class MapObject:
         """
         self.poly = Polygon(vertices)
         self.color = color
-
-    def __str__(self):
-        """Represent object as string.
-
-        Returns:
-            (string): String representing object when printing it.
-
-        """
-        return "None"
 
     def get_coords(self):
         """Return all coordinates in the polygon.
@@ -98,7 +85,7 @@ class Place(MapObject):
             (string): String representing object when printing it.
 
         """
-        return "Place"
+        return "PlaceObject"
 
     def density_to_amount(self, density):
         """Convert the density to a value given the place area.
@@ -128,11 +115,11 @@ class Road(MapObject):
         self.speed = speed
 
     def flip(self, pos):
-        """Flip direction given start position.
+        """Flip road direction given the start position of an agent.
 
-        Check if a agent start the road from the left or right up or under,
+        Check if an agent enters the road from the left, right top or bottom,
         by seeing if it is close to the maximum or minimum x and y value of
-        the road and flips the sign for the direction accordingly.
+        the road and flip the sign for the direction accordingly.
 
         Args:
             pos (tuple): Position of agent.
@@ -163,4 +150,4 @@ class Road(MapObject):
             (string): String representing object when printing it.
 
         """
-        return "Road"
+        return "RoadObject"
