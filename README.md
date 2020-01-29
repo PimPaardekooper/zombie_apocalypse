@@ -32,7 +32,10 @@ With the map slider on the left, one can switch between verification environment
 We have saved all our experiments in the ```apocalypse_sim/experiments/``` folder. However, since some experiments may take multiple hours to run, we have provided a small experiment to reproduce one of the figures from our poster and report. Navigate to ```apocalypse_sim/experiments/``` and run ```python3 EXPERIMENT_NAME_HERE.py```. The resulting figure is stored in ```apocalypse_sim/experiments/results/EXPERIMENT_NAME_HERE.pdf``` should correspond to the figure included at the end of this README.
 
 ## Flags
-FLAG DOCUMENTATION HERE.
+We have made use of several flags to make our lives a bit easier. They can be used as follows: ```python3 run.py --[flag]```.
+- ```--test```: Loads agent behavior inspection maps.
+- ```--netherland```: Loads the Netherlands map.
+- ```--doorway```: Loads doorway tests.
 
 # OLD VERSION OF README BELOW
 
