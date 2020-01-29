@@ -31,6 +31,7 @@ elif sys.argv[-1] == "--situation":
     os.environ["mode"] = "6"
 elif sys.argv[-1] == "--help":
     print(help_text)
+    
     exit(0)
 else:
     os.environ["mode"] = "0"
