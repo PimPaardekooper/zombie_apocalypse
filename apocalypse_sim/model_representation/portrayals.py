@@ -3,6 +3,7 @@
 Visualize the current state and says what each object looks like given there
 attribute.
 """
+import os
 
 
 def model_draw(agent):

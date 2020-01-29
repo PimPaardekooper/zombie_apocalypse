@@ -27,6 +27,9 @@ def get_mode():
     elif os.environ["mode"] == "5":
         model_params, canvas_height, canvas_width, grid_height, grid_width = \
             roads_mode()
+    elif os.environ["mode"] == 6:
+        model_params, canvas_height, canvas_width, grid_height, grid_width = \
+            situation_mode()
     else:
         model_params, canvas_height, canvas_width, grid_height, grid_width = \
             standard_mode()
@@ -143,6 +146,9 @@ def experiment_mode():
             "slider", "Human survive chance", value=0.35, min_value=0,
             max_value=1, step=0.01
         ),
+        "grouping": UserSettableParameter(
+            "checkbox", "Grouping", value=False
+        )
     }
 
     return model_params, canvas_height, canvas_width, grid_height, grid_width
@@ -248,6 +254,10 @@ def roads_mode():
     model_params = {
         "height": grid_height,
         "width": grid_width,
+        "map_id": UserSettableParameter(
+            "slider", "Map id (max 4)", value=map_id, min_value=0,
+            max_value=1, step=1
+        ),
         "seed": UserSettableParameter("number", "seed", value=str(seed)),
         "density": UserSettableParameter(
             "slider", "Agent density", value=0.2, min_value=0.01,
@@ -255,6 +265,25 @@ def roads_mode():
         ),
         "infected_chance": infected_chance,
         "human_kill_agent_chance": human_kill_agent_chance,
+    }
+
+    return model_params, canvas_height, canvas_width, grid_height, grid_width
+
+
+def situation_mode():
+    """Situation mode for plots on poster."""
+    seed = random.randrange(sys.maxsize)
+
+    map_id = 0
+    grid_height = 9
+    grid_width = 9
+    canvas_height = 600
+    canvas_width = canvas_height
+
+    model_params = {
+        "height": grid_height,
+        "width": grid_width,
+        "seed": UserSettableParameter("number", "seed", value=str(seed)),
         "map_id": UserSettableParameter(
             "slider", "Map id (max 4)", value=map_id, min_value=0,
             max_value=7, step=1

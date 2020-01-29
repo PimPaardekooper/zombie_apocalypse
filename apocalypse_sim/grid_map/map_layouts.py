@@ -38,6 +38,11 @@ class Map:
             maps = [self.doorway_map]
         elif os.environ["mode"] == "5":
             maps = [self.road_map]
+        elif os.environ["mode"] == "6":
+            maps = [
+                    self.avoid_zombie_search_brain, 
+                    self.seperation_map, self.alignment_map,
+                    self.cohesion_map]
         else:
             maps = [
                 self.initial_map, self.second_map, self.third_map,
@@ -456,15 +461,94 @@ class Map:
 
         return [city], [], []
 
+    def seperation_map(self):
+        """Map to show humans steer to avoid crowding."""
+        back = Place([(3, 7), (5, 7), (7, 5), (7, 3),
+                      (5, 1), (3, 1), (1, 3), (1, 5),
+                      (3, 7)], 0)
+
+        city = Place([[0, 0],
+                      [0, self.model.grid.height],
+                      [self.model.grid.width,
+                       self.model.grid.height],
+                      [self.model.grid.width, 0],
+                      [0, 0]],
+                     0, color="#ffffff")
+
+        human = Agents("human", [(1, 3), (4, 4), (4, 7),
+                                 (3, 5), (8, 0), (0, 8)])
+
+        return [city], [], [human]
+
+    def alignment_map(self):
+        """Map to show human steer towards the average heading."""
+        back = Place([(3, 7), (5, 7), (7, 5), (7, 3),
+                      (5, 1), (3, 1), (1, 3), (1, 5),
+                      (3, 7)], 0, color="")
+
+        city = Place([[0, 0],
+                      [0, self.model.grid.height],
+                      [self.model.grid.width,
+                       self.model.grid.height],
+                      [self.model.grid.width, 0],
+                      [0, 0]],
+                     0, color="#ffffff")
+
+        human = Agents("human", [(3, 1), (4, 4), (6, 5),
+                                 (2, 6), (6, 2), (5, 7),
+                                 (1, 3)])
+
+        return [city], [], [human]
+
+    def cohesion_map(self):
+        """Map to show human move toward the average position."""
+        back = Place([(3, 7), (5, 7), (7, 5), (7, 3),
+                      (5, 1), (3, 1), (1, 3), (1, 5),
+                      (3, 7)], 0)
+
+        city = Place([[0, 0],
+                      [0, self.model.grid.height],
+                      [self.model.grid.width,
+                       self.model.grid.height],
+                      [self.model.grid.width, 0],
+                      [0, 0]],
+                     0, color="#ffffff")
+
+        human = Agents("human", [(3, 1), (4, 4), (1, 5),
+                                 (3, 6), (1, 3), (8, 5),
+                                 (8, 7), (7, 1), (1, 7), (0, 1)])
+
+        return [city], [], [human]
+
+    def avoid_zombie_search_brain(self):
+        """Map to show humans avoid zombie and zombie search humans."""
+        back = Place([(3, 7), (5, 7), (7, 5), (7, 3),
+                (5, 1), (3, 1), (1, 3), (1, 5),
+                (3, 7)], 0)
+
+        city = Place([[0, 0],
+                      [0, self.model.grid.height],
+                      [self.model.grid.width,
+                       self.model.grid.height],
+                      [self.model.grid.width, 0],
+                      [0, 0]],
+                     0, color="#ffffff")
+
+        human = Agents("human", [(5,4), (2,3)])
+        zombie = Agents("zombie", [(2,6)])
+
+        return [city], [], [human, zombie]
 
 class Agents:
     """List of agents, same type different positions."""
 
-    def __init__(self, agent_type, positions):
+    def __init__(self, agent_type, positions, color=""):
         """Agents object.
 
         agent_type: zombie or human.
         positions: spawn locations of agent.
+        color: representation color.
         """
         self.agent_type = agent_type
         self.positions = positions
+        self.color = color

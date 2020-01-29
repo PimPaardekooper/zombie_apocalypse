@@ -7,7 +7,7 @@ class HumanAgent(Agent):
     Args:
         pos (tuple): Position of the agent.
         model (:obj:): The corresponding model of the agent.
-        fsm (:obj:): Finite state machine for the behaviour of the agent.
+        fsm (:obj:): Finite state machine for the behavior of the agent.
     """
     def __init__(self, pos, model, fsm):
         super().__init__(pos, model, fsm)

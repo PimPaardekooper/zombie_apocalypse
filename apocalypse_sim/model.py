@@ -28,7 +28,7 @@ class Apocalypse(Model):
                  map_id=5, city_id=0, province="", total_agents=0,
                  human_kill_agent_chance=0.6, patient_zero=False,
                  door_width=5, seed=None, incubation_time=3,
-                 server=None):
+                 server=None, grouping=True, iteration=0):
         """Apocalypse object.
 
         Initializes the apocalypse object, makes the grid and put agents on
@@ -48,6 +48,7 @@ class Apocalypse(Model):
         seed: seed that decides all randomness in the model, so you can repeat
             the exact same experiments.
         incubation_time: time it takes for a infected human to turn.
+        grouping: let humans form groups.
         server: ??????????????????????????????????????????????????????????????????????
         """
         # variables to get from model_params in server.py
@@ -65,11 +66,12 @@ class Apocalypse(Model):
         self.total = 0
         self.patient_zero = patient_zero
         self.human_kill_zombie_chance = human_kill_agent_chance
+        self.grouping = grouping
         self.door = [(-1, -1)]
         self.door_coords = []
         self.door_width = door_width
         self.incubation_time = incubation_time
-        self.fsm = Automaton()
+        self.fsm = Automaton(self)
 
         # print(self.density, self.incubation_time, self.incubation_time,
         #       self.human_kill_zombie_chance, self._seed)
@@ -126,7 +128,7 @@ class Apocalypse(Model):
             #         #
             #
             #
-
+        
         self.schedule.step()
         self.datacollector.collect(self)
 
