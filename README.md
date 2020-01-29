@@ -38,5 +38,5 @@ We have made use of several flags to make our lives a bit easier. They can be us
 - ```--netherland```: Loads the Netherlands map.
 - ```--experiments```: Map where we run the experiments.
 - ```--doorway```: Loads doorway tests.
-- ```--roads```: map where zombies can't take roads.
-- ```--situation```: all flocking components tested.
+- ```--roads```: Map where zombies can't take roads.
+- ```--situation```: All flocking components are tested here.
