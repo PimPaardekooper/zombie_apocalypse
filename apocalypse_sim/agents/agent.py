@@ -2,6 +2,8 @@ from mesa import Model
 from mesa import Agent as MesaAgent
 from grid_map.map_object import Road
 from shapely.geometry import Point
+import os
+
 
 class Agent(MesaAgent):
     """
@@ -23,6 +25,7 @@ class Agent(MesaAgent):
         agent_type (string): String specifying the type of the agent.
         model (:obj:): The model an agent is spawned in.
     """
+
     def __init__(self, pos, model, fsm):
         super().__init__(model.total, model)
 
@@ -36,8 +39,6 @@ class Agent(MesaAgent):
         # Add one to the counter of total agents in the model
         self.model.total += 1
 
-
-
     def get_moves(self):
         """
         Check the cells that an agent is able to move to. Gets all non-occupied
@@ -50,9 +51,9 @@ class Agent(MesaAgent):
         # List of agents we can't overlap with
         no_overlap = ["wall", "human", "zombie"]
 
-        if self.agent_type == "zombie" or "AvoidingZombie" not in self.states:
+        if self.agent_type == "zombie" or \
+                ("AvoidingZombie" not in self.states and os.environ["mode"] == "5"):
             no_overlap.append("road")
-
 
         # Always give the option to stay on your current location(stand still)
         all_cells = self.neighbors()
@@ -75,8 +76,6 @@ class Agent(MesaAgent):
                 free_cells.append((x, y))
 
         return free_cells
-
-
 
     def best_cell(self, coord):
         """
@@ -107,8 +106,6 @@ class Agent(MesaAgent):
 
         return new_cell
 
-
-
     def remove_agent(self):
         """
         Removes an agent of the grid.
@@ -123,8 +120,6 @@ class Agent(MesaAgent):
 
         del self
 
-
-
     def neighbors(self, moore=True, include_center=True, radius=1):
         """
         Get the direct neighbours of an agent.
@@ -138,8 +133,6 @@ class Agent(MesaAgent):
             (list): List of direct neighbours.
         """
         return self.model.grid.get_neighbors(self.pos, moore, include_center, radius)
-
-
 
     def step(self):
         """
@@ -156,6 +149,7 @@ class Agent(MesaAgent):
             state.on_update(self)
 
     def on_road(self):
+        """Check if agent shares a cell with a Road object."""
         for obj in self.model.grid[self.pos[0]][self.pos[1]]:
             if obj.agent_type == "road":
                 return obj

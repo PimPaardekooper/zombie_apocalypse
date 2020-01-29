@@ -6,7 +6,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 d = {}
-with open('series2.json') as json_file:
+with open('series_road.json') as json_file:
     data = json.load(json_file)
     for item in tqdm(data):
         series = item['data']
@@ -63,7 +63,7 @@ for i, dens in enumerate(d):
     axes.set_title("density {}".format(dens))
     plot = sns.lineplot(x="step", y="percentage_infected",
                     hue="incubation_time",
-                    markers=True, dashes=False, data=serie, legend="brief",
+                    markers=True, dashes=False, data=serie, legend="full",
                     ax=axes)
     counter += 1
 

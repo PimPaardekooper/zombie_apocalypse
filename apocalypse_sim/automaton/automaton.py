@@ -25,14 +25,12 @@ class Automaton():
             self.event(FormingHerd(), HumanWandering())
             self.event(FormingHerd(), AvoidingZombie())
             
-
-
         # Human health
         self.event(Susceptible(), Infected())
         self.event(Infected(), Turned())
 
         # Through doorway
-        if os.environ["mode"] == "3":
+        if os.environ["mode"] == "4":
             self.event(FindDoor(), Escaped())
         elif os.environ["mode"] == "5":
             self.event(HumanWandering(), OnRoad())
