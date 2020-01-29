@@ -513,10 +513,14 @@ class InfectHuman(State):
 
 
 class OnRoad(State):
+    """State for agents on a road, get transported other side."""
+
     def __init__(self):
+        """Initialize On Road state."""
         self.name = "OnRoad"
 
     def transition(self, agent):
+        """If agent is on road and running from a zombie transition to road."""
         road = self.on_road(agent)
 
         if road and "AvoidingZombie" in agent.states:
@@ -528,9 +532,11 @@ class OnRoad(State):
         return False
 
     def halt(self, agent):
+        """Never change from state."""
         return True
 
     def on_update(self, agent):
+        """Switch to state if of road otherwise move along the road."""
         if not self.on_road(agent):
             if agent.agent_type == "human":
                 agent.model.fsm.switch_to_state(agent, "OnRoad",
@@ -542,13 +548,13 @@ class OnRoad(State):
                 new_state_obj = agent.model.fsm.states["Idle"]["object"]
                 agent.states.append(new_state_obj)
                 new_state_obj.on_enter(agent)
-
-
-        x = int(agent.pos[0] + agent.traits["dir"][0] * agent.traits["speed"])
-        y = int(agent.pos[1] + agent.traits["dir"][1] * agent.traits["speed"])
-        agent.model.grid.move_agent(agent, (x, y))
+        else:
+            x = int(agent.pos[0] + agent.traits["dir"][0] * agent.traits["speed"])
+            y = int(agent.pos[1] + agent.traits["dir"][1] * agent.traits["speed"])
+            agent.model.grid.move_agent(agent, (x, y))
 
     def on_road(self, agent):
+        """Check if human or zombie on the road shares cell with a Road obj."""
         if agent.agent_type == "human" or \
                 (agent.agent_type == "zombie" and "OnRoad" in agent.states):
 
