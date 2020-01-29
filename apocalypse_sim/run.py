@@ -11,7 +11,10 @@ import getopt
 help_text = "Choose your mode with --,\n\
             --test: runs test maps,\n\
             --netherland: run the holland map\
+            --experiments: experiment field\
             --doorway: doorway tests\
+            --roads: map where zombies can't take roads\
+            --situation: all flocking components tested\
             "
 
 if sys.argv[-1] == "--test":
