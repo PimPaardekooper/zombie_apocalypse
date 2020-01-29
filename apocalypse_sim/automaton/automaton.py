@@ -4,9 +4,7 @@ from automaton.states import *
 
 
 class Automaton():
-    """Our automaton class. Used to program finite state machines (FSM).
-
-    """
+    """Our automaton class. Used to program finite state machines (FSM)."""
 
     def __init__(self, model):
         """Initialize the FSM and program it.

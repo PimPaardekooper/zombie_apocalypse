@@ -1,3 +1,5 @@
+"""Run the simulations over multiple threads."""
+
 from model import Apocalypse
 import numpy as np
 import random
@@ -9,12 +11,16 @@ import multiprocessing as mp
 import csv
 from p_tqdm import p_umap
 
+
 def read_last_line(filename):
-    return subprocess.check_output(['tail', '-1', filename])[0:-1].decode('utf-8')
+    """Read last line."""
+    a = subprocess.check_output(['tail', '-1', filename])[0:-1].decode('utf-8')
+    return a
+
 
 def delete_last_line(filename):
+    """Delete last line."""
     subprocess.check_output(['sed', '-i', '$d', filename])
-
 
 
 # Default parameters for iterators
@@ -32,22 +38,11 @@ inc_time_end = 18
 simulation_end = 25
 
 # last_experiment = read_last_line(filename)
-
 os.environ["mode"] = "3"
 
-# At least one experiment was done already
-# if len(last_experiment):
-#     # Delete the last unfinished experiment, so that
-#     # we can continue from there.
-#     delete_last_line(filename)
 
-#     last_experiment = last_experiment.split(",")
-
-#     # Update iterator's start parameters
-#     density_start = float(last_experiment[0])
-#     inc_time_start = int(last_experiment[1])
-#     simulation_start = int(last_experiment[2])
 def get_model_params():
+    """Get all parameters needed for the model."""
     return {
         "width": 30,
         "height": 30,
@@ -59,13 +54,16 @@ def get_model_params():
         "grouping": False
     }
 
+
 densities = np.arange(density_start, density_end, density_stepsize)
 inc_times = np.arange(inc_time_start, inc_time_end, inc_time_stepsize)
 simulations = np.arange(simulation_start, simulation_end, simulation_stepsize)
 
 first = True
 
+
 def run_simulation(params):
+    """Run the simulation."""
     model = Apocalypse(**params)
 
     while True:
@@ -84,6 +82,7 @@ def run_simulation(params):
             params['steps'] = model.schedule.steps
 
             return params
+
 
 models = []
 
@@ -109,13 +108,14 @@ for density in densities:
 with open('models.csv', 'w', newline="") as csv_file:
     writer = csv.writer(csv_file)
     for model in models:
-       writer.writerow(model.values())
+        writer.writerow(model.values())
 
 results = p_umap(run_simulation, models)
 print("time for writing the results")
 with open('out.csv', "a") as file:
     for result in results:
         file.write('{:.2f},{:d},{:d},{:},{:},{:d}, {:d}\n'.format(
-            result["density"], int(result["incubation_time"]), int(result["iteration"]),
-            result["seed"], result["winner"], result["steps"], int(result["grouping"])
+            result["density"], int(result["incubation_time"]),
+            int(result["iteration"]), result["seed"], result["winner"],
+            result["steps"], int(result["grouping"])
         ))

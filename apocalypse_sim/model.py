@@ -28,8 +28,7 @@ class Apocalypse(Model):
                  map_id=5, city_id=0, province="", human_kill_agent_chance=0.6,
                  patient_zero=False, door_width=5, seed=None,
                  incubation_time=3, server=None, grouping=True):
-        """Initializes the apocalypse object, makes the grid and puts agents on
-        that grid.
+        """Initialize the apocalypse object, make and fill the grid.
 
         Args:
             height (int): Grid height.
@@ -54,7 +53,6 @@ class Apocalypse(Model):
             grouping (bool): Allow humans to form groups.
 
         """
-
         self._seed = seed
         self.server = server
         self.height = height
@@ -105,7 +103,7 @@ class Apocalypse(Model):
         or no more humans.
         """
         if ((self.susceptible == 0) or
-            (self.infected == 0 and self.carrier == 0)):
+                (self.infected == 0 and self.carrier == 0)):
 
             self.running = False
             self.server.model.running = False

@@ -45,7 +45,7 @@ class ModularServerExtd(ModularServer):
         super().__init__(model_cls, visualization_elements, name, model_params)
 
     def launch(self, port=None):
-        """ Run the app. """
+        """Run the app."""
         if port is not None:
             self.port = port
 

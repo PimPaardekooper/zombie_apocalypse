@@ -9,7 +9,9 @@ from p_tqdm import p_umap
 
 os.environ["mode"] = "3"
 
+
 def get_model_params():
+    """Get the parameters needed for running the model."""
     return {
         "width": 50,
         "height": 50,
@@ -19,6 +21,7 @@ def get_model_params():
         "grouping": None,
         "human_kill_agent_chance": 0.35
     }
+
 
 output_file = "group_output2.csv"
 
@@ -41,6 +44,7 @@ simulations = np.arange(simulation_start, simulation_end, simulation_stepsize)
 
 
 def run_simulation(params):
+    """Run the simulation with the given parameters."""
     model = Apocalypse(**params)
 
     while True:
@@ -57,6 +61,7 @@ def run_simulation(params):
             params['winner'] = 'human'
             params['steps'] = model.schedule.steps
             return params
+
 
 models = []
 
@@ -75,13 +80,14 @@ for density in densities:
 with open('models.csv', 'w', newline="") as csv_file:
     writer = csv.writer(csv_file)
     for model in models:
-       writer.writerow(model.values())
+        writer.writerow(model.values())
 
 results = p_umap(run_simulation, models)
 print("time for writing the results")
 with open(output_file, "a") as file:
     for result in results:
         file.write('{:.2f},{:d},{:d},{:},{:},{:d}\n'.format(
-            result["density"], int(result["grouping"]), int(result["iteration"]),
-            result["seed"], result["winner"], result["steps"]
+            result["density"], int(result["grouping"]),
+            int(result["iteration"]), result["seed"], result["winner"],
+            result["steps"]
         ))
