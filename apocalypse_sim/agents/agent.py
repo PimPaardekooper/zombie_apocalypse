@@ -9,8 +9,6 @@ from mesa import Model
 from mesa import Agent as MesaAgent
 from grid_map.map_object import Road
 from shapely.geometry import Point
-import os
-
 
 
 class Agent(MesaAgent):
@@ -66,10 +64,6 @@ class Agent(MesaAgent):
         grid = self.model.grid
         # List of agents we can't overlap with
         no_overlap = ["wall", "human", "zombie"]
-
-        if self.agent_type == "zombie" or \
-                ("AvoidingZombie" not in self.states and os.environ["mode"] == "5"):
-            no_overlap.append("road")
 
         # Always give the option to stay on your current location(stand still)
         all_cells = self.neighbors()
@@ -162,9 +156,3 @@ class Agent(MesaAgent):
                 continue
 
             state.on_update(self)
-
-    def on_road(self):
-        """Check if agent shares a cell with a Road object."""
-        for obj in self.model.grid[self.pos[0]][self.pos[1]]:
-            if obj.agent_type == "road":
-                return obj

@@ -66,8 +66,8 @@ class MapGen:
                 for r in self.map.roads:
                     if r.poly.intersects(Point(x, y)):
                         added = True
-                        new_agent = MapObjectAgent((x, y), "road", self.model,
-                                                    place=r)
+                        new_agent = MapObjectAgent((x, y), "road", self.model)
+
                         self.model.grid.place_agent(new_agent, (x, y))
 
                         break
