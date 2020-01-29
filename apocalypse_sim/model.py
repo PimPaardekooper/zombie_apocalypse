@@ -27,7 +27,7 @@ class Apocalypse(Model):
     def __init__(self, height=50, width=50, density=0.1, infected_chance=0.05,
                  map_id=5, city_id=0, province="", human_kill_agent_chance=0.6,
                  patient_zero=False, door_width=5, seed=None,
-                 incubation_time=3, server=None, grouping=True):
+                 incubation_time=3, server=None, grouping=True, iteration=-1):
         """Initializes the apocalypse object, makes the grid and puts agents on
         that grid.
 

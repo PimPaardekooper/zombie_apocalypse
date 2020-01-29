@@ -29,7 +29,7 @@ With the map slider on the left, one can switch between verification environment
 - Id 3: Test if grouping behaviour works properly.
 
 ## Reproduction of figure
-We have saved all our experiments in the ```apocalypse_sim/experiments/``` folder. However, since some experiments may take multiple hours to run, we have provided a small experiment to reproduce one of the figures from our poster and report. Navigate to ```apocalypse_sim/experiments/``` and run ```python3 EXPERIMENT_NAME_HERE.py```. The resulting figure is stored in ```apocalypse_sim/experiments/results/EXPERIMENT_NAME_HERE.pdf``` should correspond to the figure included at the end of this README.
+We have saved all our experiments in the ```apocalypse_sim/experiments/``` folder. However, since some experiments may take multiple hours to run, we have provided a small experiment to reproduce one of the figures from our poster and report. Navigate to ```apocalypse_sim/experiments/``` and run ```python3 compute_time_series.py && python3 plot_series.py```. The resulting figure is stored in ```apocalypse_sim/experiments/results/series.pdf``` should correspond to the figure included at the end of this README.
 
 ## Flags
 We have made use of several flags to make our lives a bit easier. They can be used as follows: ```python3 run.py --[flag]```.
