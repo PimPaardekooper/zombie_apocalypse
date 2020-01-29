@@ -1,3 +1,5 @@
+import sys
+sys.path.append("..")
 from model import Apocalypse
 import numpy as np
 import random
