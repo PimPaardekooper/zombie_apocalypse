@@ -1,9 +1,10 @@
+"""This file contains our automaton class."""
+
 from automaton.states import *
 
 
 class Automaton():
-    """Our automaton class. This is used to program finite state machines
-    (FSM).
+    """Our automaton class. Used to program finite state machines (FSM).
 
     """
 
@@ -44,7 +45,7 @@ class Automaton():
         self.event(FindDoor(), Escaped())
 
     def add_state(self, state):
-        """Adds a state to the Automaton.
+        """Add a state to the Automaton.
 
         Args:
             state (:obj:): the state to be added to the automaton.
@@ -81,7 +82,9 @@ class Automaton():
             agent.states.append(state)
 
     def switch_to_state(self, agent, old, new):
-        """Force a state-switch before the Automaton's update function
+        """Switch the automaton to a new state manually.
+
+        Force a state-switch before the Automaton's update function
         is called. This is riskier than using the Automaton's own update
         function since no verification is made to ensure proper transitions.
 
@@ -103,7 +106,9 @@ class Automaton():
             new_state_obj.on_enter(agent)
 
     def update(self, agent):
-        """Allow agent to possibly transition from current state to a
+        """Update the state of an agent.
+
+        Allow agent to possibly transition from current state to a
         registered and verified new state.
 
         Args:

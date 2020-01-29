@@ -349,12 +349,13 @@ class FindDoor(State):
         name (string): A string containing the name of the state.
 
     """
-    
+
     def __init__(self):
         """Initialize the FindDoor state."""
         self.name = "FindDoor"
 
     def get_best_cell(self, agent, target):
+        """Get the cell nearest to the target."""
         return agent.best_cell([target[0], target[1]])
 
     def on_update(self, agent):
@@ -479,7 +480,9 @@ class AvoidingZombie(State):
         self.name = "AvoidingZombie"
 
     def get_best_cell(self, agent):
-        """Find the best possible cell for an agent to move to, based
+        """Find the best cell to move to.
+
+        Find the best possible cell for an agent to move to, based
         on it's current neighbors.
 
         Args:
@@ -894,7 +897,9 @@ class InfectHuman(State):
         self.name = "InfectHuman"
 
     def on_enter(self, agent):
-        """Attempt to find only susceptible humans, i.e. humans who do not
+        """Code to be executed upon entering this state.
+
+        Attempt to find only susceptible humans, i.e. humans who do not
         already carry the virus. When entering the state, try to infect a
         human.
 

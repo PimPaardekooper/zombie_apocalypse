@@ -50,7 +50,7 @@ class ZombieAgent(Agent):
         nearby_humans = [agent for agent in neighbours if
                          agent.agent_type == "human" and "Infected" not in
                          [state.name for state in agent.states]]
-                         
+
         if len(nearby_humans) > 0:
             nearest = None
 

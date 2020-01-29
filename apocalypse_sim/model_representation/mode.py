@@ -10,7 +10,9 @@ import sys
 import os
 
 def get_mode():
-    """Get the parameters the GUI and model have to run in given a
+    """Get the GUI parameters.
+
+    Get the parameters the GUI and model have to run in given a
     certain user specified mode (modes are switched by using flags, see --help).
     """
     if os.environ["mode"] == "1":
@@ -33,7 +35,6 @@ def get_mode():
             standard_mode()
 
     return model_params, canvas_height, canvas_width, grid_height, grid_width
-
 
 def test_mode():
     """Test mode."""
@@ -58,7 +59,6 @@ def test_mode():
     }
 
     return model_params, canvas_height, canvas_width, grid_width, grid_width
-
 
 def netherlands_mode():
     """Netherland mode."""
@@ -110,7 +110,6 @@ def netherlands_mode():
     }
 
     return model_params, canvas_height, canvas_width, grid_height, grid_width
-
 
 def experiment_mode():
     """Experiment mode."""
