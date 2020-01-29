@@ -1,3 +1,9 @@
+"""Main experiment.
+
+Experiment on a 30x30 grid, where we change the population density and the
+incubation time and see how many times of all experiments the humans win.
+We do this then for humans wo use herding and humans wo do not.
+"""
 import sys
 sys.path.append("..")
 from model import Apocalypse
@@ -7,9 +13,24 @@ import random
 import csv
 from p_tqdm import p_umap
 
-os.environ["mode"] = "3"
+
+def make_params():
+    """Set the model parameters to use in the experiments."""
+    density_stepsize = 0.1
+    density_start = 0.05
+    density_end = 0.5
+    densities = np.arange(density_start, density_end, density_stepsize)
+
+    simulation_start = 0
+    simulation_end = 10
+    simulation_stepsize = 1
+    simulations = np.arange(simulation_start, simulation_end,
+                            simulation_stepsize)
+
+    return densities, simulations
 
 def get_model_params():
+    """Standard parameters of the model in all experiments."""
     return {
         "width": 50,
         "height": 50,
@@ -20,27 +41,33 @@ def get_model_params():
         "human_kill_agent_chance": 0.35
     }
 
-output_file = "group_output2.csv"
+def make_models(inc_times, simulations):
+    """Make model for each experiment."""
+    models = []
 
-# TODO::Check if exist add number
+    for density in densities:
+        for group in [True, False]:
+            for iteration in simulations:
+                # Fix simulations iterator after updating
+                # the unfinished experiment
+                model = get_model_params()
+                model["density"] = density
+                model["grouping"] = group
+                model["seed"] = str(random.randrange(sys.maxsize))
+                model["iteration"] = iteration
+                models.append(model)
 
-columns = [
-    "density", "group", "iteration",
-    "seed", "winner", "steps"
-]
+    return models
 
-density_stepsize = 0.1
-density_start = 0.05
-density_end = 0.5
-densities = np.arange(density_start, density_end, density_stepsize)
-
-simulation_start = 0
-simulation_end = 10
-simulation_stepsize = 1
-simulations = np.arange(simulation_start, simulation_end, simulation_stepsize)
-
+def write_models(models, model_file):
+    """Write models made to model_file."""
+    with open(model_file, 'w', newline="") as csv_file:
+        writer = csv.writer(csv_file)
+        for model in models:
+            writer.writerow(model.values())
 
 def run_simulation(params):
+    """Run experiment with given parameters. Return outcome of experiment."""
     model = Apocalypse(**params)
 
     while True:
@@ -58,30 +85,22 @@ def run_simulation(params):
             params['steps'] = model.schedule.steps
             return params
 
-models = []
+def run_experiment(models, series_file):
+    """Run experiment on multiple cores and write result to series_file."""
+    results = p_umap(run_simulation, models)
+    print("time for writing the results")
+    with open(series_file, "a") as file:
+        for result in results:
+            file.write('{:.2f},{:d},{:d},{:},{:},{:d}\n'.format(
+                result["density"], int(result["grouping"]), int(result["iteration"]),
+                result["seed"], result["winner"], result["steps"]
+            ))
 
-for density in densities:
-    for group in [True, False]:
-        for iteration in simulations:
-            # Fix simulations iterator after updating
-            # the unfinished experiment
-            model = get_model_params()
-            model["density"] = density
-            model["grouping"] = group
-            model["seed"] = str(random.randrange(sys.maxsize))
-            model["iteration"] = iteration
-            models.append(model)
 
-with open('models.csv', 'w', newline="") as csv_file:
-    writer = csv.writer(csv_file)
-    for model in models:
-       writer.writerow(model.values())
-
-results = p_umap(run_simulation, models)
-print("time for writing the results")
-with open(output_file, "a") as file:
-    for result in results:
-        file.write('{:.2f},{:d},{:d},{:},{:},{:d}\n'.format(
-            result["density"], int(result["grouping"]), int(result["iteration"]),
-            result["seed"], result["winner"], result["steps"]
-        ))
+if __name__ == "__main__":
+    os.environ["mode"] = "3"
+    output_file = "group_output.csv"
+    densities, simulations = make_params()
+    models = make_models(densities, simulations)
+    write_models(models, "group_models.csv")
+    run_experiment(models, "group_series.json")

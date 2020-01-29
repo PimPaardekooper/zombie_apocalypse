@@ -33,6 +33,7 @@ def make_params():
     return inc_times, simulations
 
 def get_model_params():
+    """Standard parameters of the model in all experiments."""
     return {
         "width": 30,
         "height": 30,
