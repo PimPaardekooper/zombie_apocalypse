@@ -12,7 +12,6 @@ from shapely.geometry import Point
 import os
 
 
-
 class Agent(MesaAgent):
     """Our own Agent class, extends the agent class from the mesa framework.
 

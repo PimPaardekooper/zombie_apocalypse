@@ -355,15 +355,37 @@ class FindDoor(State):
         self.name = "FindDoor"
 
     def halt(self, agent):
-        """Always go for the door."""
+        """Always go for the door.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        Returns:
+            (bool): Always stay in the current state.
+
+        """
         return True
 
     def get_best_cell(self, agent, target):
-        """Return best cell agent can take given target and neighbors."""
+        """Find best cell agent can take given target and neighbors.
+
+        Args:
+            agent (:obj:): The agent in the state.
+            target (tuple): A coordinate the agent wants to move to.
+
+        Returns:
+            (tuple): Best cell an agent can move to
+
+        """
         return agent.best_cell([target[0], target[1]])
 
     def on_update(self, agent):
-        """Change to escape if door is reached, otherwise move to door."""
+        """Change to escape if door is reached, otherwise move to door.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        """
         if agent.pos in agent.model.door_coords:
             agent.fsm.switch_to_state(agent, self.name, "Escaped")
         else:
@@ -398,7 +420,12 @@ class Escaped(State):
         self.name = "Escaped"
 
     def on_enter(self, agent):
-        """If agent gets to this state its get removed."""
+        """If agent gets to this state its get removed.
+
+        Args:
+            agent (:obj:): The agent in the state.
+            
+        """
         agent.remove_agent()
 
         del agent
