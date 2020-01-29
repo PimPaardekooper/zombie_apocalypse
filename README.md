@@ -23,10 +23,10 @@ We have made several verification environments, which we can visually inspect, t
 With the map slider on the left, one can switch between verification environments and then press ```reset``` to generate a new map.
 
 ### Verification environments
-- Id 0: What does map 1 do?
-- Id 1: What does map 2 do?
-- Id 2: What does map 3 do?
-- Id 3: What does map 4 do?
+- Id 0: Test if killing/infection works properly (outcome depends on seed).
+- Id 1: Test if zombie tracking works properly.
+- Id 2: Test if human fleeing works properly.
+- Id 3: Test if grouping behaviour works properly.
 
 ## Reproduction of figure
 We have saved all our experiments in the ```apocalypse_sim/experiments/``` folder. However, since some experiments may take multiple hours to run, we have provided a small experiment to reproduce one of the figures from our poster and report. Navigate to ```apocalypse_sim/experiments/``` and run ```python3 EXPERIMENT_NAME_HERE.py```. The resulting figure is stored in ```apocalypse_sim/experiments/results/EXPERIMENT_NAME_HERE.pdf``` should correspond to the figure included at the end of this README.
@@ -36,7 +36,5 @@ We have made use of several flags to make our lives a bit easier. They can be us
 - ```--test```: Loads agent behavior inspection maps.
 - ```--experiments```: Loads the map with changeable parameters that match the parameters used in our experiments.
 - ```--netherland```: Loads the Netherlands map.
-- ```--experiments```: Map where we run the experiments.
 - ```--doorway```: Loads doorway tests.
-- ```--roads```: Map where zombies can't take roads.
-- ```--situation```: All flocking components are tested here.
+- ```--roads```: Loads roads that zombies can't enter into the map.
