@@ -27,9 +27,6 @@ def get_mode():
             doorway_mode()
     elif os.environ["mode"] == "5":
         model_params, canvas_height, canvas_width, grid_height, grid_width = \
-            roads_mode()
-    elif os.environ["mode"] == 6:
-        model_params, canvas_height, canvas_width, grid_height, grid_width = \
             situation_mode()
     else:
         model_params, canvas_height, canvas_width, grid_height, grid_width = \
@@ -238,7 +235,6 @@ def standard_mode():
 
     return model_params, canvas_height, canvas_width, grid_height, grid_width
 
-
 def roads_mode():
     """All sliders."""
     seed = random.randrange(sys.maxsize)
@@ -270,6 +266,7 @@ def situation_mode():
     """Situation mode for plots on poster."""
     seed = random.randrange(sys.maxsize)
 
+    patient_zero = False
     map_id = 0
     grid_height = 9
     grid_width = 9
@@ -279,10 +276,9 @@ def situation_mode():
     model_params = {
         "height": grid_height,
         "width": grid_width,
-        "seed": UserSettableParameter("number", "seed", value=str(seed)),
         "map_id": UserSettableParameter(
             "slider", "Map id (max 4)", value=map_id, min_value=0,
-            max_value=7, step=1
+            max_value=3, step=1
         ),
     }
 

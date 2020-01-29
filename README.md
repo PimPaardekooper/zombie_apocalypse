@@ -23,10 +23,10 @@ We have made several verification environments, which we can visually inspect, t
 With the map slider on the left, one can switch between verification environments and then press ```reset``` to generate a new map.
 
 ### Verification environments
-- Id 0: What does map 1 do?
-- Id 1: What does map 2 do?
-- Id 2: What does map 3 do?
-- Id 3: What does map 4 do?
+- Id 0: Test if killing/infection works properly (outcome depends on seed).
+- Id 1: Test if zombie tracking works properly.
+- Id 2: Test if human fleeing works properly.
+- Id 3: Test if grouping behaviour works properly.
 
 ## Reproduction of figure
 We have saved all our experiments in the ```apocalypse_sim/experiments/``` folder. However, since some experiments may take multiple hours to run, we have provided a small experiment to reproduce one of the figures from our poster and report. Navigate to ```apocalypse_sim/experiments/``` and run ```python3 EXPERIMENT_NAME_HERE.py```. The resulting figure is stored in ```apocalypse_sim/experiments/results/EXPERIMENT_NAME_HERE.pdf``` should correspond to the figure included at the end of this README.
@@ -37,26 +37,4 @@ We have made use of several flags to make our lives a bit easier. They can be us
 - ```--experiments```: Loads the map with changeable parameters that match the parameters used in our experiments.
 - ```--netherland```: Loads the Netherlands map.
 - ```--doorway```: Loads doorway tests.
-
-# OLD VERSION OF README BELOW
-
-## How to run our project
-We have made it very easy. Just follow these steps:
-
-### Install docker
-You can install docker using these steps written here:
-https://docs.docker.com/get-docker/
-
-### Build the docker image
-To build the docker image, use ```sudo docker image build -t zombie .```.
-
-### Run docker image
-To run the docker image, use ```sudo docker run -p 8521:8521 zombie```.
-You will see a file called output.pdf containing the resulting figure.
-
-## Verification of agent behavior
-We have made verification environments, which we can visually inspect, to verify the behavior of our agents. To open the graphical user interface (GUI) for model verification, the following steps must be followed:
-1. Install project dependencies: ```pip install --no-cache-dir -r requirements.txt```
-2. Navigate to model folder: ```cd apocalypse_sim/```
-3. Run the server: ```python3 run.py --test```
-4. Click the link in your terminal to view the GUI if it doesn't open automatically.
+- ```--roads```: Loads roads that zombies can't enter into the map.
