@@ -108,7 +108,7 @@ with open('models.csv', 'w', newline="") as csv_file:
 results = p_umap(run_simulation, models)
 # print(results)
 print("time for writing the results")
-with open('series2.json', "w") as file:
+with open('series_road.json', "w") as file:
     file.write(json.dumps(results))
 
 
