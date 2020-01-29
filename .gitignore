@@ -11,4 +11,4 @@ apocalypse_sim/remove_add.txt
 *.png
 
 # Allow pdfs in experiments folder
-!apocalypse_sim/experiments/data/density_and_incubation_grouping.csv
+!/apocalypse_sim/experiments/data/density_and_incubation_grouping.csv
