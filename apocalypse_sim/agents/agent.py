@@ -10,7 +10,6 @@ from mesa import Agent as MesaAgent
 from grid_map.map_object import Road
 from shapely.geometry import Point
 
-
 class Agent(MesaAgent):
     """Our own Agent class, extends the agent class from the mesa framework.
 
