@@ -32,7 +32,7 @@ def model_draw(agent):
         portrayal = road_portrayal(agent, portrayal)
     else:
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true",
-                     "Layer": 0, "Text": "pos:" + str(agent.pos)}
+                     "Layer": 1, "Text": "pos:" + str(agent.pos)}
         portrayal["Color"] = ["#000000"]
 
     return portrayal
