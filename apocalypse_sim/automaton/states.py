@@ -424,7 +424,7 @@ class Escaped(State):
 
         Args:
             agent (:obj:): The agent in the state.
-            
+
         """
         agent.remove_agent()
 
