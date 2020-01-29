@@ -1,11 +1,10 @@
 """State class for the states in a finite state machine."""
-
-import sys
-sys.path.append("..")
-
 from .state import State
 from agents.human_agent import HumanAgent
 from agents.zombie_agent import ZombieAgent
+from grid_map.map_object import Road
+import sys
+sys.path.append("..")
 
 
 class Reproduce(State):
@@ -292,6 +291,7 @@ class FormingHerd(State):
 
         agent.direction = (new_cell[0] - agent.pos[0],
                            new_cell[1] - agent.pos[1])
+
         agent.model.grid.move_agent(agent, new_cell)
 
 
@@ -349,15 +349,43 @@ class FindDoor(State):
         name (string): A string containing the name of the state.
 
     """
-    
+
     def __init__(self):
         """Initialize the FindDoor state."""
         self.name = "FindDoor"
 
+    def halt(self, agent):
+        """Always go for the door.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        Returns:
+            (bool): Always stay in the current state.
+
+        """
+        return True
+
     def get_best_cell(self, agent, target):
+        """Find best cell agent can take given target and neighbors.
+
+        Args:
+            agent (:obj:): The agent in the state.
+            target (tuple): A coordinate the agent wants to move to.
+
+        Returns:
+            (tuple): Best cell an agent can move to
+
+        """
         return agent.best_cell([target[0], target[1]])
 
     def on_update(self, agent):
+        """Change to escape if door is reached, otherwise move to door.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        """
         if agent.pos in agent.model.door_coords:
             agent.fsm.switch_to_state(agent, self.name, "Escaped")
         else:
@@ -392,6 +420,12 @@ class Escaped(State):
         self.name = "Escaped"
 
     def on_enter(self, agent):
+        """If agent gets to this state its get removed.
+
+        Args:
+            agent (:obj:): The agent in the state.
+
+        """
         agent.remove_agent()
 
         del agent
@@ -532,7 +566,7 @@ class AvoidingZombie(State):
                     false otherwise.
 
         """
-        return self.get_best_cell(agent)
+        return self.get_best_cell(agent) and "OnRoad" in agent.states
 
     def on_update(self, agent):
         """Let an agent in this state execute one step.
@@ -743,7 +777,13 @@ class Turned(State):
 
         target.model.grid.place_agent(zombie, target.pos)
         target.model.schedule.add(zombie)
-        target.fsm.set_initial_states(["ZombieWandering", "Idle"], zombie)
+
+        if "OnRoad" in target.states:
+            target.fsm.set_initial_states(["OnRoad"], zombie)
+            zombie.traits["dir"] = target.traits["dir"]
+            zombie.traits["speed"] = target.traits["speed"]
+        else:
+            target.fsm.set_initial_states(["ZombieWandering", "Idle"], zombie)
 
     def transition(self, agent):
         """Check if an agent can transition into this state.
@@ -913,3 +953,81 @@ class InfectHuman(State):
                     neighbour.traits["infected"] = True
 
                     return
+
+
+class OnRoad(State):
+    """State for agents on a road, get transported other side.
+
+    Attributes:
+        name (string): A string containing the name of the state.
+
+    """
+
+    def __init__(self):
+        """Initialize On Road state."""
+        self.name = "OnRoad"
+
+    def transition(self, agent):
+        """If agent is on road and running from a zombie transition to road.
+
+        Args:
+            agent (:obj:): The zombie in the state.
+
+        """
+        road = self.on_road(agent)
+
+        if road and "AvoidingZombie" in agent.states:
+            agent.traits["speed"] = road.place.speed
+            agent.traits["dir"] = road.place.flip(agent.pos)
+
+            return True
+
+        return False
+
+    def halt(self, agent):
+        """Never change from state.
+
+        Args:
+            agent (:obj:): The zombie in the state.
+
+        """
+        return True
+
+    def on_update(self, agent):
+        """Switch to state if of road otherwise move along the road.
+
+        Args:
+            agent (:obj:): The zombie in the state.
+
+        """
+        if not self.on_road(agent):
+            if agent.agent_type == "human":
+                agent.model.fsm.switch_to_state(agent, "OnRoad",
+                                                "HumanWandering")
+            elif agent.agent_type == "zombie":
+                agent.model.fsm.switch_to_state(agent, "OnRoad",
+                                                "ZombieWandering")
+
+                new_state_obj = agent.model.fsm.states["Idle"]["object"]
+                agent.states.append(new_state_obj)
+                new_state_obj.on_enter(agent)
+        else:
+            x = int(agent.pos[0] + agent.traits["dir"][0] *
+                    agent.traits["speed"])
+            y = int(agent.pos[1] + agent.traits["dir"][1] *
+                    agent.traits["speed"])
+            agent.model.grid.move_agent(agent, (x, y))
+
+    def on_road(self, agent):
+        """Check if human or zombie on the road shares cell with a Road obj.
+
+        Args:
+            agent (:obj:): The zombie in the state.
+
+        """
+        if agent.agent_type == "human" or \
+                (agent.agent_type == "zombie" and "OnRoad" in agent.states):
+
+            return agent.on_road()
+
+        return False

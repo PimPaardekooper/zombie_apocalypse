@@ -4,6 +4,10 @@
 class State():
     """Our own state class, used by the Finite State Machine."""
 
+    def __init__(self):
+        """Initialize a state."""
+        self.name = ""
+
     def transition(self, agent):
         """Check if an agent can transition into a state.
 
@@ -58,3 +62,12 @@ class State():
     def __str__(self):
         """When trying to print a state, print its name."""
         return self.name
+
+    def __eq__(self, other):
+        """Object is equal if string is the same.
+
+        Args:
+            other (:obj:): The agent in the state.
+
+        """
+        return self.name == other
