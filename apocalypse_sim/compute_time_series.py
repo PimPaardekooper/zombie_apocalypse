@@ -31,7 +31,7 @@ simulation_start = 0
 # Ends (exclusive)
 density_end = 0.35
 inc_time_end = 13
-simulation_end = 25
+simulation_end = 50
 
 # last_experiment = read_last_line(filename)
 
@@ -93,42 +93,6 @@ with open('models.csv', 'w', newline="") as csv_file:
        writer.writerow(model.values())
 
 results = p_umap(run_simulation, models)
-# print(results)
 print("time for writing the results")
 with open('series.json', "w") as file:
     file.write(json.dumps(results))
-
-
-
-# with open(filename, "a") as file:
-#     model_params = get_model_params()
-
-#     # Loop through iterators
-#     for density in densities:
-#         model_params["density"] = density
-
-#         for incubation_time in inc_times:
-#             model_params["incubation_time"] = incubation_time
-
-#             for iteration in simulations.copy():
-
-#                 # Fix simulations iterator after updating
-#                 # the unfinished experiment
-#                 if first:
-#                     simulations = np.arange(
-#                         0, simulation_end, simulation_stepsize
-#                     )
-
-#                     first = False
-
-#                 model_params["seed"] = str(random.randrange(sys.maxsize))
-
-#                 seed, winner, steps = run_simulation(model_params)
-
-#                 # Write experiment to file
-#                 file.write('{:.2f},{:d},{:d},{:},{:},{:d}\n'.format(
-#                     density, int(incubation_time), int(iteration),
-#                     seed, winner, steps
-#                 ))
-
-                # print('x')
