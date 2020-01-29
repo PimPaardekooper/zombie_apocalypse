@@ -6,22 +6,23 @@ percentage of agent infected, is effected by it.
 """
 import sys
 sys.path.append("..")
-from model import Apocalypse
-import numpy as np
-import random
-import os
-import subprocess
-import time
-import multiprocessing as mp
-import csv
-from p_tqdm import p_umap
 import json
+from p_tqdm import p_umap
+import csv
+import multiprocessing as mp
+import time
+import subprocess
+import os
+import random
+import numpy as np
+from model import Apocalypse
+
 
 
 def make_params():
     """Set the model parameters to use in the experiments."""
     simulation_start = 0
-    simulation_end = 100
+    simulation_end = 1000
     simulation_stepsize = 1
 
     inc_time_start = 0
@@ -34,6 +35,7 @@ def make_params():
 
     return inc_times, simulations
 
+
 def get_model_params():
     """Standard parameters of the model in all experiments."""
     return {
@@ -45,6 +47,7 @@ def get_model_params():
         "map_id": 0,
         "human_kill_agent_chance": 0.35
     }
+
 
 def make_models(inc_times, simulations):
     """Make model for each experiment."""
@@ -61,12 +64,14 @@ def make_models(inc_times, simulations):
 
     return models
 
+
 def write_models(models, model_file):
     """Write models made to model_file."""
     with open(model_file, 'w', newline="") as csv_file:
         writer = csv.writer(csv_file)
         for model in models:
             writer.writerow(model.values())
+
 
 def run_simulation(params):
     """Run experiment with given parameters. Return outcome of experiment."""
@@ -76,7 +81,8 @@ def run_simulation(params):
     while True:
         it += 1
         model.step()
-        series.append((model.susceptible, model.infected, model.carrier))
+        series.append((model.susceptible, model.infected, model.carrier,
+                       model.recovered))
         if (model.infected == 0 and model.carrier == 0) or \
                 (model.susceptible == 0):
             return {"data": series, "density": str(params["density"]),
@@ -93,6 +99,7 @@ def run_experiment(models, series_file):
     print("time for writing the results")
     with open(series_file, "w") as file:
         file.write(json.dumps(results))
+
 
 if __name__ == "__main__":
     os.environ["mode"] = "5"

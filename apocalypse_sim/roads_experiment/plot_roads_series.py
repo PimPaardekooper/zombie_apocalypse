@@ -10,11 +10,11 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-def read_series_compute_percentage_infected():
+def read_series_compute_percentage_infected(data_file):
     """Read and return data with percentage infected added."""
     d = {}
 
-    with open('series_road.json') as json_file:
+    with open(data_file) as json_file:
         data = json.load(json_file)
         for item in tqdm(data):
             series = item['data']
@@ -25,7 +25,8 @@ def read_series_compute_percentage_infected():
                 if x[0] == 0:
                     p = 0
                 else:
-                    p = ((x[1] + x[2]) / (x[0] + x[1] + x[2])) * 100
+                    p = ((x[1] + x[2] + x[3]) / (x[0] + x[1] + x[2] + x[3])) \
+                        * 100
 
                 if incubation in d:
                     d[incubation].append([i, p, float(density),
@@ -38,32 +39,37 @@ def read_series_compute_percentage_infected():
     return d
 
 
-def plot_series(d):
+def plot_series(d, output_file):
     """Plot percentage infected against the incubation time."""
-    f, axes = plt.subplots(1, 1, figsize=(7, 7), sharex=True)
+    _, axes = plt.subplots(1, 1, figsize=(7, 7), sharex=True)
+    palette = sns.color_palette('coolwarm', n_colors=len(d))
+    series = []
 
-    counter = 0
-    for i, inc in enumerate(d):
+    for _, inc in enumerate(d):
         serie = pd.DataFrame(d[inc], columns=['step',
                                               'percentage_infected',
                                               'density',
                                               'incubation_time'])
+        series.append(serie)
 
-        plot = sns.lineplot(x="step",
-                            y="percentage_infected",
-                            hue="incubation_time",
-                            markers=True,
-                            dashes=False,
-                            data=serie,
-                            legend="full",
-                            ax=axes)
-        counter += 1
+    serie = pd.concat(series)
+    plot = sns.lineplot(x="step",
+                        y="percentage_infected",
+                        hue="incubation_time",
+                        markers=True,
+                        dashes=False,
+                        data=serie,
+                        legend="full",
+                        ax=axes,
+                        palette=palette)
 
-    plot.title("Percentage infected by different incubation times.")
+    # plot.title("Percentage infected by different incubation times.")
     plot.legend(fontsize='10', loc="upper left")
-    plot.get_figure().savefig("outputs/output3.pdf")
+    plot.get_figure().savefig(output_file)
 
 
 if __name__ == "__main__":
-    d = read_series_compute_percentage_infected()
-    plot_series(d)
+    data_file = "data/road_series.json"
+    output_file = "results/road_output.pdf"
+    d = read_series_compute_percentage_infected(data_file)
+    plot_series(d, output_file)
