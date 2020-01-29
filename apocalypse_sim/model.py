@@ -1,6 +1,6 @@
 """model.py.
 
-Creates the model where we will simulate a zombie outbreak.
+Creates the model which we use to simulate a zombie outbreak.
 """
 from mesa import Model, Agent
 from mesa.time import RandomActivation
@@ -27,10 +27,8 @@ class Apocalypse(Model):
     def __init__(self, height=50, width=50, density=0.1, infected_chance=0.05,
                  map_id=5, city_id=0, province="", human_kill_agent_chance=0.6,
                  patient_zero=False, door_width=5, seed=None,
-                 incubation_time=3, server=None, grouping=True, iteration=0):
-        """Apocalypse object.
-
-        Initializes the apocalypse object, makes the grid and put agents on
+                 incubation_time=3, server=None, grouping=True):
+        """Initializes the apocalypse object, makes the grid and puts agents on
         that grid.
 
         Args:
@@ -54,7 +52,6 @@ class Apocalypse(Model):
                                    human to turn into a zombie.
             server (:obj:): Server instance, used to pause the server.
             grouping (bool): Allow humans to form groups.
-            iteration (int): ??????????????
 
         """
 

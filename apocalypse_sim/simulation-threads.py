@@ -75,12 +75,14 @@ def run_simulation(params):
         if model.susceptible == 0:
             params['winner'] = 'zombies'
             params['steps'] = model.schedule.steps
+
             return params
 
         # Humans win
         elif model.infected == 0 and model.carrier == 0:
             params['winner'] = 'human'
             params['steps'] = model.schedule.steps
+
             return params
 
 models = []
@@ -94,12 +96,14 @@ for density in densities:
                 simulations = np.arange(
                     0, simulation_end, simulation_stepsize
                 )
+
             model = get_model_params()
             model["grouping"] = False
             model["density"] = density
             model["incubation_time"] = incubation_time
             model["seed"] = str(random.randrange(sys.maxsize))
             model["iteration"] = iteration
+
             models.append(model)
 
 with open('models.csv', 'w', newline="") as csv_file:
@@ -115,38 +119,3 @@ with open('out.csv', "a") as file:
             result["density"], int(result["incubation_time"]), int(result["iteration"]),
             result["seed"], result["winner"], result["steps"], int(result["grouping"])
         ))
-
-
-
-# with open(filename, "a") as file:
-#     model_params = get_model_params()
-
-#     # Loop through iterators
-#     for density in densities:
-#         model_params["density"] = density
-
-#         for incubation_time in inc_times:
-#             model_params["incubation_time"] = incubation_time
-
-#             for iteration in simulations.copy():
-
-#                 # Fix simulations iterator after updating
-#                 # the unfinished experiment
-#                 if first:
-#                     simulations = np.arange(
-#                         0, simulation_end, simulation_stepsize
-#                     )
-
-#                     first = False
-
-#                 model_params["seed"] = str(random.randrange(sys.maxsize))
-
-#                 seed, winner, steps = run_simulation(model_params)
-
-#                 # Write experiment to file
-#                 file.write('{:.2f},{:d},{:d},{:},{:},{:d}\n'.format(
-#                     density, int(incubation_time), int(iteration),
-#                     seed, winner, steps
-#                 ))
-
-                # print('x')

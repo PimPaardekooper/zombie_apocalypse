@@ -349,6 +349,7 @@ class FindDoor(State):
         name (string): A string containing the name of the state.
 
     """
+    
     def __init__(self):
         """Initialize the FindDoor state."""
         self.name = "FindDoor"
@@ -385,6 +386,7 @@ class Escaped(State):
         name (string): A string containing the name of the state.
 
     """
+
     def __init__(self):
         """Initialize the Escaped state."""
         self.name = "Escaped"
