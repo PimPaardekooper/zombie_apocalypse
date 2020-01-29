@@ -8,11 +8,12 @@ import os
 import sys
 import getopt
 
-help_text = "Choose your mode with --,\n\
-            --test: runs test maps,\n\
-            --netherland: run the holland map\
-            --doorway: doorway tests\
-            "
+help_text = ("\nChoose your mode with --:\n" +
+             "--test: runs visual inspection maps\n" +
+             "--netherland: run the holland map\n" +
+             "--doorway: doorway tests\n" +
+             "--experiments: map with parameters that match parameters in " +
+             "our experiments")
 
 if sys.argv[-1] == "--test":
     os.environ["mode"] = "1"
