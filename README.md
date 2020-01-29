@@ -37,3 +37,4 @@ We have made use of several flags to make our lives a bit easier. They can be us
 - ```--experiments```: Loads the map with changeable parameters that match the parameters used in our experiments.
 - ```--netherland```: Loads the Netherlands map.
 - ```--doorway```: Loads doorway tests.
+- ```--roads```: Loads roads that zombies can't enter into the map.
