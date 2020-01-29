@@ -253,10 +253,7 @@ def roads_mode():
     model_params = {
         "height": grid_height,
         "width": grid_width,
-        "map_id": UserSettableParameter(
-            "slider", "Map id (max 4)", value=map_id, min_value=0,
-            max_value=1, step=1
-        ),
+        "map_id": 0
         "seed": UserSettableParameter("number", "seed", value=str(seed)),
         "density": UserSettableParameter(
             "slider", "Agent density", value=0.2, min_value=0.01,
