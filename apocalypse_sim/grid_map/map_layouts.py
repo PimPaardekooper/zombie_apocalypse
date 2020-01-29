@@ -20,8 +20,11 @@ class Map:
         """Initialise Map.
 
         Get maps for the mode and choices one out of it.
-        map_id: id of map in list.
-        model: holds the Apocalypse model.
+
+        Args:
+            map_id (int): id of map in list.
+            model (:obj:): holds the Apocalypse model.
+
         """
         self.model = model
 
@@ -38,9 +41,9 @@ class Map:
             maps = [self.doorway_map]
         elif os.environ["mode"] == "5":
             maps = [
-                    self.avoid_zombie_search_brain, 
-                    self.seperation_map, self.alignment_map,
-                    self.cohesion_map]
+                self.avoid_zombie_search_brain, self.seperation_map,
+                self.alignment_map, self.cohesion_map
+            ]
         else:
             maps = [
                 self.initial_map, self.second_map, self.third_map,
@@ -51,7 +54,12 @@ class Map:
         self.places, self.roads, self.agents = maps[map_id]()
 
     def doorway_map(self):
-        """One city with a doorway at the top."""
+        """One city with a doorway at the top.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         city = Place([[0, 0],
                       [0, self.model.height*0.75],
                       [self.model.width, self.model.height*0.75],
@@ -95,6 +103,10 @@ class Map:
         The densities are person per km and needs to fit on the grid, therefore
         we stretch it between 0.1 and 1. So relative the densities represent
         real data.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
         """
         cities = []
 
@@ -177,7 +189,12 @@ class Map:
         return vert
 
     def initial_map(self):
-        """Square map no walls."""
+        """Square map no walls.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         city = Place([[0, 0],
                       [0, self.model.grid.height],
                       [self.model.grid.width,
@@ -193,6 +210,10 @@ class Map:
 
         Map that has a city and village and a road between. Every point that is
         not inside it you can't walk.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
         """
         city = Place([[50, 75],
                       [75, 75],
@@ -208,7 +229,12 @@ class Map:
         return [city, village], [road], []
 
     def third_map(self):
-        """Map that has no roads."""
+        """Map that has no roads.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         city = Place([[50, 75],
                       [75, 75],
                       [75, 50],
@@ -223,7 +249,12 @@ class Map:
         return [city, village], [], []
 
     def fourth_map(self):
-        """Five cities connected through middle city."""
+        """Five cities connected through middle city.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         city1 = Place([[35, 37], [37, 35], [35, 65], [65, 65],
                        [65, 35], [35, 37]], self.model.density)
 
@@ -254,7 +285,12 @@ class Map:
         return cities, roads, []
 
     def fifth_map(self):
-        """Five cities connected middle city and corners are connected."""
+        """Five cities connected middle city and corners are connected.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         city1 = Place([[10, 90], [10, 70], [25, 70], [30, 75],
                        [30, 90], [10, 90]], self.model.density)
         city2 = Place([[10, 10], [30, 10], [30, 25], [25, 30],
@@ -297,7 +333,12 @@ class Map:
         return cities, roads, []
 
     def sixth_map(self):
-        """Nine cities 3 in a row, all neighbor cities are connected."""
+        """Nine cities 3 in a row, all neighbor cities are connected.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         city1 = Place([[40, 55], [40, 45], [45, 40], [55, 40], [60, 45],
                        [60, 55], [55, 60], [45, 60], [40, 55]],
                       self.model.density)
@@ -354,7 +395,12 @@ class Map:
         return cities, roads, []
 
     def situation_map(self):
-        """Square map no walls."""
+        """Square map no walls.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         city = Place([[0, 0],
                       [0, self.model.grid.height],
                       [self.model.grid.width,
@@ -368,7 +414,12 @@ class Map:
         return [city], [], [humans]
 
     def convert_test(self):
-        """Test if the transition from zombie to human works."""
+        """Test if the transition from zombie to human works.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         humans = Agents("human", [(0, 1)])
         zombies = Agents("zombie", [(0, 2)])
         city = Place([[0, 0],
@@ -382,7 +433,12 @@ class Map:
         return [city], [], [humans, zombies]
 
     def range_test(self):
-        """Square map no walls."""
+        """Square map no walls.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         city = Place([[0, 0],
                       [0, self.model.grid.height],
                       [self.model.grid.width,
@@ -397,7 +453,12 @@ class Map:
         return [city], [], [humans, zombies]
 
     def runaway_test(self):
-        """Square map no walls."""
+        """Square map no walls.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         city = Place([[0, 0],
                       [0, self.model.grid.height],
                       [self.model.grid.width,
@@ -412,7 +473,12 @@ class Map:
         return [city], [], [humans, zombies]
 
     def group_test(self):
-        """Square map no walls."""
+        """Square map no walls.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         city = Place([[0, 0],
                       [0, self.model.grid.height],
                       [self.model.grid.width,
@@ -427,7 +493,12 @@ class Map:
         return [city], [], [humans, zombies]
 
     def simple_incubation(self):
-        """Square map no walls."""
+        """Square map no walls.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         city = Place([[0, 0],
                       [0, self.model.grid.height],
                       [self.model.grid.width,
@@ -439,7 +510,12 @@ class Map:
         return [city], [], []
 
     def seperation_map(self):
-        """Map to show humans steer to avoid crowding."""
+        """Map to show humans steer to avoid crowding.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         back = Place([(3, 7), (5, 7), (7, 5), (7, 3),
                       (5, 1), (3, 1), (1, 3), (1, 5),
                       (3, 7)], 0)
@@ -458,7 +534,12 @@ class Map:
         return [city], [], [human]
 
     def alignment_map(self):
-        """Map to show human steer towards the average heading."""
+        """Map to show human steer towards the average heading.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         back = Place([(3, 7), (5, 7), (7, 5), (7, 3),
                       (5, 1), (3, 1), (1, 3), (1, 5),
                       (3, 7)], 0, color="")
@@ -478,7 +559,12 @@ class Map:
         return [city], [], [human]
 
     def cohesion_map(self):
-        """Map to show human move toward the average position."""
+        """Map to show human move toward the average position.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
         back = Place([(3, 7), (5, 7), (7, 5), (7, 3),
                       (5, 1), (3, 1), (1, 3), (1, 5),
                       (3, 7)], 0)
@@ -498,10 +584,17 @@ class Map:
         return [city], [], [human]
 
     def avoid_zombie_search_brain(self):
-        """Map to show humans avoid zombie and zombie search humans."""
-        back = Place([(3, 7), (5, 7), (7, 5), (7, 3),
-                (5, 1), (3, 1), (1, 3), (1, 5),
-                (3, 7)], 0)
+        """Map to show humans avoid zombie and zombie search humans.
+
+        Returns:
+            (tuple): Tuple containing map construction details.
+
+        """
+        back = Place([
+                        (3, 7), (5, 7), (7, 5), (7, 3),
+                        (5, 1), (3, 1), (1, 3), (1, 5),
+                        (3, 7)
+                     ], 0)
 
         city = Place([[0, 0],
                       [0, self.model.grid.height],
@@ -511,10 +604,11 @@ class Map:
                       [0, 0]],
                      0, color="#ffffff")
 
-        human = Agents("human", [(5,4), (2,3)])
-        zombie = Agents("zombie", [(2,6)])
+        human = Agents("human", [(5, 4), (2, 3)])
+        zombie = Agents("zombie", [(2, 6)])
 
         return [city], [], [human, zombie]
+
 
 class Agents:
     """List of agents, same type different positions."""
@@ -522,9 +616,11 @@ class Agents:
     def __init__(self, agent_type, positions, color=""):
         """Agents object.
 
-        agent_type: zombie or human.
-        positions: spawn locations of agent.
-        color: representation color.
+        Args:
+            agent_type (string): zombie or human.
+            positions (list): spawn locations of agent.
+            color (string): representation color.
+
         """
         self.agent_type = agent_type
         self.positions = positions

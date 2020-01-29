@@ -9,9 +9,14 @@ import random
 import sys
 import os
 
-
 def get_mode():
-    """Return different mode, model parameters and grid representations."""
+    """Return different mode, model parameters and grid representations.
+
+    Returns:
+        (tuple): Tuple containing mode specific visualization and model
+                 parameters.
+
+    """
     if os.environ["mode"] == "1":
         model_params, canvas_height, canvas_width, grid_height, grid_width = \
             test_mode()

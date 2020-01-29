@@ -25,10 +25,9 @@ class Apocalypse(Model):
     """
 
     def __init__(self, height=50, width=50, density=0.1, infected_chance=0.05,
-                 map_id=5, city_id=0, province="", total_agents=0,
-                 human_kill_agent_chance=0.6, patient_zero=False,
-                 door_width=5, seed=None, incubation_time=3,
-                 server=None, grouping=True, iteration=0):
+                 map_id=5, city_id=0, province="", human_kill_agent_chance=0.6,
+                 patient_zero=False, door_width=5, seed=None,
+                 incubation_time=3, server=None, grouping=True, iteration=0):
         """Apocalypse object.
 
         Initializes the apocalypse object, makes the grid and put agents on
@@ -45,7 +44,6 @@ class Apocalypse(Model):
             city_id (int): Index of the city where the outbreak happens.
             province (string): On the Netherlands map, this is the province
                                where the outbreak starts.
-            total_agents (int): The total number of agents ever spawned.
             human_kill_agent_chance (float): Chance for a human to kill a
                                              zombie.
             patient_zero (bool): If only one person should be infected.
@@ -54,8 +52,9 @@ class Apocalypse(Model):
                            you can repeat the exact same experiments.
             incubation_time (int): Number of steps it takes for an infected
                                    human to turn into a zombie.
-            grouping (bool): Allow humans to form groups.
             server (:obj:): Server instance, used to pause the server.
+            grouping (bool): Allow humans to form groups.
+            iteration (int): ??????????????
 
         """
 
@@ -69,7 +68,6 @@ class Apocalypse(Model):
         self.infected = 0
         self.susceptible = 0
         self.recovered = 0
-        self.total_agents = total_agents
         self.total = 0
         self.patient_zero = patient_zero
         self.human_kill_zombie_chance = human_kill_agent_chance

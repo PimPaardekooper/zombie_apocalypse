@@ -6,11 +6,6 @@ from .agent import Agent
 class HumanAgent(Agent):
     """Our own HumanAgent class, extends our own Agent class.
 
-    Args:
-        pos (tuple): Position of the agent.
-        model (:obj:): The corresponding model of the agent.
-        fsm (:obj:): Finite state machine for the behaviour of the agent.
-
     Attributes:
         agent_type (string): String specifying the type of the agent.
         direction (tuple): The current direction where the HumanAgent is going.
@@ -18,13 +13,20 @@ class HumanAgent(Agent):
     """
 
     def __init__(self, pos, model, fsm):
-        """Initialize the human agent."""
+        """Initialize the human agent.
+
+        Args:
+            pos (tuple): Position of the agent.
+            model (:obj:): The corresponding model of the agent.
+            fsm (:obj:): Finite state machine for the behaviour of the agent.
+
+        """
         super().__init__(pos, model, fsm)
+
         self.agent_type = "human"
         self.direction = (0, 0)
-        # Add one to the counter of total susceptible humans in the model
         self.model.susceptible += 1
-        # Set vision range to 4
+
         self.setVision(4)
 
     def running_direction(self, nearby_zombies):
@@ -43,6 +45,7 @@ class HumanAgent(Agent):
 
         """
         direction = [0, 0]
+
         if len(nearby_zombies) > 0:
             for zombie in nearby_zombies:
 
@@ -63,10 +66,12 @@ class HumanAgent(Agent):
 
         # Normalize the direction vector that was found
         d = (direction[0]**2 + direction[1]**2)**0.5
+
         if direction[0]:
             direction[0] /= d
         if direction[1]:
             direction[1] /= d
+
         return (direction[0], direction[1])
 
     def bruteforce(self, nearby_zombies):
@@ -94,26 +99,31 @@ class HumanAgent(Agent):
         if len(nearby_zombies) > 0:
             for cell in free_cells:
                 priority = 0
+
                 for zombie in nearby_zombies:
                     dist_x = abs(cell[0] - zombie.pos[0])
                     dist_y = abs(cell[1] - zombie.pos[1])
                     distance = (dist_x**2 + dist_y**2)**0.5
                     priority += distance**0.5
+
                 if not best_cells:
                     best_cells = [priority, [cell]]
                 elif priority > best_cells[0]:
                     best_cells = [priority, [cell]]
                 elif priority == best_cells[0]:
                     best_cells[1].append(cell)
+
             choice = self.random.choice(best_cells[1])
 
             # Create a normalized vector for the direction of the agent
             vector = [choice[0] - self.pos[0], choice[1] - self.pos[1]]
             length = (vector[0]**2 + vector[1]**2)**0.5
+
             if vector[0]:
                 vector[0] /= length
             if vector[1]:
                 vector[1] /= length
+
             return (vector[0], vector[1])
         else:
             return None
@@ -144,9 +154,12 @@ class HumanAgent(Agent):
             new_x = self.pos[0] + vector[0]
             new_y = self.pos[1] + vector[1]
             new_cell = self.best_cell([new_x, new_y])
+
             if new_cell == self.pos:
                 vector = self.bruteforce(nearby_zombies)
+
             return vector
+
         return None
 
     def setVision(self, vision_radius):

@@ -6,11 +6,6 @@ from .agent import Agent
 class ZombieAgent(Agent):
     """Our own ZombieAgent class, extends our own Agent class.
 
-    Args:
-        pos (tuple): Position of the agent.
-        model (:obj:): The corresponding model of the agent.
-        fsm (:obj:): Finite state machine for the behaviour of the agent.
-
     Attributes:
         agent_type (string): String specifying the type of the agent.
         target (:obj:): Agent(of agent_type "human") which is currently the
@@ -19,13 +14,20 @@ class ZombieAgent(Agent):
     """
 
     def __init__(self, pos, model, fsm):
-        """Initialize the zombie agent."""
+        """Initialize the zombie agent.
+
+        Args:
+            pos (tuple): Position of the agent.
+            model (:obj:): The corresponding model of the agent.
+            fsm (:obj:): Finite state machine for the behaviour of the agent.
+
+        """
         super().__init__(pos, model, fsm)
+
         self.agent_type = "zombie"
         self.target = None
-        # Add one to the counter of total zombies
         self.model.infected += 1
-        # Set vision range to 7
+
         self.setVision(7)
 
     def nearest_brain(self, neighbours):
@@ -48,8 +50,10 @@ class ZombieAgent(Agent):
         nearby_humans = [agent for agent in neighbours if
                          agent.agent_type == "human" and "Infected" not in
                          [state.name for state in agent.states]]
+                         
         if len(nearby_humans) > 0:
             nearest = None
+
             for human in nearby_humans:
                 distance = ((abs(human.pos[0] - self.pos[0])**2 +
                              abs(human.pos[1] - self.pos[1])**2))**0.5
@@ -66,6 +70,7 @@ class ZombieAgent(Agent):
                 self.target = self.random.choice(nearest[1])
 
             return self.target.pos
+
         return None
 
     def move(self):

@@ -21,11 +21,16 @@ class MapGen:
     def __init__(self, map_id, city_id, infected_chance, province, model):
         """Construct a map.
 
-        map_id: id of map in lists of maps in map_layouts.py.
-        city_id: can change in which city the outbreak is if multiple cities.
-        infected_chance: percentage of a city that is infected at start.
-        province: in netherlands map you can choose in which province the
-                  outbreak starts.
+        Args:
+            map_id (int): Id of map in lists of maps in map_layouts.py.
+            city_id (int): Id of the city the outbreak will start in in case
+                           of multiple cities.
+            infected_chance (float): Percentage of city that is initially
+                                     infected.
+            province (string): In the Netherlands map you can choose in which
+                               province the outbreak starts.
+            model (:obj:): Model instance for which the map is made.
+
         """
         self.model = model
         self.map = Map(map_id, model)
@@ -52,7 +57,9 @@ class MapGen:
                     added = True
                     new_agent = MapObjectAgent(
                         (x, y), "city", self.model, color=place.color)
+
                     self.model.grid.place_agent(new_agent, (x, y))
+
                     break
 
             if not added:
@@ -60,11 +67,14 @@ class MapGen:
                     if r.poly.intersects(Point(x, y)):
                         added = True
                         new_agent = MapObjectAgent((x, y), "road", self.model)
+
                         self.model.grid.place_agent(new_agent, (x, y))
+
                         break
 
             if not added:
                 new_agent = MapObjectAgent((x, y), "wall", self.model)
+
                 self.model.grid.place_agent(new_agent, (x, y))
 
     def spawn_agents(self):
@@ -73,6 +83,7 @@ class MapGen:
             for pos in agent.positions:
                 if agent.agent_type == "zombie":
                     new_agent = ZombieAgent(pos, self.model, self.model.fsm)
+
                     self.model.fsm.set_initial_states(
                         ["ZombieWandering", "Idle"], new_agent)
                 else:
@@ -93,6 +104,15 @@ class MapGen:
         the place area and agent density. Get random coordinates from the place
         based on the agent density, and spawn zombies and humans on those
         coordinates based on the infection density.
+
+        Args:
+            city_id (int): Id of the city the outbreak will start in in case
+                           of multiple cities.
+            infected_chance (float): Percentage of city that is initially
+                                     infected.
+            province (string): In the Netherlands map you can choose in which
+                               province the outbreak starts.
+
         """
         one_patient = False
 
@@ -124,6 +144,7 @@ class MapGen:
 
                 if i in infected_coords:
                     new_agent = ZombieAgent(pos, self.model, self.model.fsm)
+
                     self.model.fsm.set_initial_states(
                         ["ZombieWandering", "Idle"], new_agent)
                 else:

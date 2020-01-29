@@ -1,5 +1,6 @@
 """State class for a FSM. Each state should inherit from this class."""
 
+
 class State():
     """Our own state class, used by the Finite State Machine."""
 
