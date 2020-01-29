@@ -42,7 +42,7 @@ We have made use of several flags to make our lives a bit easier. They can be us
 
 ## How to run our project
 We have made it very easy. Just follow these steps:
-
+ 
 ### Install docker
 You can install docker using these steps written here:
 https://docs.docker.com/get-docker/
