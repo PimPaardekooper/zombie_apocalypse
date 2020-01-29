@@ -6,6 +6,9 @@ practice/
 *.pdf
 apocalypse_sim/remove_add.txt
 *.txt
-*.csv
 *.zip
 *.png
+
+# Allow pdfs in experiments folder
+!./apocalypse_sim/experiments/data/*
+!./apocalypse_sim/experiments/results/*
