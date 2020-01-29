@@ -211,13 +211,22 @@ class Wandering(State):
 
 
 class FindDoor(State):
+    """Human is trying to go through the door."""
+
     def __init__(self):
+        """FindDoor state initialize."""
         self.name = "FindDoor"
 
+    def halt(self, agent):
+        """Always go for the door."""
+        return True
+
     def get_best_cell(self, agent, target):
+        """Return best cell agent can take given target and neighbors."""
         return agent.best_cell([target[0], target[1]])
 
     def on_update(self, agent):
+        """Change to escape if door is reached, otherwise move to door."""
         if agent.pos in agent.model.door_coords:
             agent.fsm.switch_to_state(agent, self.name, "Escaped")
         else:
@@ -238,10 +247,14 @@ class FindDoor(State):
 
 
 class Escaped(State):
+    """Remove agent if reached door."""
+
     def __init__(self):
+        """Initialize Escaped state."""
         self.name = "Escaped"
 
     def on_enter(self, agent):
+        """If agent gets to this state its get removed."""
         agent.remove_agent()
 
         del agent

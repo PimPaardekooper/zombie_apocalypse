@@ -4,10 +4,11 @@ Simulates road experiment where humans infected or not can change from place
 using roads. We change the incubation_time to check if the spread, the
 percentage of agent infected, is effected by it.
 """
+import sys
+sys.path.append("..")
 from model import Apocalypse
 import numpy as np
 import random
-import sys
 import os
 import subprocess
 import time
@@ -16,10 +17,11 @@ import csv
 from p_tqdm import p_umap
 import json
 
+
 def make_params():
     """Set the model parameters to use in the experiments."""
     simulation_start = 0
-    simulation_end = 25
+    simulation_end = 100
     simulation_stepsize = 1
 
     inc_time_start = 0

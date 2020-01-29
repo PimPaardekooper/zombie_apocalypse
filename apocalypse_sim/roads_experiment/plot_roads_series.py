@@ -1,3 +1,7 @@
+"""Plot incubation time against percentage infected.
+
+Plot the result of the road experiment.
+"""
 import json
 from collections import defaultdict
 import pandas as pd
@@ -5,67 +9,61 @@ from tqdm import tqdm
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-d = {}
-with open('series_road.json') as json_file:
-    data = json.load(json_file)
-    for item in tqdm(data):
-        series = item['data']
-        print(series)
-        density = item['density']
-        incubation = item['incubation_time']
 
+def read_series_compute_percentage_infected():
+    """Read and return data with percentage infected added."""
+    d = {}
 
-        # print(incubation)
-        for i, x in enumerate(series):
-            if x[0] == 0:
-                p = 0
-            else:
-                p = ((x[1] + x[2]) / (x[0] + x[1] + x[2])) * 100
+    with open('series_road.json') as json_file:
+        data = json.load(json_file)
+        for item in tqdm(data):
+            series = item['data']
+            density = item['density']
+            incubation = item['incubation_time']
 
-            if density in d:
-                if incubation in d[density]:
-                    d[density][incubation].append([i, p, float(density), int(incubation)])
+            for i, x in enumerate(series):
+                if x[0] == 0:
+                    p = 0
                 else:
-                    d[density][incubation] = []
-                    d[density][incubation].append([i, p, float(density), int(incubation)])
-            else:
+                    p = ((x[1] + x[2]) / (x[0] + x[1] + x[2])) * 100
 
-                d[density] = {}
-                d[density][incubation] = []
-                d[density][incubation].append([i, p, float(density), int(incubation)])
+                if incubation in d:
+                    d[incubation].append([i, p, float(density),
+                                          int(incubation)])
+                else:
+                    d[incubation] = []
+                    d[incubation].append([i, p, float(density),
+                                          int(incubation)])
+
+    return d
 
 
-f, axes = plt.subplots(1, 1 , figsize=(7, 7), sharex=True)
+def plot_series(d):
+    """Plot percentage infected against the incubation time."""
+    f, axes = plt.subplots(1, 1, figsize=(7, 7), sharex=True)
 
-plt.legend(fontsize='1')
+    counter = 0
+    for i, inc in enumerate(d):
+        serie = pd.DataFrame(d[inc], columns=['step',
+                                              'percentage_infected',
+                                              'density',
+                                              'incubation_time'])
 
-counter = 0
-for i, dens in enumerate(d):
-    series = []
-    for j, inc in enumerate(d[dens]):
-        series.append(pd.DataFrame(d[dens][inc],
-                    columns=['step', 'percentage_infected', 'density',
-                            'incubation_time']))
+        plot = sns.lineplot(x="step",
+                            y="percentage_infected",
+                            hue="incubation_time",
+                            markers=True,
+                            dashes=False,
+                            data=serie,
+                            legend="full",
+                            ax=axes)
+        counter += 1
 
-    serie = pd.concat(series)
+    plot.title("Percentage infected by different incubation times.")
+    plot.legend(fontsize='10', loc="upper left")
+    plot.get_figure().savefig("outputs/output3.pdf")
 
-    if i == 0 or i == 4 or i == 3 or i == 2:
-        print(i)
-        continue
-    print(i)
-# serie = serie.loc[serie['density'] = str(0.15)]
-# print(serie)
-# serie = pd.read_csv('series.csv')
-    # print(dens, inc)
-    # print(serie)
-    # print("\n\n")
-    print(i, dens)
-    axes.set_title("density {}".format(dens))
-    plot = sns.lineplot(x="step", y="percentage_infected",
-                    hue="incubation_time",
-                    markers=True, dashes=False, data=serie, legend="full",
-                    ax=axes)
-    counter += 1
 
-plot.legend(fontsize='10', loc="upper left")
-plot.get_figure().savefig("outputs/output3.pdf")
+if __name__ == "__main__":
+    d = read_series_compute_percentage_infected()
+    plot_series(d)
