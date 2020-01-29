@@ -36,7 +36,7 @@ class Automaton():
             self.event(AvoidingZombie(), FormingHerd())
             self.event(FormingHerd(), HumanWandering())
             self.event(FormingHerd(), AvoidingZombie())
-            
+
         # Human health
         self.event(Susceptible(), Infected())
         self.event(Infected(), Turned())
