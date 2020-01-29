@@ -9,6 +9,6 @@ apocalypse_sim/remove_add.txt
 *.zip
 *.png
 
-# Allow pdfs in experiments folder
+# Allow pdfs and csvs in experiments folder
 !./apocalypse_sim/experiments/data/*
 !./apocalypse_sim/experiments/results/*
