@@ -14,7 +14,7 @@ from shapely.geometry import Polygon, Point
 class MapObjectAgent(MesaAgent):
     """Hold all immovable agents as a Mesa Agent."""
 
-    def __init__(self, pos, agent_type, model, place=None, color=""):
+    def __init__(self, pos, agent_type, model, color=""):
         """MapObjectAgent.
 
         Args:
@@ -28,7 +28,6 @@ class MapObjectAgent(MesaAgent):
 
         self.agent_type = agent_type
         self.color = color
-        self.place = place
 
 
 class MapObject:

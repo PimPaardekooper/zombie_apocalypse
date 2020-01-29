@@ -1,5 +1,4 @@
 from automaton.states import *
-import os
 
 
 class Automaton():
@@ -42,18 +41,7 @@ class Automaton():
         self.event(Infected(), Turned())
 
         # Through doorway
-        if os.environ["mode"] == "4":
-            self.event(FindDoor(), Escaped())
-        elif os.environ["mode"] == "5":
-            self.event(HumanWandering(), OnRoad())
-            self.event(FormingHerd(), OnRoad())
-            self.event(AvoidingZombie(), OnRoad())
-            self.event(ZombieWandering(), OnRoad())
-
-            self.event(OnRoad(), HumanWandering())
-            self.event(OnRoad(), FormingHerd())
-            self.event(OnRoad(), AvoidingZombie())
-            self.event(OnRoad(), ZombieWandering())
+        self.event(FindDoor(), Escaped())
 
     def add_state(self, state):
         """Adds a state to the Automaton.
@@ -150,15 +138,6 @@ class Automaton():
                 state.on_leave(agent)
                 agent.states.remove(state)
 
-            # We add the list of new states to our
-            # active states list.
-            # If transition to road don't transition to other states.
-            if OnRoad() in new_states:
-                for new_state in new_states:
-                    if new_state == "OnRoad":
-                        agent.states.append(new_state)
-                        new_state.on_enter(agent)
-            else:
-                for new_state in new_states:
-                    agent.states.append(new_state)
-                    new_state.on_enter(agent)
+            for new_state in new_states:
+                agent.states.append(new_state)
+                new_state.on_enter(agent)
