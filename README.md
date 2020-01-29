@@ -2,7 +2,7 @@
 This repository contains the code behind the model we created for Project Computational Science. Our project is written in Python 3 and was verified to work from Python 3.6.9 up to Python 3.7.6. Other versions might not work or produce different results.
 
 ## Packages
-We have made extensive use of third-party packages. These can be found in ```requirements.txt```. To install the packages all at once, the following command can be run: ```pip install --no-cache-dir -r requirements.txt```.
+We have made extensive use of third-party packages. These can be found in ```requirements.txt```. To install the packages all at once, the following command can be run: ```pip3 install --no-cache-dir -r requirements.txt```.
 
 ## Run Mesa GUI
 To run an in-browser visualization of our project, we have used the Mesa framework. To start Mesa's GUI, you should follow these steps:
