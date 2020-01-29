@@ -2,46 +2,46 @@
 """
 import sys
 sys.path.append("..")
-from model import Apocalypse
-import numpy as np
-import random
-import sys
-import os
-import subprocess
-import time
-import multiprocessing as mp
-import csv
-from p_tqdm import p_umap
-import json
-
-def get_model_params():
-    """Standard parameters of the model in all experiments."""
-    return {
-        "width": 30,
-        "height": 30,
-        "density": None,
-        "infected_chance": 0.05,
-        "incubation_time": None,
-        "map_id": 0,
-        "human_kill_agent_chance": 0.35
-        }
-
-def run_simulation(params):
-    """Run experiment with given parameters. Return outcome of experiment."""
-    model = Apocalypse(**params)
-    series = []
-    it = 0
-    while True:
-        it += 1
-        model.step()
-        series.append((model.susceptible, model.infected, model.carrier))
-        if (model.infected == 0 and model.carrier == 0) or (model.susceptible == 0):
-            return {"data": series, "density": str(params["density"]), "incubation_time": str(params["incubation_time"])}
-        # Zombies win
-        if it > 100:
-            return {"data": series, "density": str(params["density"]), "incubation_time": str(params["incubation_time"])}
-
 def main():
+    from model import Apocalypse
+    import numpy as np
+    import random
+    import sys
+    import os
+    import subprocess
+    import time
+    import multiprocessing as mp
+    import csv
+    from p_tqdm import p_umap
+    import json
+
+    def get_model_params():
+        """Standard parameters of the model in all experiments."""
+        return {
+            "width": 30,
+            "height": 30,
+            "density": None,
+            "infected_chance": 0.05,
+            "incubation_time": None,
+            "map_id": 0,
+            "human_kill_agent_chance": 0.35
+            }
+
+    def run_simulation(params):
+        """Run experiment with given parameters. Return outcome of experiment."""
+        model = Apocalypse(**params)
+        series = []
+        it = 0
+        while True:
+            it += 1
+            model.step()
+            series.append((model.susceptible, model.infected, model.carrier))
+            if (model.infected == 0 and model.carrier == 0) or (model.susceptible == 0):
+                return {"data": series, "density": str(params["density"]), "incubation_time": str(params["incubation_time"])}
+            # Zombies win
+            if it > 100:
+                return {"data": series, "density": str(params["density"]), "incubation_time": str(params["incubation_time"])}
+
     # Default parameters for iterators
     density_stepsize = 0.1
     inc_time_stepsize = 6
@@ -82,7 +82,7 @@ def main():
                 model["iteration"] = iteration
                 models.append(model)
 
-    with open('models.csv', 'w', newline="") as csv_file:  
+    with open('models.csv', 'w', newline="") as csv_file:
         writer = csv.writer(csv_file)
         for model in models:
             writer.writerow(model.values())
