@@ -34,6 +34,7 @@ We have saved all our experiments in the ```apocalypse_sim/experiments/``` folde
 ## Flags
 We have made use of several flags to make our lives a bit easier. They can be used as follows: ```python3 run.py --[flag]```.
 - ```--test```: Loads agent behavior inspection maps.
+- ```--experiments```: 
 - ```--netherland```: Loads the Netherlands map.
 - ```--doorway```: Loads doorway tests.
 
