@@ -42,4 +42,4 @@ We have made use of several flags to make our lives a bit easier. They can be us
 
 
 #### Figure
-![alt text](https://i.imgur.com/E2LZC9o.png)
+![alt text](https://i.imgur.com/FxzA4Rt.png)
