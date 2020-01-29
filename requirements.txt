@@ -2,3 +2,8 @@ mesa
 matplotlib
 shapely
 pygeoj
+pandas
+numpy
+beautifulsoup4
+tornado
+p-tqdm
