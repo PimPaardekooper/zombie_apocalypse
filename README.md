@@ -36,7 +36,10 @@ We have made use of several flags to make our lives a bit easier. They can be us
 - ```--test```: Loads agent behavior inspection maps.
 - ```--experiments```: Loads the map with changeable parameters that match the parameters used in our experiments.
 - ```--netherland```: Loads the Netherlands map.
+- ```--experiments```: Map where we run the experiments.
 - ```--doorway```: Loads doorway tests.
+- ```--roads```: map where zombies can't take roads.
+- ```--situation```: all flocking components tested.
 
 # OLD VERSION OF README BELOW
 
