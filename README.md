@@ -16,6 +16,6 @@ We have made verification environments, which we can visually inspect, to verify
 graphical user interface (GUI) for model verification, the following steps must be followed:
 1. Install project dependencies: ```pip install --no-cache-dir -r requirements.txt```
 2. Run the server: ```python3 apocalypse_sim/run.py --test```
-3. Click the link in your terminal to view the GUI.
+3. Click the link in your terminal to view the GUI if it doesn't open automatically.
 
 With the map slider, one can select a map and then press ```reset``` to see the changes to the GUI and model.
