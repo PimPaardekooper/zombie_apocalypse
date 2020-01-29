@@ -9,9 +9,10 @@ import random
 import sys
 import os
 
-
 def get_mode():
-    """Return different mode, model parameters and grid representations."""
+    """Get the parameters the GUI and model have to run in given a
+    certain user specified mode (modes are switched by using flags, see --help).
+    """
     if os.environ["mode"] == "1":
         model_params, canvas_height, canvas_width, grid_height, grid_width = \
             test_mode()
@@ -150,7 +151,6 @@ def experiment_mode():
 
     return model_params, canvas_height, canvas_width, grid_height, grid_width
 
-
 def doorway_mode():
     """Doorway mode."""
     seed = random.randrange(sys.maxsize)
@@ -183,7 +183,6 @@ def doorway_mode():
     }
 
     return model_params, canvas_height, canvas_width, grid_height, grid_width
-
 
 def standard_mode():
     """All sliders."""

@@ -1,3 +1,6 @@
+/**
+ * Fix a css styling issue in the framework's GUI.
+ */
 var CSSImportModule = function() {
     this.render = function() {
         var seed = document.getElementById("seed_id");

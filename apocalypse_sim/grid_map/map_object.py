@@ -17,10 +17,12 @@ class MapObjectAgent(MesaAgent):
     def __init__(self, pos, agent_type, model, color=""):
         """MapObjectAgent.
 
-        pos: spawn location agent.
-        agent_type: human or zombie.
-        model: Apocalypse object holds all needed information.
-        color: display color agent.
+        Args:
+            pos (tuple): Spawn location agent.
+            agent_type (string): Human or zombie.
+            model (:obj:): Model object holds all needed information.
+            color (string): Display color agent.
+
         """
         super().__init__(pos, model)
 
@@ -38,18 +40,30 @@ class MapObject:
     def __init__(self, vertices, color=""):
         """MapObject.
 
-        vertices: vertices that make up the polygon.
-        color: display color.
+        Args:
+            vertices (list): Vertices that make up the polygon.
+            color (string): Display color.
+
         """
         self.poly = Polygon(vertices)
         self.color = color
 
     def __str__(self):
-        """Represent object as string."""
+        """Represent object as string.
+
+        Returns:
+            (string): String representing object when printing it.
+
+        """
         return "None"
 
     def get_coords(self):
-        """Return all coordinates in the polygon."""
+        """Return all coordinates in the polygon.
+
+        Returns:
+            (list): List of all coordinated in polygon.
+
+        """
         min_x, min_y, max_x, max_y = self.poly.bounds
 
         xs = [x for x in range(floor(min_x), ceil(max_x))]
@@ -65,21 +79,34 @@ class Place(MapObject):
     def __init__(self, vertices, population_density, name="", color=""):
         """Subclass MapObject, Place.
 
-        vertices: vertices that make up the polygon.
-        population_density: percentage of map has agents.
-        name: string id (province name).
-        color: display color.
+        Args:
+            vertices (list): Vertices that make up the polygon.
+            population_density (float): Percentage of map has agents.
+            name (string): String id (province name).
+            color (string): Display color.
+
         """
         super().__init__(vertices, color=color)
+
         self.population_density = population_density
         self.name = name
 
     def __str__(self):
-        """Represent object as string."""
+        """Represent object as string.
+
+        Returns:
+            (string): String representing object when printing it.
+
+        """
         return "Place"
 
     def density_to_amount(self, density):
-        """Convert the density to a value given the place area."""
+        """Convert the density to a value given the place area.
+
+        Returns:
+            (int): Density converted to an actual amount of agents.
+
+        """
         return ceil(len(self.get_coords()) * density)
 
 
@@ -89,11 +116,14 @@ class Road(MapObject):
     def __init__(self, vertices, direction, speed):
         """Subclass MapObject, Road.
 
-        vertices: vertices that make up the polygon.
-        direction: direction agents need to walk when on the road.
-        speed: how many cells in one step the agent takes.
+        Args:
+            vertices (list): Vertices that make up the polygon.
+            direction (list): Direction agents need to walk when on the road.
+            speed (int): How many cells in one step the agent takes.
+
         """
         super().__init__(vertices)
+
         self.direction = direction
         self.speed = speed
 
@@ -103,6 +133,13 @@ class Road(MapObject):
         Check if a agent start the road from the left or right up or under,
         by seeing if it is close to the maximum or minimum x and y value of
         the road and flips the sign for the direction accordingly.
+
+        Args:
+            pos (tuple): Position of agent.
+
+        Returns:
+            (tuple): Tuple containing new direction.
+
         """
         x, y = pos
 
@@ -120,5 +157,10 @@ class Road(MapObject):
         return tuple(new_dir)
 
     def __str__(self):
-        """Represent object as string."""
+        """Represent object as string.
+
+        Returns:
+            (string): String representing object when printing it.
+
+        """
         return "Road"
