@@ -29,7 +29,7 @@ def make_params():
 
     return densities, simulations
 
-def get_model_params():
+def get_model_params(group):
     """Standard parameters of the model in all experiments."""
     return {
         "width": 50,
@@ -37,25 +37,24 @@ def get_model_params():
         "density": None,
         "infected_chance": 0.05,
         "map_id": 0,
-        "grouping": None,
+        "grouping": group,
         "human_kill_agent_chance": 0.35
     }
 
-def make_models(inc_times, simulations):
+def make_models(inc_times, simulations, group):
     """Make model for each experiment."""
     models = []
 
     for density in densities:
-        for group in [True, False]:
-            for iteration in simulations:
-                # Fix simulations iterator after updating
-                # the unfinished experiment
-                model = get_model_params()
-                model["density"] = density
-                model["grouping"] = group
-                model["seed"] = str(random.randrange(sys.maxsize))
-                model["iteration"] = iteration
-                models.append(model)
+        for iteration in simulations:
+            # Fix simulations iterator after updating
+            # the unfinished experiment
+            model = get_model_params(group)
+            model["density"] = density
+            model["grouping"] = group
+            model["seed"] = str(random.randrange(sys.maxsize))
+            model["iteration"] = iteration
+            models.append(model)
 
     return models
 
@@ -99,8 +98,14 @@ def run_experiment(models, series_file):
 
 if __name__ == "__main__":
     os.environ["mode"] = "3"
-    output_file = "group_output.csv"
-    densities, simulations = make_params()
-    models = make_models(densities, simulations)
-    write_models(models, "group_models.csv")
-    run_experiment(models, "group_series.json")
+
+    for group in [True, False]:
+        if group:
+            output_file = "density_and_incubation_grouping.csv"
+        else:
+            output_file = "density_and_incubation_nogrouping.csv"
+
+        densities, simulations = make_params()
+        models = make_models(densities, simulations, group)
+        write_models(models, "group_models.csv")
+        run_experiment(models, output_file)

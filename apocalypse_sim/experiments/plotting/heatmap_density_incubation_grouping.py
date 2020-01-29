@@ -6,7 +6,11 @@ import pandas as pd
 
 vals = {}
 
-with open('data/density_and_incubation_nogrouping.csv', 'r') as file:
+
+data_file = '../data/density_and_incubation_grouping.csv'
+output_file = '../results/density_and_incubation_grouping.pdf'
+
+with open(data_file, 'r') as file:
     reader = csv.reader(file, delimiter=',')
 
     for result in reader:
@@ -33,7 +37,8 @@ for i, k in enumerate(sorted(vals.keys(), key=lambda x: float(x))):
     for j, m in enumerate(sorted(f, key=lambda x: int(x))):
         result[i][j] = vals[k][m]
 
-plt.imshow(result, vmin=0, vmax=25, cmap='BuGn', interpolation='spline16', origin='lower')
+plt.imshow(result, vmin=0, vmax=25, cmap='BuGn',
+            interpolation='spline16', origin='lower')
 
 m = np.array(result)
 win_min = m.min()
@@ -41,14 +46,16 @@ win_max = m.max()
 
 cbar = plt.colorbar(ticks=[0, 25])
 
-cbar.ax.set_yticklabels(["{:d}%".format(int(100 * (0 / 25))), "{:d}%".format(int(100 * (25 / 25)))])
+cbar.ax.set_yticklabels(
+    ["{:d}%".format(int(100 * (0 / 25))), "{:d}%".format(int(100 * (25 / 25)))])
 
 cbar.ax.set_ylabel('Out of 25 simulations', rotation=90)
 
 ax = plt.axes()
 
 ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: x * 3))
-ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, pos: "{:d}".format(int(100 * (0.1 * y + 0.05)))))
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(
+    lambda y, pos: "{:d}".format(int(100 * (0.1 * y + 0.05)))))
 
 plt.xlabel("Incubation time")
 plt.ylabel("Population density (in %)")
@@ -57,4 +64,4 @@ plt.title("Human survival rate")
 plt.tight_layout()
 # plt.show()
 
-plt.savefig('results/density_and_incubation_nogrouping.pdf')
+plt.savefig(output_file)

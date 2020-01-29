@@ -6,7 +6,10 @@ import pandas as pd
 
 vals = {}
 
-with open('data/density_and_incubation_grouping.csv', 'r') as file:
+data_file = '../data/density_and_incubation_nogrouping.csv'
+output_file = '../results/density_and_incubation_nogrouping.pdf'
+
+with open(data_file, 'r') as file:
     reader = csv.reader(file, delimiter=',')
 
     for result in reader:
@@ -57,4 +60,4 @@ plt.title("Human survival rate")
 plt.tight_layout()
 # plt.show()
 
-plt.savefig('results/density_and_incubation_grouping.pdf')
+plt.savefig(output_file)

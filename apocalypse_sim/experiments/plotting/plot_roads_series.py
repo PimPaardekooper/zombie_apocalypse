@@ -69,7 +69,7 @@ def plot_series(d, output_file):
 
 
 if __name__ == "__main__":
-    data_file = "data/road_series.json"
-    output_file = "results/road_output.pdf"
+    data_file = "../data/road_series.json"
+    output_file = "../results/road_output.pdf"
     d = read_series_compute_percentage_infected(data_file)
     plot_series(d, output_file)

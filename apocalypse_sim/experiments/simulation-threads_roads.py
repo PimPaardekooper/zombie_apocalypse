@@ -6,17 +6,16 @@ percentage of agent infected, is effected by it.
 """
 import sys
 sys.path.append("..")
-import json
-from p_tqdm import p_umap
-import csv
-import multiprocessing as mp
-import time
-import subprocess
-import os
-import random
-import numpy as np
 from model import Apocalypse
-
+import numpy as np
+import random
+import os
+import subprocess
+import time
+import multiprocessing as mp
+import csv
+from p_tqdm import p_umap
+import json
 
 
 def make_params():
@@ -65,14 +64,6 @@ def make_models(inc_times, simulations):
     return models
 
 
-def write_models(models, model_file):
-    """Write models made to model_file."""
-    with open(model_file, 'w', newline="") as csv_file:
-        writer = csv.writer(csv_file)
-        for model in models:
-            writer.writerow(model.values())
-
-
 def run_simulation(params):
     """Run experiment with given parameters. Return outcome of experiment."""
     model = Apocalypse(**params)
@@ -105,5 +96,4 @@ if __name__ == "__main__":
     os.environ["mode"] = "5"
     inc_times, simulations = make_params()
     models = make_models(inc_times, simulations)
-    write_models(models, "roads_models.csv")
     run_experiment(models, "road_series.json")
