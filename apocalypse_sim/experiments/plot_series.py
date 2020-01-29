@@ -1,3 +1,5 @@
+""" Plot a time series comparing 5% vs 25% density on a 12 step incubation time.
+"""
 import json
 from collections import defaultdict
 import pandas as pd
@@ -16,10 +18,6 @@ with open('series.json') as json_file:
                 p = (x[1] + x[2]) / ( x[0] + x[1] + x[2] ) * 100
                 d.append([i, p, float(density), int(incubation)])
 serie = pd.DataFrame(d, columns=['step', 'percentage infected', 'density', 'incubation time'])
-# serie = serie.loc[serie['density'] = str(0.15)]
-# print(serie)
-# serie = pd.read_csv('series.csv')
-print(serie)
 plot = sns.lineplot(x="step", y="percentage infected",
                   hue="density",
                   markers=True, dashes=False, data=serie,  legend="full")
